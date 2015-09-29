@@ -15,6 +15,7 @@ import javax.swing.JFrame;
 import client.entity.mob.Player;
 import client.graphics.Screen;
 import client.input.Keyboard;
+import client.input.Mouse;
 import client.level.Level;
 import client.level.SpawnLevel;
 import client.level.tile.TileCoordinate;
@@ -38,6 +39,7 @@ public class Client extends Canvas implements Runnable{
 	private JFrame frame;
 	private Screen screen;
 	private Keyboard key;
+	private Mouse mouse;
 	private Level level;
 	private Player player;
 	private int frames;
@@ -72,6 +74,7 @@ public class Client extends Canvas implements Runnable{
 	}
 	
 	private void initGame(){key = new Keyboard();/*Initialise KeyBoard object*/
+		mouse = new Mouse();
 		//level = new RandomLevel(128, 128);
 		level = new SpawnLevel("/textures/map/MAP_1.PNG");
 		//level.generateLevel();
@@ -80,6 +83,8 @@ public class Client extends Canvas implements Runnable{
 				key);
 		player.initialise(level);
 		addKeyListener(key);
+		addMouseListener(mouse);
+		addMouseMotionListener(mouse);
 	}
 	
 	public synchronized void start(){
