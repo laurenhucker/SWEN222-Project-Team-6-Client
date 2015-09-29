@@ -170,6 +170,10 @@ public class Client extends Canvas implements Runnable{
 		g.setColor(Color.WHITE);
 		g.setFont(new Font("Verdana", 0, 20));
 		g.drawString("x:" + player.xTile + ", y:" + player.yTile, 20, 20);
+
+		//add mouse cursor
+		g.setColor(Color.RED);
+		g.fillOval(Mouse.getX() - 5, Mouse.getY() - 5, 10, 10);
 		
 		g.dispose();/*Dont need these graphics any more. Throw away or game will crash from memory overload*/
 		buffStrat.show();
