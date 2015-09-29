@@ -48,16 +48,30 @@ public class Client extends Canvas implements Runnable{
 	private int[] pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
 	
 	public Client(){
+		connect();
+		initFrame();
+		initGame();
+		
+		
+	}
+	
+	private void connect(){
 		try {
 			socket = new Socket("localhost",2560);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void initFrame(){
 		Dimension size = new Dimension(SCALE*WIDTH, SCALE*HEIGHT);
 		this.setPreferredSize(size);
+		//System.out.println(SCALE*WIDTH + ", " + SCALE*HEIGHT);
 		screen = new Screen(WIDTH, HEIGHT);
 		frame = new JFrame(TITLE);
-		key = new Keyboard();/*Initialise KeyBoard object*/
+	}
+	
+	private void initGame(){key = new Keyboard();/*Initialise KeyBoard object*/
 		//level = new RandomLevel(128, 128);
 		level = new SpawnLevel("/textures/map/MAP_1.PNG");
 		//level.generateLevel();
@@ -65,7 +79,6 @@ public class Client extends Canvas implements Runnable{
 				SPAWN_LOCATION.getY(),
 				key);
 		player.initialise(level);
-		
 		addKeyListener(key);
 	}
 	
