@@ -7,10 +7,13 @@ import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Socket;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import client.entity.mob.Player;
 import client.graphics.Screen;
@@ -19,6 +22,13 @@ import client.input.Mouse;
 import client.level.Level;
 import client.level.SpawnLevel;
 import client.level.tile.TileCoordinate;
+
+enum STATE {
+	LOGIN,
+	NEW_CHARACTER,
+	EXISTING_CHARACTER,
+	GAME
+}
 
 
 public class Client extends Canvas implements Runnable{
@@ -37,12 +47,14 @@ public class Client extends Canvas implements Runnable{
 	private boolean running = false;
 	private Thread thread;
 	private JFrame frame;
+	private JPanel panel;
 	private Screen screen;
 	private Keyboard key;
 	private Mouse mouse;
 	private Level level;
 	private Player player;
 	private int frames;
+	private STATE state = STATE.LOGIN;
 	
 	private Socket socket;
 	
@@ -50,11 +62,28 @@ public class Client extends Canvas implements Runnable{
 	private int[] pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
 	
 	public Client(){
-		connect();
 		initFrame();
-		initGame();
+		loginScreen();
+		connect();
+		//initGame();
 		
 		
+	}
+	
+	private void loginScreen(){
+		try {
+			panel = new JPanel(){
+				BufferedImage bg = ImageIO.read(new FileInputStream("res/textures/login/LOGIN_SCREEN.PNG"));
+				@Override
+				protected void paintComponent(Graphics g) {
+					super.paintComponent(g);
+					g.drawImage(bg, 0, 0, this);
+				}
+			};
+			frame.add(panel);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void connect(){
