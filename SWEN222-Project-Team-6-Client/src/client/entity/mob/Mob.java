@@ -17,7 +17,6 @@ public abstract class Mob extends Entity{
 	protected int dir = 1;//direction - 1:NORTH 2:EAST 3:SOUTH 4:WEST
 	protected boolean moving = false;
 	
-	protected List<Projectile> projectiles = new ArrayList<Projectile>();
 	
 	public boolean collision(int x, int y){
 		Tile tileToCheck = level.getTile(x, y);
@@ -28,15 +27,14 @@ public abstract class Mob extends Entity{
 		return false;
 	}
 	
-	protected void shoot(int x, int y, double dir){
+	public void shoot(int x, int y, double dir){
 		Projectile p = new ArrowProjectile(x, y, dir);
-		projectiles.add(p);
-		level.add(p);
-		
-		
+		level.addProjectile(p);	
 	}
 	
-	public void move(int deltaX, int deltaY){}
+	public void move(int xa, int ya){
+		System.out.println("Move");
+	}
 	
 	public int getDir(){return this.dir;}
 	

@@ -17,9 +17,12 @@ public abstract class Entity {
 	protected final Random random = new Random();
 	public Sprite[] sprites = Sprite.player1;
 	
-	public void update(){}
+	public void update(){
+	}
 	
-	public void render(int x, int y, Screen screen){}
+	public void render(int x, int y, Screen screen){
+		//System.out.println("rendering entity");
+	}
 	
 	public int getDir(){return this.dir;}
 

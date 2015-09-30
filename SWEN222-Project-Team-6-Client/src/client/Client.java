@@ -66,8 +66,6 @@ public class Client extends Canvas implements Runnable{
 		loginScreen();
 		connect();
 		initGame();
-		
-		
 	}
 	
 	private void loginScreen(){

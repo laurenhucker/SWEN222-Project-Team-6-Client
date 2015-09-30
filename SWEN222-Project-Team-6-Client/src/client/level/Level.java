@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import client.Client;
+import client.entity.ArrowProjectile;
 import client.entity.Entity;
+import client.entity.Projectile;
 import client.graphics.Screen;
 import client.level.tile.Tile;
 
@@ -15,6 +17,7 @@ public class Level {
 	protected int[] tiles;
 	
 	private List<Entity> entities = new ArrayList<Entity>();
+	private List<Projectile> projectiles = new ArrayList<Projectile>();
 	
 	
 	public Level(int w, int h){
@@ -41,6 +44,10 @@ public class Level {
 		for(Entity e : entities){
 			e.update();
 		}
+		
+		for(Projectile p : projectiles){
+				p.update();
+		}
 	}
 	
 	public void render(int xScroll, int yScroll, Screen screen){
@@ -57,14 +64,22 @@ public class Level {
 				//tiles[x + y * Game.TILE_WIDTH].render(x, y, screen);
 			}
 		}
-		
 		for(Entity e : entities){
-			e.render(xScroll, yScroll, screen);
+			e.render(xScroll, yScroll,screen);
+		}
+		
+		for(Projectile p : projectiles){
+				p.render(screen);
+			
 		}
 	}
 	
 	public void add(Entity e){
 		entities.add(e);
+	}
+	
+	public void addProjectile(Projectile p){
+		projectiles.add(p);
 	}
 	
 	
@@ -85,5 +100,9 @@ public class Level {
 		if(tiles[x + y*width] == 0xffff0000) return Tile.ROCK;
 		if(tiles[x + y*width] == 0xffffff00) return Tile.SAND;
 		return Tile.VOID;
+	}
+	
+	public List<Projectile> getProjectiles(){
+		return projectiles;
 	}
 }
