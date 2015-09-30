@@ -59,6 +59,7 @@ public class Client extends Canvas implements Runnable{
 	
 	private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 	private int[] pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
+	private int counter = 0;
 	
 	public Client(){
 		initFrame();
@@ -175,6 +176,15 @@ public class Client extends Canvas implements Runnable{
 		key.update();
 		player.update();
 		level.update();
+		counter = counter +1;
+		//if(counter == 5){
+		//	try {
+		//		send();
+		//	} catch (IOException e) {
+		//		// TODO Auto-generated catch block
+		//		e.printStackTrace();
+		//	}
+		//}
 	}
 
 	/**
@@ -217,7 +227,7 @@ public class Client extends Canvas implements Runnable{
 	
 	public void send() throws IOException{
 		OutputStreamWriter outStream;
-		String toSend = player.x + "\n";
+		String toSend = player.x + "\r" + player.y + "\n";
 		try{
 			outStream = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
 			outStream.write(toSend);
