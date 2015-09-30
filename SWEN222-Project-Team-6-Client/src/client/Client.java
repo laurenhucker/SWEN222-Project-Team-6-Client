@@ -65,33 +65,33 @@ public class Client extends Canvas implements Runnable{
 		initFrame();
 		loginScreen();
 		connect();
-		//initGame();
+		initGame();
 		
 		
 	}
 	
 	private void loginScreen(){
-		try {
-			panel = new JPanel(){
-				BufferedImage bg = ImageIO.read(new FileInputStream("res/textures/login/LOGIN_SCREEN.PNG"));
-				@Override
-				protected void paintComponent(Graphics g) {
-					super.paintComponent(g);
-					g.drawImage(bg, 0, 0, this);
-				}
-			};
-			frame.add(panel);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			panel = new JPanel(){
+//				BufferedImage bg = ImageIO.read(new FileInputStream("res/textures/login/LOGIN_SCREEN.PNG"));
+//				@Override
+//				protected void paintComponent(Graphics g) {
+//					super.paintComponent(g);
+//					g.drawImage(bg, 0, 0, this);
+//				}
+//			};
+//			frame.add(panel);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 	
 	private void connect(){
-		try {
-			socket = new Socket("localhost",2560);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			socket = new Socket("localhost",2560);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 	
 	private void initFrame(){
@@ -170,6 +170,7 @@ public class Client extends Canvas implements Runnable{
 	public void update(){
 		key.update();
 		player.update();
+		level.update();
 	}
 
 	/**

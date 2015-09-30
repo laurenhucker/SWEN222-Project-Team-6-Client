@@ -1,6 +1,10 @@
 package client.level;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import client.Client;
+import client.entity.Entity;
 import client.graphics.Screen;
 import client.level.tile.Tile;
 
@@ -9,6 +13,8 @@ public class Level {
 	protected int width, height;
 	protected int[] tilesInt;
 	protected int[] tiles;
+	
+	private List<Entity> entities = new ArrayList<Entity>();
 	
 	
 	public Level(int w, int h){
@@ -32,7 +38,9 @@ public class Level {
 	}
 	
 	public void update(){
-		
+		for(Entity e : entities){
+			e.update();
+		}
 	}
 	
 	public void render(int xScroll, int yScroll, Screen screen){
@@ -49,7 +57,18 @@ public class Level {
 				//tiles[x + y * Game.TILE_WIDTH].render(x, y, screen);
 			}
 		}
+		
+		for(Entity e : entities){
+			e.render(xScroll, yScroll, screen);
+		}
 	}
+	
+	public void add(Entity e){
+		entities.add(e);
+	}
+	
+	
+	
 	/**
 	 * 0xff00ff00 - GRASS
 	 * 0xff808000 - DIRT

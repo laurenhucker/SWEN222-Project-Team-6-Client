@@ -3,6 +3,7 @@ package client.entity.mob;
 import client.Client;
 import client.graphics.Screen;
 import client.input.Keyboard;
+import client.input.Mouse;
 
 enum PLAYER_CLASS {
 	WARRIOR,
@@ -84,13 +85,28 @@ public class Player extends Mob {
 		if(input.down) ya++;
 		if(input.left) xa--;
 		if(input.right) xa++;
+
 		
 		if(xa != 0 || ya != 0) move(xa, ya);
 		
 		this.xTile = ((this.x / Client.TILE_WIDTH) + ((Client.WIDTH  / Client.TILE_WIDTH) / 2)) - (Client.DEFAULT_SPAWN.getX() / Client.TILE_WIDTH) + 1;
 		this.yTile = ((this.y  / Client.TILE_WIDTH) + ((Client.HEIGHT  / Client.TILE_WIDTH) / 2)) - (Client.DEFAULT_SPAWN.getY()  / Client.TILE_WIDTH);
+		
+		updateShooting();
 	}
 	
+	private void updateShooting() {
+		if(Mouse.getButton() == 1){
+			double dx = Mouse.getX() - Client.WIDTH/2;
+			double dy = Mouse.getY() - Client.HEIGHT/2;
+			double dir = Math.atan2(dy, dx);
+			shoot(x, y, dir);
+			
+		}
+	}
+	
+	
+
 	public void render(int x, int y, Screen screen){
 		x -= Client.DEFAULT_SPAWN.getX();
 		y -= Client.DEFAULT_SPAWN.getY();
