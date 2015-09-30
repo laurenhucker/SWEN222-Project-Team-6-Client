@@ -7,9 +7,8 @@ import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -66,6 +65,12 @@ public class Client extends Canvas implements Runnable{
 		loginScreen();
 		connect();
 		initGame();
+		try {
+			send();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private void loginScreen(){
@@ -85,12 +90,13 @@ public class Client extends Canvas implements Runnable{
 	}
 	
 	private void connect(){
-//		try {
-//			socket = new Socket("localhost",2560);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		try {
+			socket = new Socket("localhost",2560);
+		} catch (IOException e) {
+			e.printStackTrace();
+     	}
 	}
+	
 	
 	private void initFrame(){
 		Dimension size = new Dimension(SCALE*WIDTH, SCALE*HEIGHT);
@@ -206,6 +212,24 @@ public class Client extends Canvas implements Runnable{
 		g.dispose();/*Dont need these graphics any more. Throw away or game will crash from memory overload*/
 		buffStrat.show();
 	}
+	
+	
+	
+	public void send() throws IOException{
+		OutputStreamWriter outStream;
+		String toSend = player.x + "\n";
+		try{
+			outStream = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
+			outStream.write(toSend);
+			outStream.flush();
+		} catch (IOException e) {
+	        System.err.print(e);
+	    } finally {
+	        socket.close();
+	    }		
+	}
+	
+	
 	
 	public static void main(String[] args){
 		Client game = new Client();
