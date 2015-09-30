@@ -65,6 +65,7 @@ public class Client extends Canvas implements Runnable{
 		loginScreen();
 		connect();
 		initGame();
+<<<<<<< HEAD
 		try {
 			send();
 		} catch (IOException e) {
@@ -73,6 +74,8 @@ public class Client extends Canvas implements Runnable{
 		}
 		
 		
+=======
+>>>>>>> master
 	}
 	
 	private void loginScreen(){

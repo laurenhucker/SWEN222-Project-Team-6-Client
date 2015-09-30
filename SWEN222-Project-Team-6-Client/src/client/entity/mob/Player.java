@@ -1,6 +1,8 @@
 package client.entity.mob;
 
 import client.Client;
+import client.entity.ArrowProjectile;
+import client.entity.Projectile;
 import client.graphics.Screen;
 import client.input.Keyboard;
 import client.input.Mouse;
@@ -17,6 +19,7 @@ public class Player extends Mob {
 	protected int dir = 3;
 	private int walkCycle = 20;
 	private PLAYER_CLASS playerClass;
+	private int fireRate = 0;
 	
 	public Player(int x, int y, Keyboard input){
 		this.x = x;
@@ -24,6 +27,7 @@ public class Player extends Mob {
 		this.xTile = ((this.x / Client.TILE_WIDTH) + ((Client.WIDTH / Client.TILE_WIDTH) / 2)) - Client.DEFAULT_SPAWN.getX();
 		this.yTile = ((this.y / Client.TILE_WIDTH) + ((Client.HEIGHT / Client.TILE_WIDTH) / 2)) - Client.DEFAULT_SPAWN.getY();
 		this.input = input;
+		fireRate = ArrowProjectile.getFireRate();
 	}
 	
 	public Player(Keyboard input){
@@ -80,6 +84,7 @@ public class Player extends Mob {
 	}
 	
 	public void update(){
+		if(fireRate > 0) fireRate--;
 		int xa = 0, ya = 0;
 		if(input.up) ya--;
 		if(input.down) ya++;
@@ -92,16 +97,34 @@ public class Player extends Mob {
 		this.xTile = ((this.x / Client.TILE_WIDTH) + ((Client.WIDTH  / Client.TILE_WIDTH) / 2)) - (Client.DEFAULT_SPAWN.getX() / Client.TILE_WIDTH) + 1;
 		this.yTile = ((this.y  / Client.TILE_WIDTH) + ((Client.HEIGHT  / Client.TILE_WIDTH) / 2)) - (Client.DEFAULT_SPAWN.getY()  / Client.TILE_WIDTH);
 		
+		clear();
 		updateShooting();
 	}
 	
+	public void clear() {
+		for(int i = 0; i < level.getProjectiles().size(); i++){
+			Projectile p = level.getProjectiles().get(i);
+			if(p.isRemoved()){
+				level.getProjectiles().remove(i);
+			}
+		}
+//		for(Projectile p : projectiles){
+//			if(p.isRemoved()){
+//				//System.out.println("projectiles length " + projectiles.size());
+//				projectiles.remove(p);
+//			}
+//		}
+	}
+	
+
+
 	private void updateShooting() {
-		if(Mouse.getButton() == 1){
+		if(Mouse.getButton() == 1 && fireRate <= 0){
 			double dx = Mouse.getX() - Client.WIDTH/2;
 			double dy = Mouse.getY() - Client.HEIGHT/2;
 			double dir = Math.atan2(dy, dx);
 			shoot(x, y, dir);
-			
+			fireRate = ArrowProjectile.getFireRate();
 		}
 	}
 	

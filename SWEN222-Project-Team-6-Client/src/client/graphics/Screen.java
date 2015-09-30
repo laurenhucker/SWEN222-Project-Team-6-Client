@@ -45,6 +45,20 @@ public class Screen {
 		}
 	}
 	
+	public void renderProjectile(int xPos, int yPos, Sprite sprite){
+		xPos -= xOffset;
+		yPos -= yOffset;
+		for(int y = 0; y < sprite.SIZE; y++){
+			int yAbs = yPos + y;
+			for(int x = 0; x < sprite.SIZE; x++){
+				int xAbs = xPos + x;
+				if(xAbs < -sprite.SIZE || xAbs >= width || yAbs < 0 || yAbs >= height) break;
+				if(xAbs < 0) xAbs = 0;
+				pixels[xAbs + yAbs * width] = sprite.pixels[x + y * sprite.SIZE];
+			}
+		}
+	}
+	
 	private Sprite getSpriteToUse(Player player){
 		int dir = player.getDir();
 		int spriteToUse = 0;
