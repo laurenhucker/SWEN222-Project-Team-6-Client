@@ -65,17 +65,12 @@ public class Client extends Canvas implements Runnable{
 		loginScreen();
 		connect();
 		initGame();
-<<<<<<< HEAD
 		try {
 			send();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-=======
->>>>>>> master
 	}
 	
 	private void loginScreen(){
