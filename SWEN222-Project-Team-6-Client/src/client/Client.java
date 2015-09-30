@@ -220,7 +220,7 @@ public class Client extends Canvas implements Runnable{
 	
 	private void connect(){
 		try {
-			socket = new Socket("localhost",2560);
+			socket = new Socket("localhost",2560); //use '192.168.1.69' to connect to georges laptop
 		} catch (IOException e) {
 			e.printStackTrace();
      	}
