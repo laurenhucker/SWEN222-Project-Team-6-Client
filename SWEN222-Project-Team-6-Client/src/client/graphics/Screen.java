@@ -91,6 +91,22 @@ public class Screen {
 		}
 	}
 	
+	public void renderItem(int xPos, int yPos, Sprite sprite){
+		xPos -= this.xOffset;
+		yPos -= this.yOffset;
+		for(int y = 0; y < sprite.SIZE; y++){
+			int yAbs = yPos + y;
+			for(int x = 0; x < sprite.SIZE; x++){
+				int xAbs = xPos + x;
+				if(xAbs < -sprite.SIZE || xAbs >= width || yAbs < 0 || yAbs >= height) break;
+				if(xAbs < 0) xAbs = 0;
+				int col = sprite.pixels[x + y * sprite.SIZE];
+				if(col != 0xffff00ff)//dont render pink
+					pixels[xAbs + yAbs * width] = col;
+			}
+		}
+	}
+	
 	public void setOffset(int xOff, int yOff){
 		this.xOffset = xOff;
 		this.yOffset = yOff;
