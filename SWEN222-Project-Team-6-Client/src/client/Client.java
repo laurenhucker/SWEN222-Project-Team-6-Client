@@ -50,7 +50,7 @@ public class Client extends Canvas implements Runnable{
 	public static final TileCoordinate SPAWN_LOCATION = new TileCoordinate(7, 7);
 	public static final TileCoordinate DEFAULT_SPAWN = new TileCoordinate(10, 6);
 	
-	private boolean running = false;
+	private boolean running = false, connected = false;
 	private Thread thread;
 	private JFrame gameFrame, loginFrame;
 	private JPanel panel;
@@ -78,12 +78,6 @@ public class Client extends Canvas implements Runnable{
 		loadImages();
 		initFrames();
 		loginScreen();
-		connect();
-		try {
-			send();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	private void loadImages(){
@@ -124,6 +118,7 @@ public class Client extends Canvas implements Runnable{
 			public void actionPerformed(ActionEvent a) {
 				state = STATE.GAME;
 				loginFrame.setVisible(false);
+				state = STATE.GAME;
 				initGame();
 			}
 		});
@@ -180,6 +175,7 @@ public class Client extends Canvas implements Runnable{
 			@Override
 			public void actionPerformed(ActionEvent a) {
 				loginFrame.setVisible(false);
+				state = STATE.GAME;
 				initGame();
 			}
 		});
@@ -191,6 +187,7 @@ public class Client extends Canvas implements Runnable{
 			@Override
 			public void actionPerformed(ActionEvent a) {
 				loginFrame.setVisible(false);
+				state = STATE.GAME;
 				initGame();
 			}
 		});
@@ -202,6 +199,7 @@ public class Client extends Canvas implements Runnable{
 			@Override
 			public void actionPerformed(ActionEvent a) {
 				loginFrame.setVisible(false);
+				state = STATE.GAME;
 				initGame();
 			}
 		});
@@ -218,12 +216,14 @@ public class Client extends Canvas implements Runnable{
 		loginFrame.setVisible(true);
 	}
 	
-	private void connect(){
+	private boolean connect(){
 		try {
 			socket = new Socket("localhost",2560); //use '192.168.1.69' to connect to georges laptop
+			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
      	}
+		return false;
 	}
 	
 	
@@ -249,6 +249,7 @@ public class Client extends Canvas implements Runnable{
 	}
 	
 	private void initGame(){
+		if(!connect()) System.exit(1);
 		key = new Keyboard();/*Initialise KeyBoard object*/
 		mouse = new Mouse();
 		//level = new RandomLevel(128, 128);
@@ -319,14 +320,15 @@ public class Client extends Canvas implements Runnable{
 		player.update();
 		level.update();
 		counter++;
-		//if(counter == 5){
-		//	try {
-		//		send();
-		//	} catch (IOException e) {
-		//		// TODO Auto-generated catch block
-		//		e.printStackTrace();
-		//	}
-		//}
+		
+		if(counter > 10){
+			try {
+				send();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			counter = 0;
+		}
 	}
 
 	/**
