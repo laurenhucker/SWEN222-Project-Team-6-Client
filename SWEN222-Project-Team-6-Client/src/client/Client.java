@@ -4,6 +4,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -11,7 +14,11 @@ import java.io.*;
 import java.net.*;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import client.entity.mob.Player;
@@ -24,7 +31,7 @@ import client.level.tile.TileCoordinate;
 
 enum STATE {
 	LOGIN,
-	NEW_CHARACTER,
+	CHARACTER_SELECTION,
 	EXISTING_CHARACTER,
 	GAME
 }
@@ -45,7 +52,7 @@ public class Client extends Canvas implements Runnable{
 	
 	private boolean running = false;
 	private Thread thread;
-	private JFrame frame;
+	private JFrame gameFrame, loginFrame;
 	private JPanel panel;
 	private Screen screen;
 	private Keyboard key;
@@ -57,37 +64,158 @@ public class Client extends Canvas implements Runnable{
 	
 	private Socket socket;
 	
-	private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+	private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB),
+			loginScreenImg,
+			newCharButtonImg,
+			existingCharButtonImg,
+			warriorButtonImg,
+			archerButtonImg,
+			mageButtonImg;
 	private int[] pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
 	private int counter = 0;
 	
 	public Client(){
-		initFrame();
+		loadImages();
+		initFrames();
 		loginScreen();
 		connect();
-		initGame();
 		try {
 			send();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void loadImages(){
+		try {
+			loginScreenImg = ImageIO.read(Client.class.getResource("/textures/login/LOGIN_SCREEN.PNG"));
+			newCharButtonImg = ImageIO.read(Client.class.getResource("/textures/login/NEW_CHARACTER_BUTTON.PNG"));
+			existingCharButtonImg = ImageIO.read(Client.class.getResource("/textures/login/EXISTING_CHARACTER_BUTTON.PNG"));
+			warriorButtonImg = ImageIO.read(Client.class.getResource("/textures/login/CHARACTER_SELECTION_1.PNG"));
+			archerButtonImg = ImageIO.read(Client.class.getResource("/textures/login/CHARACTER_SELECTION_2.PNG"));
+			mageButtonImg = ImageIO.read(Client.class.getResource("/textures/login/CHARACTER_SELECTION_3.PNG"));
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	private void loginScreen(){
-//		try {
-//			panel = new JPanel(){
-//				BufferedImage bg = ImageIO.read(new FileInputStream("res/textures/login/LOGIN_SCREEN.PNG"));
-//				@Override
-//				protected void paintComponent(Graphics g) {
-//					super.paintComponent(g);
-//					g.drawImage(bg, 0, 0, this);
-//				}
-//			};
-//			frame.add(panel);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		JButton newCharButton = new JButton();
+		JButton existingCharButton = new JButton();
+		
+		newCharButton.setIcon(new ImageIcon(newCharButtonImg));
+		newCharButton.setBorder(BorderFactory.createEmptyBorder());
+		newCharButton.setContentAreaFilled(false);
+		newCharButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent a) {
+				state = STATE.CHARACTER_SELECTION;
+				panel.remove(newCharButton);
+				panel.remove(existingCharButton);
+				characterSelectScreen();
+			}
+		});
+		
+		existingCharButton.setIcon(new ImageIcon(existingCharButtonImg));
+		existingCharButton.setBorder(BorderFactory.createEmptyBorder());
+		existingCharButton.setContentAreaFilled(false);
+		existingCharButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent a) {
+				state = STATE.GAME;
+				loginFrame.setVisible(false);
+				initGame();
+			}
+		});
+		
+		panel = new JPanel(){
+			@Override
+			protected void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				if(state == STATE.LOGIN)
+					g.drawImage(loginScreenImg, 0, 0, this);
+			}
+		};
+		
+		/*
+		 * I want the buttons at coordinates 2,2 and 2,3 in the GridLayout to try and put them in the right place on the 
+		 * screen. To fill the gaps I will put empty JLabel objects.
+		 */
+		panel.setLayout(new GridLayout(6, 3));
+		panel.add(new JLabel());
+		panel.add(new JLabel());
+		panel.add(new JLabel());
+
+		panel.add(new JLabel());
+		panel.add(new JLabel());
+		panel.add(new JLabel());
+		
+		panel.add(new JLabel());
+		panel.add(newCharButton);
+		panel.add(new JLabel());
+
+		panel.add(new JLabel());
+		panel.add(existingCharButton);
+		panel.add(new JLabel());
+
+		panel.add(new JLabel());
+		panel.add(new JLabel());
+		panel.add(new JLabel());
+		
+		panel.setPreferredSize(new Dimension(1344, 768));
+		panel.setVisible(true);
+		loginFrame.getContentPane().add(panel);
+		loginFrame.setVisible(true);
+	}
+	
+	private void characterSelectScreen(){
+		JButton warriorButton = new JButton();
+		JButton archerButton = new JButton();
+		JButton mageButton = new JButton();
+		
+		warriorButton.setIcon(new ImageIcon(this.warriorButtonImg));
+		warriorButton.setBorder(BorderFactory.createEmptyBorder());
+		warriorButton.setContentAreaFilled(false);
+		warriorButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent a) {
+				loginFrame.setVisible(false);
+				initGame();
+			}
+		});
+		
+		archerButton.setIcon(new ImageIcon(this.archerButtonImg));
+		archerButton.setBorder(BorderFactory.createEmptyBorder());
+		archerButton.setContentAreaFilled(false);
+		archerButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent a) {
+				loginFrame.setVisible(false);
+				initGame();
+			}
+		});
+		
+		mageButton.setIcon(new ImageIcon(this.mageButtonImg));
+		mageButton.setBorder(BorderFactory.createEmptyBorder());
+		mageButton.setContentAreaFilled(false);
+		mageButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent a) {
+				loginFrame.setVisible(false);
+				initGame();
+			}
+		});
+		
+		panel = new JPanel();
+		
+		panel.setLayout(new GridLayout(1, 3));
+		panel.add(warriorButton);
+		panel.add(archerButton);
+		panel.add(mageButton);
+		panel.setPreferredSize(new Dimension(1344, 768));
+		panel.setVisible(true);
+		loginFrame.getContentPane().add(panel);
+		loginFrame.setVisible(true);
 	}
 	
 	private void connect(){
@@ -99,26 +227,40 @@ public class Client extends Canvas implements Runnable{
 	}
 	
 	
-	private void initFrame(){
+	private void initFrames(){
+		screen = new Screen(WIDTH, HEIGHT);
+		loginFrame = new JFrame(TITLE);
+		gameFrame = new JFrame(TITLE);
+
 		Dimension size = new Dimension(SCALE*WIDTH, SCALE*HEIGHT);
 		this.setPreferredSize(size);
-		//System.out.println(SCALE*WIDTH + ", " + SCALE*HEIGHT);
-		screen = new Screen(WIDTH, HEIGHT);
-		frame = new JFrame(TITLE);
+		loginFrame.setPreferredSize(size);
+		loginFrame.setResizable(false);
+		loginFrame.add(this);
+		loginFrame.pack();
+		loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		loginFrame.setLocationRelativeTo(null);
+		gameFrame.setPreferredSize(size);
+		gameFrame.setResizable(false);
+		gameFrame.add(this);
+		gameFrame.pack();
+		gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		gameFrame.setLocationRelativeTo(null);
 	}
 	
-	private void initGame(){key = new Keyboard();/*Initialise KeyBoard object*/
+	private void initGame(){
+		key = new Keyboard();/*Initialise KeyBoard object*/
 		mouse = new Mouse();
 		//level = new RandomLevel(128, 128);
 		level = new SpawnLevel("/textures/map/MAP_1.PNG");
 		//level.generateLevel();
-		player = new Player(SPAWN_LOCATION.getX(),
-				SPAWN_LOCATION.getY(),
-				key);
+		player = new Player(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key);
 		player.initialise(level);
 		addKeyListener(key);
 		addMouseListener(mouse);
 		addMouseMotionListener(mouse);
+		gameFrame.setVisible(true);
+		this.start();
 	}
 	
 	public synchronized void start(){
@@ -160,7 +302,7 @@ public class Client extends Canvas implements Runnable{
 			frames++;
 			if(System.currentTimeMillis() - timer > 1000){
 				timer += 1000;
-				frame.setTitle(TITLE + " - FPS:" + frames);
+				gameFrame.setTitle(TITLE + " - FPS:" + frames);
 				frames = 0;
 				updates = 0;
 			}
@@ -176,7 +318,7 @@ public class Client extends Canvas implements Runnable{
 		key.update();
 		player.update();
 		level.update();
-		counter = counter +1;
+		counter++;
 		//if(counter == 5){
 		//	try {
 		//		send();
@@ -223,9 +365,7 @@ public class Client extends Canvas implements Runnable{
 		buffStrat.show();
 	}
 	
-	
-	
-	public void send() throws IOException{
+	public void send() throws IOException {
 		OutputStreamWriter outStream;
 		String toSend = player.x + "\r" + player.y + "\n";
 		try{
@@ -239,18 +379,8 @@ public class Client extends Canvas implements Runnable{
 	    }		
 	}
 	
-	
-	
 	public static void main(String[] args){
 		Client game = new Client();
-		game.frame.setResizable(false);
-		game.frame.add(game);
-		game.frame.pack();
-		game.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		game.frame.setLocationRelativeTo(null);
-		game.frame.setVisible(true);
-		
-		game.start();
 	}
 	
 }
