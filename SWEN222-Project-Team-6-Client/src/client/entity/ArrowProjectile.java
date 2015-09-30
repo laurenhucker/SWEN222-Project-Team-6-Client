@@ -11,7 +11,7 @@ public class ArrowProjectile extends Projectile {
 		speed = 20;
 		range = 500;
 		damage = 15;
-		sprite = Sprite.grass;
+		sprite = Sprite.star;
 		nx = speed * Math.cos(angle);
 		ny = speed * Math.sin(angle);
 	}
@@ -37,7 +37,8 @@ public class ArrowProjectile extends Projectile {
 
 	public void render(Screen screen){
 		System.out.println("Rendering shoot");
-		screen.renderProjectile((int)x, (int)y, sprite);
+		screen.renderItem((int)x, (int)y - 25, sprite);
+		//ArrowProjectile.screen.renderProjectile((int)x, (int)y, sprite);
 		
 	}
 

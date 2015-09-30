@@ -18,6 +18,8 @@ public class Sprite {
 	public static Sprite rock = new Sprite(3, 0, SpriteSheet.TILES);
 	public static Sprite sand = new Sprite(4, 0, SpriteSheet.TILES);
 	
+	public static Sprite star = new Sprite(0, 0, SpriteSheet.ITEMS);
+	
 	public static Sprite[] player1 = {
 		new Sprite(0, 0, SpriteSheet.ENTITIES),//NORTH LEFT FOOT
 		new Sprite(1, 0, SpriteSheet.ENTITIES),//NORTH STILL
