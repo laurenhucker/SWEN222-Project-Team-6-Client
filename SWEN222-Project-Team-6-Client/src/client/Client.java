@@ -87,11 +87,11 @@ public class Client extends Canvas implements Runnable{
 	}
 	
 	private void connect(){
-//		try {
-//			socket = new Socket("localhost",2560);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		try {
+			socket = new Socket("localhost",2560);
+		} catch (IOException e) {
+			e.printStackTrace();
+     	}
 	}
 	
 	private void initFrame(){
