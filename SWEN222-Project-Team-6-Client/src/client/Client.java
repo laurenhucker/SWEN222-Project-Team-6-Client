@@ -33,7 +33,7 @@ enum STATE {
 
 public class Client extends Canvas implements Runnable{
 	
-	public static final String TITLE = "Lauren is cool";
+	public static final String TITLE = "Lauren is cool  ";
 	public static final int SCALE = 1,
 			NUM_TILES = 21,
 			TILE_WIDTH = 64,
