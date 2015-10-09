@@ -20,6 +20,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import client.entity.mob.Player;
 import client.graphics.Screen;
@@ -50,7 +51,7 @@ public class Client extends Canvas implements Runnable{
 	public static final TileCoordinate SPAWN_LOCATION = new TileCoordinate(7, 7);
 	public static final TileCoordinate DEFAULT_SPAWN = new TileCoordinate(10, 6);
 	
-	private boolean running = false, connected = false;
+	private boolean running = false, connected = false, login = false;
 	private Thread thread;
 	private JFrame gameFrame, loginFrame;
 	private JPanel panel;
@@ -219,6 +220,10 @@ public class Client extends Canvas implements Runnable{
 	private boolean connect(){
 		try {
 			socket = new Socket("localhost",2560); //use '192.168.1.69' to connect to georges laptop
+			if(socket.isConnected()){
+				System.out.println("WE ARE CONNECTED");
+				return handleLoginBox(socket);
+			}
 			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -226,6 +231,54 @@ public class Client extends Canvas implements Runnable{
 		return false;
 	}
 	
+	private boolean handleLoginBox(Socket socket){
+		JFrame loginBox = new JFrame("Please enter your username and password:");
+		JTextField username = new JTextField("Username");
+		JTextField password = new JTextField("Password");
+		JButton confirm = new JButton("Login");
+		
+		loginBox.setLayout(new GridLayout(1, 2));
+		loginBox.add(username);
+		loginBox.add(password);
+		loginBox.add(confirm);
+		confirm.setVisible(true);
+		username.setVisible(true);
+		password.setVisible(true);
+		
+		confirm.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					DataOutputStream outStream = new DataOutputStream(socket.getOutputStream());
+					String request = "LOGIN:" + username.getText() + ":" + password.getText();
+					outStream.writeUTF(request);
+					
+					login = getLoginResponse(socket);
+					
+				} catch (IOException ioe) {
+					ioe.printStackTrace();
+				}
+			}
+		});
+		
+		loginBox.setResizable(false);
+		loginBox.pack();
+		loginBox.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		loginBox.setLocationRelativeTo(null);
+		loginBox.setVisible(true);
+		return login;
+	}
+	
+	private boolean getLoginResponse(Socket socket){
+		DataInputStream inStream;
+		try {
+			inStream = new DataInputStream(socket.getInputStream());
+			return inStream.readBoolean();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 	
 	private void initFrames(){
 		screen = new Screen(WIDTH, HEIGHT);
