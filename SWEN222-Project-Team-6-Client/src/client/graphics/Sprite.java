@@ -35,6 +35,21 @@ public class Sprite {
 		new Sprite(11, 0, SpriteSheet.ENTITIES)//WEST
 	};
 	
+	public static Sprite[] player2 = {
+		new Sprite(0, 1, SpriteSheet.ENTITIES),//NORTH LEFT FOOT
+		new Sprite(1, 1, SpriteSheet.ENTITIES),//NORTH STILL
+		new Sprite(2, 1, SpriteSheet.ENTITIES),//NORTH RIGHT FOOT
+		new Sprite(3, 1, SpriteSheet.ENTITIES),//EAST
+		new Sprite(4, 1, SpriteSheet.ENTITIES),//EAST
+		new Sprite(5, 1, SpriteSheet.ENTITIES),//EAST
+		new Sprite(6, 1, SpriteSheet.ENTITIES),//SOUTH
+		new Sprite(7, 1, SpriteSheet.ENTITIES),//SOUTH
+		new Sprite(8, 1, SpriteSheet.ENTITIES),//SOUTH
+		new Sprite(9, 1, SpriteSheet.ENTITIES),//WEST
+		new Sprite(10, 1, SpriteSheet.ENTITIES),//WEST
+		new Sprite(11, 1, SpriteSheet.ENTITIES)//WEST
+	};
+	
 	public Sprite( int x, int y, SpriteSheet sheet){
 		this.x = x*SIZE;
 		this.y = y*SIZE;

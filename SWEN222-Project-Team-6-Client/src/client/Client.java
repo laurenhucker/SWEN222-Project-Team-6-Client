@@ -10,8 +10,11 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.io.*;
-import java.net.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -302,7 +305,7 @@ public class Client extends Canvas implements Runnable{
 	}
 	
 	private void initGame(){
-		if(!connect()) System.exit(1);
+		//if(!connect()) System.exit(1);
 		key = new Keyboard();/*Initialise KeyBoard object*/
 		mouse = new Mouse();
 		//level = new RandomLevel(128, 128);
@@ -421,6 +424,7 @@ public class Client extends Canvas implements Runnable{
 	}
 	
 	public void send() throws IOException {
+		if(socket == null) return;
 		OutputStreamWriter outStream;
 		String toSend = player.x + "\r" + player.y + "\n";
 		try{
@@ -430,7 +434,8 @@ public class Client extends Canvas implements Runnable{
 		} catch (IOException e) {
 	        System.err.print(e);
 	    } finally {
-	        socket.close();
+	    	if(socket != null)
+	    		socket.close();
 	    }		
 	}
 	
