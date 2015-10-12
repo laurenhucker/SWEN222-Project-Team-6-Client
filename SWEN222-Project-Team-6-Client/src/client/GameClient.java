@@ -10,11 +10,9 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
+import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -23,13 +21,14 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
-import client.entity.mob.Mob;
-import client.entity.mob.Monster;
+import client.Packet.*;
+
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryonet.Client;
+
 import client.entity.mob.Player;
 import client.graphics.Screen;
-import client.graphics.Sprite;
 import client.input.Keyboard;
 import client.input.Mouse;
 import client.level.Level;
@@ -43,8 +42,10 @@ enum STATE {
 	GAME
 }
 
-
-public class Client extends Canvas implements Runnable{
+public class GameClient extends Canvas implements Runnable{
+	
+	public Client client;
+	private Scanner scanner;
 	
 	public static final String TITLE = "Lauren is cool  ";
 	public static final int SCALE = 1,
@@ -57,7 +58,7 @@ public class Client extends Canvas implements Runnable{
 	public static final TileCoordinate SPAWN_LOCATION = new TileCoordinate(7, 7);
 	public static final TileCoordinate DEFAULT_SPAWN = new TileCoordinate(10, 6);
 	
-	private boolean running = false, connected = false, login = false;
+	private boolean running = false;
 	private Thread thread;
 	private JFrame gameFrame, loginFrame;
 	private JPanel panel;
@@ -66,7 +67,6 @@ public class Client extends Canvas implements Runnable{
 	private Mouse mouse;
 	private Level level;
 	private Player player;
-	private Monster penisMob;
 	private int frames;
 	private STATE state = STATE.LOGIN;
 	
@@ -82,20 +82,50 @@ public class Client extends Canvas implements Runnable{
 	private int[] pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
 	private int counter = 0;
 	
-	public Client(){
+	public GameClient(){
+		
+		setScanner(new Scanner(System.in));
+		client = new Client();
+		registerPackets();
+		ConnectionHandler ch = new ConnectionHandler();
+		ch.init(client);
+		client.addListener(ch);
+		client.start();
+		try {
+			client.connect(10000, "localhost", 2555);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			client.stop();
+		}
+		
 		loadImages();
 		initFrames();
 		loginScreen();
+		/*
+		connect();
+		try {
+			send();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		*/
+	}
+	
+	public void registerPackets(){
+		Kryo kryo = client.getKryo();
+		kryo.register(Packet0LoginRequest.class);
+		kryo.register(Packet1LoginAnswer.class);
+		
 	}
 
 	private void loadImages(){
 		try {
-			loginScreenImg = ImageIO.read(Client.class.getResource("/textures/login/LOGIN_SCREEN.PNG"));
-			newCharButtonImg = ImageIO.read(Client.class.getResource("/textures/login/NEW_CHARACTER_BUTTON.PNG"));
-			existingCharButtonImg = ImageIO.read(Client.class.getResource("/textures/login/EXISTING_CHARACTER_BUTTON.PNG"));
-			warriorButtonImg = ImageIO.read(Client.class.getResource("/textures/login/CHARACTER_SELECTION_1.PNG"));
-			archerButtonImg = ImageIO.read(Client.class.getResource("/textures/login/CHARACTER_SELECTION_2.PNG"));
-			mageButtonImg = ImageIO.read(Client.class.getResource("/textures/login/CHARACTER_SELECTION_3.PNG"));
+			loginScreenImg = ImageIO.read(GameClient.class.getResource("/textures/login/LOGIN_SCREEN.PNG"));
+			newCharButtonImg = ImageIO.read(GameClient.class.getResource("/textures/login/NEW_CHARACTER_BUTTON.PNG"));
+			existingCharButtonImg = ImageIO.read(GameClient.class.getResource("/textures/login/EXISTING_CHARACTER_BUTTON.PNG"));
+			warriorButtonImg = ImageIO.read(GameClient.class.getResource("/textures/login/CHARACTER_SELECTION_1.PNG"));
+			archerButtonImg = ImageIO.read(GameClient.class.getResource("/textures/login/CHARACTER_SELECTION_2.PNG"));
+			mageButtonImg = ImageIO.read(GameClient.class.getResource("/textures/login/CHARACTER_SELECTION_3.PNG"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -126,7 +156,6 @@ public class Client extends Canvas implements Runnable{
 			public void actionPerformed(ActionEvent a) {
 				state = STATE.GAME;
 				loginFrame.setVisible(false);
-				state = STATE.GAME;
 				initGame();
 			}
 		});
@@ -183,7 +212,6 @@ public class Client extends Canvas implements Runnable{
 			@Override
 			public void actionPerformed(ActionEvent a) {
 				loginFrame.setVisible(false);
-				state = STATE.GAME;
 				initGame();
 			}
 		});
@@ -195,7 +223,6 @@ public class Client extends Canvas implements Runnable{
 			@Override
 			public void actionPerformed(ActionEvent a) {
 				loginFrame.setVisible(false);
-				state = STATE.GAME;
 				initGame();
 			}
 		});
@@ -207,7 +234,6 @@ public class Client extends Canvas implements Runnable{
 			@Override
 			public void actionPerformed(ActionEvent a) {
 				loginFrame.setVisible(false);
-				state = STATE.GAME;
 				initGame();
 			}
 		});
@@ -223,69 +249,15 @@ public class Client extends Canvas implements Runnable{
 		loginFrame.getContentPane().add(panel);
 		loginFrame.setVisible(true);
 	}
-	
-	private boolean connect(){
+	/*
+	private void connect(){
 		try {
-			socket = new Socket("localhost",2560); //use '192.168.1.69' to connect to georges laptop
-			if(socket.isConnected()){
-				System.out.println("WE ARE CONNECTED");
-				return handleLoginBox(socket);
-			}
-			return true;
+			socket = new Socket("localhost",2560);
 		} catch (IOException e) {
 			e.printStackTrace();
      	}
-		return false;
 	}
-	
-	private boolean handleLoginBox(Socket socket){
-		JFrame loginBox = new JFrame("Please enter your username and password:");
-		JTextField username = new JTextField("Username");
-		JTextField password = new JTextField("Password");
-		JButton confirm = new JButton("Login");
-		
-		loginBox.setLayout(new GridLayout(1, 2));
-		loginBox.add(username);
-		loginBox.add(password);
-		loginBox.add(confirm);
-		confirm.setVisible(true);
-		username.setVisible(true);
-		password.setVisible(true);
-		
-		confirm.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					DataOutputStream outStream = new DataOutputStream(socket.getOutputStream());
-					String request = "LOGIN:" + username.getText() + ":" + password.getText();
-					outStream.writeUTF(request);
-					
-					login = getLoginResponse(socket);
-					
-				} catch (IOException ioe) {
-					ioe.printStackTrace();
-				}
-			}
-		});
-		
-		loginBox.setResizable(false);
-		loginBox.pack();
-		loginBox.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		loginBox.setLocationRelativeTo(null);
-		loginBox.setVisible(true);
-		return login;
-	}
-	
-	private boolean getLoginResponse(Socket socket){
-		DataInputStream inStream;
-		try {
-			inStream = new DataInputStream(socket.getInputStream());
-			return inStream.readBoolean();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
+	*/
 	
 	private void initFrames(){
 		screen = new Screen(WIDTH, HEIGHT);
@@ -309,15 +281,11 @@ public class Client extends Canvas implements Runnable{
 	}
 	
 	private void initGame(){
-		//if(!connect()) System.exit(1);
 		key = new Keyboard();/*Initialise KeyBoard object*/
 		mouse = new Mouse();
 		//level = new RandomLevel(128, 128);
 		level = new SpawnLevel("/textures/map/MAP_1.PNG");
 		//level.generateLevel();
-		
-		penisMob = new Monster(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), Sprite.penisMob);
-		
 		player = new Player(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key);
 		player.initialise(level);
 		addKeyListener(key);
@@ -382,16 +350,13 @@ public class Client extends Canvas implements Runnable{
 		key.update();
 		player.update();
 		level.update();
-		penisMob.update();
 		counter++;
-		
-		if(counter > 10){
+		if(counter == 5){
 			try {
-				send();
+			send();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			counter = 0;
 		}
 	}
 
@@ -407,7 +372,6 @@ public class Client extends Canvas implements Runnable{
 		
 		screen.clear();/*Clear screen before rendering again*/
 		level.render(player.x, player.y, screen);
-		penisMob.render(screen);
 		player.render(player.x, player.y, screen);
 		//screen.render(xOffset, yOffset);/*Now render screen*/
 		
@@ -433,23 +397,31 @@ public class Client extends Canvas implements Runnable{
 	}
 	
 	public void send() throws IOException {
-		if(socket == null) return;
-		OutputStreamWriter outStream;
-		String toSend = player.x + "\r" + player.y + "\n";
-		try{
-			outStream = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
-			outStream.write(toSend);
-			outStream.flush();
-		} catch (IOException e) {
-	        System.err.print(e);
-	    } finally {
-	    	if(socket != null)
-	    		socket.close();
-	    }		
+		if (state==STATE.GAME){
+			OutputStreamWriter outStream;
+			String toSend = player.x + "\r" + player.y + "\n";
+			try{
+				outStream = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
+				outStream.write(toSend);
+				outStream.flush();
+			} catch (IOException e) {
+				System.err.print(e);
+			} finally {
+				socket.close();
+			}	
+		}
 	}
 	
 	public static void main(String[] args){
-		Client game = new Client();
+		GameClient game = new GameClient();
+	}
+
+	public Scanner getScanner() {
+		return scanner;
+	}
+
+	public void setScanner(Scanner scanner) {
+		this.scanner = scanner;
 	}
 	
 }

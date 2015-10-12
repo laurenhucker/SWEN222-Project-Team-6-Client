@@ -3,7 +3,7 @@ package client.level;
 import java.util.ArrayList;
 import java.util.List;
 
-import client.Client;
+import client.GameClient;
 import client.entity.ArrowProjectile;
 import client.entity.Entity;
 import client.entity.Projectile;
@@ -51,13 +51,13 @@ public class Level {
 	}
 	
 	public void render(int xScroll, int yScroll, Screen screen){
-		xScroll -=  Client.DEFAULT_SPAWN.getX();
-		yScroll -=  Client.DEFAULT_SPAWN.getY();
+		xScroll -=  GameClient.DEFAULT_SPAWN.getX();
+		yScroll -=  GameClient.DEFAULT_SPAWN.getY();
 		screen.setOffset(xScroll , yScroll);
 		int x0 = xScroll >> 6;//xScroll/64 (2^6)     -- LEFT HAND SIDE OF TILE
-		int x1 = (xScroll + screen.getWidth() + Client.TILE_WIDTH) >> 6;// RIGHT HAND SIDE OF TILE(adding 64 to render extra tile)
+		int x1 = (xScroll + screen.getWidth() + GameClient.TILE_WIDTH) >> 6;// RIGHT HAND SIDE OF TILE(adding 64 to render extra tile)
 		int y0 = yScroll >> 6;// TOP SIDE
-		int y1 = (yScroll + screen.getHeight() + Client.TILE_WIDTH) >> 6;// BOTTOM SIDE (adding 64 to render extra tile)
+		int y1 = (yScroll + screen.getHeight() + GameClient.TILE_WIDTH) >> 6;// BOTTOM SIDE (adding 64 to render extra tile)
 		for(int y = y0; y < y1; y++){
 			for(int x = x0; x < x1; x++){
 				getTile(x, y).render(x, y, screen);

@@ -1,10 +1,10 @@
 package client.graphics;
 
-import client.Client;
+import client.GameClient;
 
 public class Sprite {
 
-	public final int SIZE = Client.TILE_WIDTH;
+	public final int SIZE = GameClient.TILE_WIDTH;
 	private int x, y;
 	public int[] pixels;
 	private SpriteSheet sheet;
