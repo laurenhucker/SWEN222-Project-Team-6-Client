@@ -79,11 +79,23 @@ public class Level {
 	}
 	
 	public void addProjectile(Projectile p){
+		p.initialise(this);
 		projectiles.add(p);
 	}
 	
-	
-	
+		public boolean tileCollision(double x, double y, double xa, double ya, int size){
+		boolean solid = false;
+		for(int i = 0; i < 4; i++){
+			double xt = ((x + xa) + i % 2 * size)/64;
+			double yt = ((y + ya) + i / 2 * size)/64;
+			if(getTile((int)xt, (int)yt).solid()) {
+				solid = true;
+				return solid;
+			}
+		}
+		return solid;
+	}
+		
 	/**
 	 * 0xff00ff00 - GRASS
 	 * 0xff808000 - DIRT

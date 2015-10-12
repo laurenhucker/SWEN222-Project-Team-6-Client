@@ -23,13 +23,15 @@ public class ArrowProjectile extends Projectile {
 	}
 	
 	protected void move(){
+	if(!level.tileCollision(x, y, nx, ny, 64)){
 		x += nx;
 		y += ny;
-		
-		if(distance() > range) {
-			remove();
-		}
 	}
+	
+	if(distance() > range) {
+		remove();
+	}
+}
 	
 	private double distance() {
 		double dist = 0;
@@ -38,7 +40,6 @@ public class ArrowProjectile extends Projectile {
 	}
 
 	public void render(Screen screen){
-		System.out.println("Rendering shoot");
 		screen.renderItem((int)x, (int)y - 25, sprite);
 		//ArrowProjectile.screen.renderProjectile((int)x, (int)y, sprite);
 		
