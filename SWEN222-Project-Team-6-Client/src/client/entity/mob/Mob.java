@@ -22,7 +22,7 @@ public abstract class Mob extends Entity{
 		Tile tileToCheck = level.getTile(x, y);
 		if(tileToCheck.solid()){
 			//System.out.println("Colliding with " + tileToCheck + " at " + x + ":" + y);
-			return false;
+			return true;
 		}
 		return false;
 	}

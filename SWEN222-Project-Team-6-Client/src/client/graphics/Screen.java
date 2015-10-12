@@ -107,6 +107,10 @@ public class Screen {
 		}
 	}
 	
+	public void renderInventory(Player player){
+		
+	}
+	
 	public void setOffset(int xOff, int yOff){
 		this.xOffset = xOff;
 		this.yOffset = yOff;

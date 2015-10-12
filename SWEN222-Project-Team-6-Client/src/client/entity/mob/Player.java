@@ -1,7 +1,11 @@
 package client.entity.mob;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import client.Client;
 import client.entity.ArrowProjectile;
+import client.entity.Item;
 import client.entity.Projectile;
 import client.graphics.Screen;
 import client.input.Keyboard;
@@ -20,6 +24,9 @@ public class Player extends Mob {
 	private int walkCycle = 20;
 	private PLAYER_CLASS playerClass;
 	private int fireRate = 0;
+	
+	private List<Item> inventory = new ArrayList<Item>();
+	private int percentHP = 100;
 	
 	public Player(int x, int y, Keyboard input){
 		this.x = x;

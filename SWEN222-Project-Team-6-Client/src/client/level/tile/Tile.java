@@ -11,9 +11,9 @@ public class Tile {
 
 	public static final Tile VOID = new VoidTile(Sprite.voidSprite);
 	public static final Tile GRASS = new GrassTile(Sprite.grass);
-	public static final Tile DIRT = new VoidTile(Sprite.dirt);
-	public static final Tile ROCK = new VoidTile(Sprite.rock);
-	public static final Tile SAND = new VoidTile(Sprite.sand);
+	public static final Tile DIRT = new DirtTile(Sprite.dirt);
+	public static final Tile ROCK = new RockTile(Sprite.rock);
+	public static final Tile SAND = new SandTile(Sprite.sand);
 	
 	/**
 	 * Handles construction of this Tile object
