@@ -25,8 +25,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import client.entity.mob.Mob;
+import client.entity.mob.Monster;
 import client.entity.mob.Player;
 import client.graphics.Screen;
+import client.graphics.Sprite;
 import client.input.Keyboard;
 import client.input.Mouse;
 import client.level.Level;
@@ -63,6 +66,7 @@ public class Client extends Canvas implements Runnable{
 	private Mouse mouse;
 	private Level level;
 	private Player player;
+	private Monster penisMob;
 	private int frames;
 	private STATE state = STATE.LOGIN;
 	
@@ -311,6 +315,9 @@ public class Client extends Canvas implements Runnable{
 		//level = new RandomLevel(128, 128);
 		level = new SpawnLevel("/textures/map/MAP_1.PNG");
 		//level.generateLevel();
+		
+		penisMob = new Monster(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), Sprite.penisMob);
+		
 		player = new Player(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key);
 		player.initialise(level);
 		addKeyListener(key);
@@ -375,6 +382,7 @@ public class Client extends Canvas implements Runnable{
 		key.update();
 		player.update();
 		level.update();
+		penisMob.update();
 		counter++;
 		
 		if(counter > 10){
@@ -399,6 +407,7 @@ public class Client extends Canvas implements Runnable{
 		
 		screen.clear();/*Clear screen before rendering again*/
 		level.render(player.x, player.y, screen);
+		penisMob.render(screen);
 		player.render(player.x, player.y, screen);
 		//screen.render(xOffset, yOffset);/*Now render screen*/
 		

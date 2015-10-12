@@ -20,6 +20,8 @@ public class Sprite {
 	
 	public static Sprite star = new Sprite(0, 0, SpriteSheet.ITEMS);
 	
+	public static Sprite penisMob = new Sprite(0, 15, SpriteSheet.ENTITIES);
+	
 	public static Sprite[] player1 = {
 		new Sprite(0, 0, SpriteSheet.ENTITIES),//NORTH LEFT FOOT
 		new Sprite(1, 0, SpriteSheet.ENTITIES),//NORTH STILL

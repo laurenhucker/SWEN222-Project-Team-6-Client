@@ -2,6 +2,7 @@ package client.graphics;
 
 import java.util.Random;
 
+import client.entity.mob.Monster;
 import client.entity.mob.Player;
 import client.level.tile.Tile;
 
@@ -89,6 +90,38 @@ public class Screen {
 					pixels[xAbs + yAbs * width] = col;
 			}
 		}
+	}
+	
+	public void renderMonster(int xPos, int yPos, Monster monster){
+		/*xPos -= this.xOffset;
+		yPos -= this.yOffset;
+		Sprite sprite = monster.getSprite();
+		for(int y = 0; y < sprite.SIZE; y++){
+			int yAbs = yPos + y;
+			for(int x = 0; x < sprite.SIZE; x++){
+				int xAbs = xPos + x;
+				if(xAbs < -sprite.SIZE || xAbs >= width || yAbs < 0 || yAbs >= height) break;
+				if(xAbs < 0) xAbs = 0;
+				int col = sprite.pixels[x + y * sprite.SIZE];
+				if(col != 0xffff00ff)//dont render pink
+					pixels[xAbs + yAbs * width] = col;
+			}
+		}*/
+		System.out.println("Rendering monster");
+		xPos -= xOffset;
+		yPos -= yOffset;
+		for(int y = 0; y < monster.getSprite().SIZE; y++){
+			int yAbs = yPos + y;
+			for(int x = 0; x < monster.getSprite().SIZE; x++){
+				int xAbs = xPos + x;
+				if(xAbs < -monster.getSprite().SIZE || xAbs >= width || yAbs < 0 || yAbs >= height) break;
+				if(xAbs < 0) xAbs = 0;
+				int col = monster.getSprite().pixels[x + y * monster.getSprite().SIZE];
+				if(col != 0xffff00ff)
+					pixels[xAbs + yAbs * width] = monster.getSprite().pixels[x + y * monster.getSprite().SIZE];
+			}
+		}
+		
 	}
 	
 	public void renderItem(int xPos, int yPos, Sprite sprite){
