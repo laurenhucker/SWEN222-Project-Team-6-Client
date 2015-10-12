@@ -24,8 +24,8 @@ public class ConnectionHandler extends Listener implements Runnable {
 	
 	@Override
 	public void connected(Connection arg0) {
-		Log.info("[CLIENT] You have connected");
-		client.sendTCP(new Packet0LoginRequest());
+		Log.info("[CLIENT] You have connected");		
+		//client.sendTCP(new Packet0LoginRequest());
 	}
 	
 	@Override

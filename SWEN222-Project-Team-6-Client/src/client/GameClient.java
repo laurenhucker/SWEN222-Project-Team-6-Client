@@ -27,6 +27,8 @@ import client.Packet.*;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
 
 import client.entity.mob.Player;
 import client.graphics.Screen;
@@ -35,6 +37,7 @@ import client.input.Mouse;
 import client.level.Level;
 import client.level.SpawnLevel;
 import client.level.tile.TileCoordinate;
+
 
 enum STATE {
 	LOGIN,
@@ -45,10 +48,15 @@ enum STATE {
 
 public class GameClient extends Canvas implements Runnable{
 	
-	public Client client;
-	private Scanner scanner;
+	public Packet packet = new Packet();	
+	private Packet0LoginRequest loginPacket;
 	
-	public static final String TITLE = "Dylan da man";
+	public Client client;
+	private String user;
+	private String pass;
+	public int id;
+	
+	public static final String TITLE = "Dylan is lame";
 	public static final int SCALE = 1,
 			NUM_TILES = 21,
 			TILE_WIDTH = 64,
@@ -83,33 +91,57 @@ public class GameClient extends Canvas implements Runnable{
 	private int[] pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
 	private int counter = 0;
 	
-	public GameClient(){
-		
-		setScanner(new Scanner(System.in));
+	public GameClient(){				
+		loadImages();
+		initFrames();
+		loginScreen();
+	}
+	
+	public void InitializeConnection(){
 		client = new Client();
 		registerPackets();
-		ConnectionHandler ch = new ConnectionHandler();
-		ch.init(client);
-		client.addListener(ch);
+		client.addListener(new Listener(){
+			public void connected(Connection connection) {
+				handleConnect(connection);
+			}		
+
+			public void disconnected(Connection connection) {
+				handleDisonnect(connection);
+			}
+			
+			public void received(Connection connection, Object object) {
+				handleMessage(connection.getID(), object);
+			}
+			
+		});
 		client.start();
 		try {
 			client.connect(10000, "localhost", 2555);
 		} catch (IOException e1) {
 			e1.printStackTrace();
-			client.stop();
-		}
+		}		
+	}
+	
+	protected void handleDisonnect(Connection connection) {
 		
-		loadImages();
-		initFrames();
-		loginScreen();
-		/*
-		connect();
-		try {
-			send();
-		} catch (IOException e) {
-			e.printStackTrace();
+	}
+
+	protected void handleConnect(Connection connection) {
+		loginPacket = new Packet0LoginRequest(user, pass);
+		client.sendTCP(loginPacket);		
+	}
+
+	public void handleMessage(int playerId, Object message) {
+		if(message instanceof Packet1LoginAnswer){
+			boolean ans = ((Packet1LoginAnswer) message).accepted;
+			if(ans){
+				System.out.println("accepted");
+				
+			}else{
+				client.close();
+			}
 		}
-		*/
+
 	}
 	
 	public void registerPackets(){
@@ -118,6 +150,13 @@ public class GameClient extends Canvas implements Runnable{
 		kryo.register(Packet1LoginAnswer.class);
 		
 	}
+	
+	public void sendMessage(Object message) {
+		if (client.isConnected()) {
+			client.sendTCP(message);
+		}
+	}
+	
 
 	private void loadImages(){
 		try {
@@ -164,12 +203,13 @@ public class GameClient extends Canvas implements Runnable{
 				loginButton.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent a1) {
-						String user = username.getText();
-						String pass = password.getText();
 						boolean verified = false;
 						while(!verified){
 							//Stanton use these two strings and send them to server to request login.
-							System.out.println(user + ":" + pass);
+							System.out.println(getUser() + ":" + getPass());
+							user = username.getText();
+							pass = password.getText();
+							InitializeConnection();
 							//verified = true;
 						}
 						//Only reaches here after verification
@@ -446,12 +486,22 @@ public class GameClient extends Canvas implements Runnable{
 		GameClient game = new GameClient();
 	}
 
-	public Scanner getScanner() {
-		return scanner;
+	private String getUser() {
+		return user;
 	}
 
-	public void setScanner(Scanner scanner) {
-		this.scanner = scanner;
+	private void setUser(String user) {
+		this.user = user;
 	}
+
+	private String getPass() {
+		return pass;
+	}
+
+	private void setPass(String pass) {
+		this.pass = pass;
+	}
+
+	
 	
 }
