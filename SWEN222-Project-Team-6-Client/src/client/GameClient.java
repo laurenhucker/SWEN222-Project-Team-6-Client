@@ -45,7 +45,7 @@ enum STATE {
 public class GameClient extends Canvas implements Runnable{
 	
 	public Client client;
-	public Scanner scanner;
+	private Scanner scanner;
 	
 	public static final String TITLE = "Lauren is cool  ";
 	public static final int SCALE = 1,
@@ -84,7 +84,7 @@ public class GameClient extends Canvas implements Runnable{
 	
 	public GameClient(){
 		
-		scanner = new Scanner(System.in);
+		setScanner(new Scanner(System.in));
 		client = new Client();
 		registerPackets();
 		ConnectionHandler ch = new ConnectionHandler();
@@ -92,7 +92,7 @@ public class GameClient extends Canvas implements Runnable{
 		client.addListener(ch);
 		client.start();
 		try {
-			client.connect(5000, "localhost", 2555);
+			client.connect(10000, "localhost", 2555);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 			client.stop();
@@ -355,7 +355,6 @@ public class GameClient extends Canvas implements Runnable{
 			try {
 			send();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -415,6 +414,14 @@ public class GameClient extends Canvas implements Runnable{
 	
 	public static void main(String[] args){
 		GameClient game = new GameClient();
+	}
+
+	public Scanner getScanner() {
+		return scanner;
+	}
+
+	public void setScanner(Scanner scanner) {
+		this.scanner = scanner;
 	}
 	
 }

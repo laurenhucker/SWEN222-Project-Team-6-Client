@@ -14,8 +14,7 @@ public class ConnectionHandler extends Listener implements Runnable {
 
 	private Client client;	
 	
-	public ConnectionHandler() {
-		
+	public ConnectionHandler() {		
 	}
 
 	public void init(Client client){
@@ -39,6 +38,7 @@ public class ConnectionHandler extends Listener implements Runnable {
 		if(o instanceof Packet1LoginAnswer){
 			boolean ans = ((Packet1LoginAnswer) o).accepted;
 			if(ans){
+				System.out.println("accepted");
 				
 			}else{
 				c.close();
