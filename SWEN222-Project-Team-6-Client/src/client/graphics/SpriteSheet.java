@@ -18,6 +18,7 @@ public class SpriteSheet {
 	 */
 	public static final SpriteSheet TILES = new SpriteSheet("/textures/TILE_SHEET.png", Client.TILE_WIDTH*16);
 	public static final SpriteSheet ENTITIES = new SpriteSheet("/textures/ENTITY_SHEET.PNG", Client.TILE_WIDTH*16);
+	public static final SpriteSheet PROJECTILES = new SpriteSheet("/textures/PROJECTILE_SHEET.PNG", Client.TILE_WIDTH*16);
 	public static final SpriteSheet ITEMS = new SpriteSheet("/item/stars.png", Client.TILE_WIDTH);
 	
 	/**

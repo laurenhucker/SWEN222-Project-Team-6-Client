@@ -107,7 +107,6 @@ public class Screen {
 					pixels[xAbs + yAbs * width] = col;
 			}
 		}*/
-		System.out.println("Rendering monster");
 		xPos -= xOffset;
 		yPos -= yOffset;
 		for(int y = 0; y < monster.getSprite().SIZE; y++){

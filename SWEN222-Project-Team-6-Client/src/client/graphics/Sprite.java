@@ -17,8 +17,9 @@ public class Sprite {
 	public static Sprite dirt = new Sprite(2, 0, SpriteSheet.TILES);
 	public static Sprite rock = new Sprite(3, 0, SpriteSheet.TILES);
 	public static Sprite sand = new Sprite(4, 0, SpriteSheet.TILES);
-	
-	public static Sprite star = new Sprite(0, 0, SpriteSheet.ITEMS);
+
+	public static Sprite fireball = new Sprite(1, 0, SpriteSheet.PROJECTILES);
+	public static Sprite bullet = new Sprite(2, 0, SpriteSheet.PROJECTILES);
 	
 	public static Sprite penisMob = new Sprite(0, 15, SpriteSheet.ENTITIES);
 	

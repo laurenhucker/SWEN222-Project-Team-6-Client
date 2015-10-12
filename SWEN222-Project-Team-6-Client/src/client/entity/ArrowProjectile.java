@@ -11,7 +11,7 @@ public class ArrowProjectile extends Projectile {
 		speed = 20;
 		range = 500;
 		damage = 15;
-		sprite = Sprite.star;
+		sprite = Sprite.bullet;
 		nx = speed * Math.cos(angle);
 		ny = speed * Math.sin(angle);
 	}
