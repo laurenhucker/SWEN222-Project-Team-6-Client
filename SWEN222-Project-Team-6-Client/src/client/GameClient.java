@@ -10,8 +10,9 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
 import java.util.Scanner;
 
 import javax.imageio.ImageIO;
@@ -23,18 +24,20 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import client.Packet.*;
-
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryonet.Client;
-
+import client.Packet.Packet0LoginRequest;
+import client.Packet.Packet1LoginAnswer;
+import client.entity.mob.Monster;
 import client.entity.mob.Player;
 import client.graphics.Screen;
+import client.graphics.Sprite;
 import client.input.Keyboard;
 import client.input.Mouse;
 import client.level.Level;
 import client.level.SpawnLevel;
 import client.level.tile.TileCoordinate;
+
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryonet.Client;
 
 enum STATE {
 	LOGIN,
@@ -67,6 +70,7 @@ public class GameClient extends Canvas implements Runnable{
 	private Keyboard key;
 	private Mouse mouse;
 	private Level level;
+	private Monster penisMob;
 	private Player player;
 	private int frames;
 	private STATE state = STATE.LOGIN;
@@ -315,6 +319,7 @@ public class GameClient extends Canvas implements Runnable{
 		//level = new RandomLevel(128, 128);
 		level = new SpawnLevel("/textures/map/MAP_1.PNG");
 		//level.generateLevel();
+		penisMob = new Monster(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), Sprite.penisMob);
 		player = new Player(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key, pClass);
 		player.initialise(level);
 		addKeyListener(key);
@@ -401,6 +406,7 @@ public class GameClient extends Canvas implements Runnable{
 		
 		screen.clear();/*Clear screen before rendering again*/
 		level.render(player.x, player.y, screen);
+		penisMob.render(screen);
 		player.render(player.x, player.y, screen);
 		//screen.render(xOffset, yOffset);/*Now render screen*/
 		
