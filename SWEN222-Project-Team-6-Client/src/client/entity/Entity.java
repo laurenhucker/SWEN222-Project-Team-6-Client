@@ -15,7 +15,7 @@ public abstract class Entity {
 	private int dir = 1;
 	protected Level level;
 	protected final Random random = new Random();
-	public Sprite[] sprites = Sprite.player3;
+	public Sprite[] sprites;
 	
 	public void update(){
 	}

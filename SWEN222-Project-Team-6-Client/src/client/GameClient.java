@@ -21,6 +21,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import client.Packet.*;
 
@@ -47,7 +48,7 @@ public class GameClient extends Canvas implements Runnable{
 	public Client client;
 	private Scanner scanner;
 	
-	public static final String TITLE = "Lauren is cool  ";
+	public static final String TITLE = "Dylan da man";
 	public static final int SCALE = 1,
 			NUM_TILES = 21,
 			TILE_WIDTH = 64,
@@ -154,9 +155,37 @@ public class GameClient extends Canvas implements Runnable{
 		existingCharButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent a) {
-				state = STATE.GAME;
-				loginFrame.setVisible(false);
-				initGame();
+				
+				JFrame loginBox = new JFrame();
+				JPanel loginPanel = new JPanel(new GridLayout(1, 3));
+				JTextField username = new JTextField("Username");
+				JTextField password = new JTextField("Password");
+				JButton loginButton = new JButton("Log in!");
+				loginButton.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent a1) {
+						String user = username.getText();
+						String pass = password.getText();
+						boolean verified = false;
+						while(!verified){
+							//Stanton use these two strings and send them to server to request login.
+							System.out.println(user + ":" + pass);
+							//verified = true;
+						}
+						//Only reaches here after verification
+						state = STATE.GAME;
+						loginFrame.setVisible(false);
+						initGame(Player.PLAYER_CLASS.WARRIOR);//Change this to the player's saved class
+					}
+				});
+				loginPanel.add(username);
+				loginPanel.add(password);
+				loginPanel.add(loginButton);
+				loginBox.add(loginPanel);
+				loginBox.setLocationRelativeTo(null);
+				loginBox.pack();
+				loginBox.setResizable(false);
+				loginBox.setVisible(true);
 			}
 		});
 		
@@ -212,7 +241,7 @@ public class GameClient extends Canvas implements Runnable{
 			@Override
 			public void actionPerformed(ActionEvent a) {
 				loginFrame.setVisible(false);
-				initGame();
+				initGame(Player.PLAYER_CLASS.WARRIOR);
 			}
 		});
 		
@@ -223,7 +252,7 @@ public class GameClient extends Canvas implements Runnable{
 			@Override
 			public void actionPerformed(ActionEvent a) {
 				loginFrame.setVisible(false);
-				initGame();
+				initGame(Player.PLAYER_CLASS.ARCHER);
 			}
 		});
 		
@@ -234,7 +263,7 @@ public class GameClient extends Canvas implements Runnable{
 			@Override
 			public void actionPerformed(ActionEvent a) {
 				loginFrame.setVisible(false);
-				initGame();
+				initGame(Player.PLAYER_CLASS.MAGE);
 			}
 		});
 		
@@ -280,13 +309,13 @@ public class GameClient extends Canvas implements Runnable{
 		gameFrame.setLocationRelativeTo(null);
 	}
 	
-	private void initGame(){
+	private void initGame(Player.PLAYER_CLASS pClass){
 		key = new Keyboard();/*Initialise KeyBoard object*/
 		mouse = new Mouse();
 		//level = new RandomLevel(128, 128);
 		level = new SpawnLevel("/textures/map/MAP_1.PNG");
 		//level.generateLevel();
-		player = new Player(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key);
+		player = new Player(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key, pClass);
 		player.initialise(level);
 		addKeyListener(key);
 		addMouseListener(mouse);
@@ -397,7 +426,7 @@ public class GameClient extends Canvas implements Runnable{
 	}
 	
 	public void send() throws IOException {
-		if (state==STATE.GAME){
+		if (state == STATE.GAME){
 			OutputStreamWriter outStream;
 			String toSend = player.x + "\r" + player.y + "\n";
 			try{
@@ -407,7 +436,8 @@ public class GameClient extends Canvas implements Runnable{
 			} catch (IOException e) {
 				System.err.print(e);
 			} finally {
-				socket.close();
+				if(socket != null)
+					socket.close();
 			}	
 		}
 	}

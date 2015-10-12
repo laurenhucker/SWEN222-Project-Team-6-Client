@@ -8,16 +8,17 @@ import client.entity.ArrowProjectile;
 import client.entity.Item;
 import client.entity.Projectile;
 import client.graphics.Screen;
+import client.graphics.Sprite;
 import client.input.Keyboard;
 import client.input.Mouse;
 
-enum PLAYER_CLASS {
-	WARRIOR,
-	ARCHER,
-	MAGE
-}
 
 public class Player extends Mob {
+	public static enum PLAYER_CLASS {
+		WARRIOR,
+		ARCHER,
+		MAGE
+	}
 	
 	private Keyboard input;
 	protected int dir = 3;
@@ -28,13 +29,26 @@ public class Player extends Mob {
 	private List<Item> inventory = new ArrayList<Item>();
 	private int percentHP = 100;
 	
-	public Player(int x, int y, Keyboard input){
+	public Player(int x, int y, Keyboard input, PLAYER_CLASS pClass){
 		this.x = x;
 		this.y = y;
 		this.xTile = ((this.x / GameClient.TILE_WIDTH) + ((GameClient.WIDTH / GameClient.TILE_WIDTH) / 2)) - GameClient.DEFAULT_SPAWN.getX();
 		this.yTile = ((this.y / GameClient.TILE_WIDTH) + ((GameClient.HEIGHT / GameClient.TILE_WIDTH) / 2)) - GameClient.DEFAULT_SPAWN.getY();
 		this.input = input;
 		fireRate = ArrowProjectile.getFireRate();
+		
+		switch(pClass){
+		case WARRIOR:
+			this.sprites = Sprite.player1;
+			break;
+		case ARCHER:
+			this.sprites = Sprite.player2;
+			break;
+		case MAGE:
+			this.sprites = Sprite.player3;
+			break;
+		}
+		
 	}
 	
 	public Player(Keyboard input){

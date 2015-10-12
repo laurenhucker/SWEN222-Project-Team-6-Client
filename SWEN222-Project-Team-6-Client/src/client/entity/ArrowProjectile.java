@@ -1,5 +1,6 @@
 package client.entity;
 
+import client.entity.mob.Player;
 import client.graphics.Screen;
 import client.graphics.Sprite;
 
@@ -11,9 +12,9 @@ public class ArrowProjectile extends Projectile {
 		speed = 20;
 		range = 500;
 		damage = 15;
-		sprite = Sprite.bullet;
 		nx = speed * Math.cos(angle);
 		ny = speed * Math.sin(angle);
+		
 	}
 	
 	public void update(){
