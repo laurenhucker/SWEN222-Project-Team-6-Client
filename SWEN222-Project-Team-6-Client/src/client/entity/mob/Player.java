@@ -1,6 +1,6 @@
 package client.entity.mob;
 
-import client.Client;
+import client.GameClient;
 import client.entity.ArrowProjectile;
 import client.entity.Projectile;
 import client.graphics.Screen;
@@ -24,8 +24,8 @@ public class Player extends Mob {
 	public Player(int x, int y, Keyboard input){
 		this.x = x;
 		this.y = y;
-		this.xTile = ((this.x / Client.TILE_WIDTH) + ((Client.WIDTH / Client.TILE_WIDTH) / 2)) - Client.DEFAULT_SPAWN.getX();
-		this.yTile = ((this.y / Client.TILE_WIDTH) + ((Client.HEIGHT / Client.TILE_WIDTH) / 2)) - Client.DEFAULT_SPAWN.getY();
+		this.xTile = ((this.x / GameClient.TILE_WIDTH) + ((GameClient.WIDTH / GameClient.TILE_WIDTH) / 2)) - GameClient.DEFAULT_SPAWN.getX();
+		this.yTile = ((this.y / GameClient.TILE_WIDTH) + ((GameClient.HEIGHT / GameClient.TILE_WIDTH) / 2)) - GameClient.DEFAULT_SPAWN.getY();
 		this.input = input;
 		fireRate = ArrowProjectile.getFireRate();
 	}
@@ -49,26 +49,26 @@ public class Player extends Mob {
 		switch(this.dir){
 		case 1://north
 			if(!collision(this.xTile, this.yTile - 1)){
-				this.x += deltaX * Client.WALK_SPEED;
-				this.y += deltaY * Client.WALK_SPEED;
+				this.x += deltaX * GameClient.WALK_SPEED;
+				this.y += deltaY * GameClient.WALK_SPEED;
 			}
 			break;
 		case 2://east
 			if(!collision(this.xTile + 1, this.yTile)){
-				this.x += deltaX * Client.WALK_SPEED;
-				this.y += deltaY * Client.WALK_SPEED;
+				this.x += deltaX * GameClient.WALK_SPEED;
+				this.y += deltaY * GameClient.WALK_SPEED;
 			}
 			break;
 		case 3://south
 			if(!collision(this.xTile, this.yTile + 1)){
-				this.x += deltaX * Client.WALK_SPEED;
-				this.y += deltaY * Client.WALK_SPEED;
+				this.x += deltaX * GameClient.WALK_SPEED;
+				this.y += deltaY * GameClient.WALK_SPEED;
 			}
 			break;
 		case 4://west
 			if(!collision(this.xTile - 1, this.yTile )){
-				this.x += deltaX * Client.WALK_SPEED;
-				this.y += deltaY * Client.WALK_SPEED;
+				this.x += deltaX * GameClient.WALK_SPEED;
+				this.y += deltaY * GameClient.WALK_SPEED;
 			}
 			break;
 		}
@@ -94,8 +94,8 @@ public class Player extends Mob {
 		
 		if(xa != 0 || ya != 0) move(xa, ya);
 		
-		this.xTile = ((this.x / Client.TILE_WIDTH) + ((Client.WIDTH  / Client.TILE_WIDTH) / 2)) - (Client.DEFAULT_SPAWN.getX() / Client.TILE_WIDTH) + 1;
-		this.yTile = ((this.y  / Client.TILE_WIDTH) + ((Client.HEIGHT  / Client.TILE_WIDTH) / 2)) - (Client.DEFAULT_SPAWN.getY()  / Client.TILE_WIDTH);
+		this.xTile = ((this.x / GameClient.TILE_WIDTH) + ((GameClient.WIDTH  / GameClient.TILE_WIDTH) / 2)) - (GameClient.DEFAULT_SPAWN.getX() / GameClient.TILE_WIDTH) + 1;
+		this.yTile = ((this.y  / GameClient.TILE_WIDTH) + ((GameClient.HEIGHT  / GameClient.TILE_WIDTH) / 2)) - (GameClient.DEFAULT_SPAWN.getY()  / GameClient.TILE_WIDTH);
 		
 		clear();
 		updateShooting();
@@ -120,8 +120,8 @@ public class Player extends Mob {
 
 	private void updateShooting() {
 		if(Mouse.getButton() == 1 && fireRate <= 0){
-			double dx = Mouse.getX() - Client.WIDTH/2;
-			double dy = Mouse.getY() - Client.HEIGHT/2;
+			double dx = Mouse.getX() - GameClient.WIDTH/2;
+			double dy = Mouse.getY() - GameClient.HEIGHT/2;
 			double dir = Math.atan2(dy, dx);
 			shoot(x, y, dir);
 			fireRate = ArrowProjectile.getFireRate();
@@ -131,8 +131,8 @@ public class Player extends Mob {
 	
 
 	public void render(int x, int y, Screen screen){
-		x -= Client.DEFAULT_SPAWN.getX();
-		y -= Client.DEFAULT_SPAWN.getY();
+		x -= GameClient.DEFAULT_SPAWN.getX();
+		y -= GameClient.DEFAULT_SPAWN.getY();
 		screen.renderPlayer(x + screen.getWidth()/2, y + screen.getHeight()/2, this);
 	}
 	

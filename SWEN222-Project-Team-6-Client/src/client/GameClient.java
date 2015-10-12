@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.*;
 import java.net.*;
+import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -20,6 +21,11 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import client.Packet.*;
+
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryonet.Client;
 
 import client.entity.mob.Player;
 import client.graphics.Screen;
@@ -36,8 +42,10 @@ enum STATE {
 	GAME
 }
 
-
-public class Client extends Canvas implements Runnable{
+public class GameClient extends Canvas implements Runnable{
+	
+	public Client client;
+	public Scanner scanner;
 	
 	public static final String TITLE = "Lauren is cool  ";
 	public static final int SCALE = 1,
@@ -74,26 +82,50 @@ public class Client extends Canvas implements Runnable{
 	private int[] pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
 	private int counter = 0;
 	
-	public Client(){
+	public GameClient(){
+		
+		scanner = new Scanner(System.in);
+		client = new Client();
+		registerPackets();
+		ConnectionHandler ch = new ConnectionHandler();
+		ch.init(client);
+		client.addListener(ch);
+		client.start();
+		try {
+			client.connect(5000, "localhost", 2555);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			client.stop();
+		}
+		
 		loadImages();
 		initFrames();
 		loginScreen();
+		/*
 		connect();
 		try {
 			send();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		*/
+	}
+	
+	public void registerPackets(){
+		Kryo kryo = client.getKryo();
+		kryo.register(Packet0LoginRequest.class);
+		kryo.register(Packet1LoginAnswer.class);
+		
 	}
 
 	private void loadImages(){
 		try {
-			loginScreenImg = ImageIO.read(Client.class.getResource("/textures/login/LOGIN_SCREEN.PNG"));
-			newCharButtonImg = ImageIO.read(Client.class.getResource("/textures/login/NEW_CHARACTER_BUTTON.PNG"));
-			existingCharButtonImg = ImageIO.read(Client.class.getResource("/textures/login/EXISTING_CHARACTER_BUTTON.PNG"));
-			warriorButtonImg = ImageIO.read(Client.class.getResource("/textures/login/CHARACTER_SELECTION_1.PNG"));
-			archerButtonImg = ImageIO.read(Client.class.getResource("/textures/login/CHARACTER_SELECTION_2.PNG"));
-			mageButtonImg = ImageIO.read(Client.class.getResource("/textures/login/CHARACTER_SELECTION_3.PNG"));
+			loginScreenImg = ImageIO.read(GameClient.class.getResource("/textures/login/LOGIN_SCREEN.PNG"));
+			newCharButtonImg = ImageIO.read(GameClient.class.getResource("/textures/login/NEW_CHARACTER_BUTTON.PNG"));
+			existingCharButtonImg = ImageIO.read(GameClient.class.getResource("/textures/login/EXISTING_CHARACTER_BUTTON.PNG"));
+			warriorButtonImg = ImageIO.read(GameClient.class.getResource("/textures/login/CHARACTER_SELECTION_1.PNG"));
+			archerButtonImg = ImageIO.read(GameClient.class.getResource("/textures/login/CHARACTER_SELECTION_2.PNG"));
+			mageButtonImg = ImageIO.read(GameClient.class.getResource("/textures/login/CHARACTER_SELECTION_3.PNG"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -217,7 +249,7 @@ public class Client extends Canvas implements Runnable{
 		loginFrame.getContentPane().add(panel);
 		loginFrame.setVisible(true);
 	}
-	
+	/*
 	private void connect(){
 		try {
 			socket = new Socket("localhost",2560);
@@ -225,7 +257,7 @@ public class Client extends Canvas implements Runnable{
 			e.printStackTrace();
      	}
 	}
-	
+	*/
 	
 	private void initFrames(){
 		screen = new Screen(WIDTH, HEIGHT);
@@ -319,14 +351,14 @@ public class Client extends Canvas implements Runnable{
 		player.update();
 		level.update();
 		counter++;
-		//if(counter == 5){
-		//	try {
-		//		send();
-		//	} catch (IOException e) {
-		//		// TODO Auto-generated catch block
-		//		e.printStackTrace();
-		//	}
-		//}
+		if(counter == 5){
+			try {
+			send();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**
@@ -366,21 +398,23 @@ public class Client extends Canvas implements Runnable{
 	}
 	
 	public void send() throws IOException {
-		OutputStreamWriter outStream;
-		String toSend = player.x + "\r" + player.y + "\n";
-		try{
-			outStream = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
-			outStream.write(toSend);
-			outStream.flush();
-		} catch (IOException e) {
-	        System.err.print(e);
-	    } finally {
-	        socket.close();
-	    }		
+		if (state==STATE.GAME){
+			OutputStreamWriter outStream;
+			String toSend = player.x + "\r" + player.y + "\n";
+			try{
+				outStream = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
+				outStream.write(toSend);
+				outStream.flush();
+			} catch (IOException e) {
+				System.err.print(e);
+			} finally {
+				socket.close();
+			}	
+		}
 	}
 	
 	public static void main(String[] args){
-		Client game = new Client();
+		GameClient game = new GameClient();
 	}
 	
 }

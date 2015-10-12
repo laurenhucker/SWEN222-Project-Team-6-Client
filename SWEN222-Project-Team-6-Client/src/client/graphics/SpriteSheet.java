@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import client.Client;
+import client.GameClient;
 
 public class SpriteSheet {
 
@@ -16,9 +16,9 @@ public class SpriteSheet {
 	/*
 	 * Start of SpriteSheets
 	 */
-	public static final SpriteSheet TILES = new SpriteSheet("/textures/TILE_SHEET.PNG", Client.TILE_WIDTH*16);
-	public static final SpriteSheet ENTITIES = new SpriteSheet("/textures/ENTITY_SHEET.PNG", Client.TILE_WIDTH*16);
-	public static final SpriteSheet ITEMS = new SpriteSheet("/item/stars.png", Client.TILE_WIDTH);
+	public static final SpriteSheet TILES = new SpriteSheet("/textures/TILE_SHEET.PNG", GameClient.TILE_WIDTH*16);
+	public static final SpriteSheet ENTITIES = new SpriteSheet("/textures/ENTITY_SHEET.PNG", GameClient.TILE_WIDTH*16);
+	public static final SpriteSheet ITEMS = new SpriteSheet("/item/stars.png", GameClient.TILE_WIDTH);
 	
 	/**
 	 * Handles construction of SpriteSheet object

@@ -1,6 +1,6 @@
 package client.level.tile;
 
-import client.Client;
+import client.GameClient;
 
 public class TileCoordinate {
 	
