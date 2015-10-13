@@ -3,6 +3,7 @@ package client.entity.mob;
 
 import client.entity.ArrowProjectile;
 import client.entity.Entity;
+import client.entity.FireballProjectile;
 //import client.entity.FireballProjectile;
 import client.entity.Projectile;
 import client.graphics.Screen;
@@ -42,7 +43,7 @@ public abstract class Mob extends Entity{
 			p = new ArrowProjectile(x, y, dir);
 			
 		} else if(getProjectileType(this).equals("fireball")){
-			p = new ArrowProjectile(x, y, dir);
+			p = new FireballProjectile(x, y, dir);
 		} else {
 			p = new ArrowProjectile(x, y, dir);
 		}
@@ -56,7 +57,6 @@ public abstract class Mob extends Entity{
 			Player p = (Player)m;
 			System.out.println(p.getPlayerClass());
 			if(p.getPlayerClass().equals(Player.PLAYER_CLASS.ARCHER)){
-				
 				return "arrow";
 			} else if(p.getPlayerClass().equals(Player.PLAYER_CLASS.MAGE)){
 				return "fireball";
