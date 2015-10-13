@@ -2,6 +2,7 @@ package client.graphics;
 
 import java.util.Random;
 
+import client.entity.Item;
 import client.entity.mob.Monster;
 import client.entity.mob.Player;
 import client.level.tile.Tile;
@@ -11,6 +12,8 @@ public class Screen {
 	private int width;
 	private int height;
 	public int xOffset, yOffset;
+	
+	private InventoryGraphics inventory;
 	
 	private Random rand = new Random();
 	public static int NUM_TILES;
@@ -24,6 +27,7 @@ public class Screen {
 		this.height = h;
 		this.pixels = new int[width*height];
 		NUM_TILES = (w/TILE_SIZE)*(h/TILE_SIZE);
+		inventory = new InventoryGraphics(w, h);
 	}
 	
 	public void clear(){
@@ -93,20 +97,6 @@ public class Screen {
 	}
 	
 	public void renderMonster(int xPos, int yPos, Monster monster){
-		/*xPos -= this.xOffset;
-		yPos -= this.yOffset;
-		Sprite sprite = monster.getSprite();
-		for(int y = 0; y < sprite.SIZE; y++){
-			int yAbs = yPos + y;
-			for(int x = 0; x < sprite.SIZE; x++){
-				int xAbs = xPos + x;
-				if(xAbs < -sprite.SIZE || xAbs >= width || yAbs < 0 || yAbs >= height) break;
-				if(xAbs < 0) xAbs = 0;
-				int col = sprite.pixels[x + y * sprite.SIZE];
-				if(col != 0xffff00ff)//dont render pink
-					pixels[xAbs + yAbs * width] = col;
-			}
-		}*/
 		xPos -= xOffset;
 		yPos -= yOffset;
 		for(int y = 0; y < monster.getSprite().SIZE; y++){
@@ -140,6 +130,34 @@ public class Screen {
 	}
 	
 	public void renderInventory(Player player){
+		int col = inventory.getColour();
+		int w = inventory.getWidth(), h = inventory.getHeight();
+		
+		int alpha = 1;
+		
+		for(int i = inventory.getX(); i < w; i += alpha){//Draws inventory background
+			for(int j = inventory.getY(); j < h; j += alpha){
+				pixels[i + (j*width)] = col;
+			}
+		}
+		
+		for(int i = 0; i < player.getItems().size(); i++){//Render each item in inventory
+			int itemX = inventory.getItemXCoord(i);//Get current item's pixel x and y on screen
+			int itemY = inventory.getItemYCoord(i);
+			int spriteX = 0, spriteY = 0;//Just to count from 0-64
+			Sprite itemSprite = player.getItems().get(i).getSprite();
+			if(itemSprite == null) continue;
+			for(int x = itemX; x < itemX + itemSprite.SIZE; x++){
+				for(int y = itemY; y < itemY + itemSprite.SIZE; y++){
+					int itemPixel = itemSprite.pixels[spriteX + (spriteY*itemSprite.SIZE) % 4096];
+					if(itemPixel != 0xffff00ff)//dont render pink
+						pixels[x + (y*width)] = itemPixel;
+					spriteY++;
+				}
+				spriteX++;
+			}
+			
+		}
 		
 	}
 	

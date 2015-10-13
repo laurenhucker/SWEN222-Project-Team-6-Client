@@ -1,15 +1,27 @@
 package client.entity;
 
+import client.graphics.Sprite;
+
 public class Item {
 
-	private final String spriteDir;
+	private final String itemName;
+	private Sprite sprite;
 	
-	public Item(String dir){
-		this.spriteDir = dir;
+	public Item(String itemName){
+		this.itemName = itemName;
+		switch(itemName){
+		case "SWORD":
+			sprite = Sprite.sword;
+			break;
+		}
 	}
 	
-	public String getDir(){
-		return this.spriteDir;
+	public Sprite getSprite(){
+		return this.sprite;
+	}
+	
+	public String getItemName(){
+		return this.itemName;
 	}
 	
 }

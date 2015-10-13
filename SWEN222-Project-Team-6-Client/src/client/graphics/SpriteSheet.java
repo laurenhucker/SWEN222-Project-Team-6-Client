@@ -19,7 +19,7 @@ public class SpriteSheet {
 	public static final SpriteSheet TILES = new SpriteSheet("/textures/TILE_SHEET.png", GameClient.TILE_WIDTH*16);
 	public static final SpriteSheet ENTITIES = new SpriteSheet("/textures/ENTITY_SHEET.PNG", GameClient.TILE_WIDTH*16);
 	public static final SpriteSheet PROJECTILES = new SpriteSheet("/textures/PROJECTILE_SHEET.PNG", GameClient.TILE_WIDTH*16);
-	public static final SpriteSheet ITEMS = new SpriteSheet("/item/stars.png", GameClient.TILE_WIDTH);
+	public static final SpriteSheet ITEMS = new SpriteSheet("/textures/ITEM_SHEET.png", GameClient.TILE_WIDTH*16);
 	
 	/**
 	 * Handles construction of SpriteSheet object

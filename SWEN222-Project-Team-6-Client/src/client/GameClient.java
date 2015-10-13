@@ -27,6 +27,7 @@ import javax.swing.JTextField;
 import client.Packet.Packet0LoginRequest;
 import client.Packet.Packet1LoginAnswer;
 import client.entity.Entity;
+import client.entity.Item;
 import client.entity.mob.Monster;
 import client.entity.mob.Player;
 import client.graphics.Screen;
@@ -323,6 +324,11 @@ public class GameClient extends Canvas implements Runnable{
 		penisMob = new Monster(SPAWN_LOCATION.getX() - 100, SPAWN_LOCATION.getY() - 100, Sprite.penisMob);
 		level.add(penisMob);
 		player = new Player(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key, pClass);
+		player.getItems().add(new Item("SWORD"));
+		player.getItems().add(new Item("SWORD"));
+		player.getItems().add(new Item("SWORD"));
+		player.getItems().add(new Item("SWORD"));
+		player.getItems().add(new Item("SWORD"));
 		player.initialise(level);
 		addKeyListener(key);
 		addMouseListener(mouse);
@@ -415,6 +421,7 @@ public class GameClient extends Canvas implements Runnable{
 		//penisMob.render(screen);
 		player.render(player.x, player.y, screen);
 		//screen.render(xOffset, yOffset);/*Now render screen*/
+		screen.renderInventory(player);
 		
 		for(int i = 0; i < pixels.length; i++){/*Copy over pixels from screen object after rendering*/
 			pixels[i] = screen.pixels[i];

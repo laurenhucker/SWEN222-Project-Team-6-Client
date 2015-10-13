@@ -169,4 +169,8 @@ public class Player extends Mob {
 		return this.dir;
 	}
 	
+	public List<Item> getItems(){
+		return this.inventory;
+	}
+	
 }
