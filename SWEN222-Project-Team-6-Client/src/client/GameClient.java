@@ -26,6 +26,7 @@ import javax.swing.JTextField;
 
 import client.Packet.Packet0LoginRequest;
 import client.Packet.Packet1LoginAnswer;
+import client.entity.Entity;
 import client.entity.mob.Monster;
 import client.entity.mob.Player;
 import client.graphics.Screen;
@@ -319,7 +320,8 @@ public class GameClient extends Canvas implements Runnable{
 		//level = new RandomLevel(128, 128);
 		level = new SpawnLevel("/textures/map/MAP_1.PNG");
 		//level.generateLevel();
-		penisMob = new Monster(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), Sprite.penisMob);
+		penisMob = new Monster(SPAWN_LOCATION.getX() - 100, SPAWN_LOCATION.getY() - 100, Sprite.penisMob);
+		level.add(penisMob);
 		player = new Player(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key, pClass);
 		player.initialise(level);
 		addKeyListener(key);
@@ -406,7 +408,11 @@ public class GameClient extends Canvas implements Runnable{
 		
 		screen.clear();/*Clear screen before rendering again*/
 		level.render(player.x, player.y, screen);
-		penisMob.render(screen);
+		for(Entity e : level.getEntities()){
+			if(e instanceof Monster)
+				((Monster)e).render(screen);
+		}
+		//penisMob.render(screen);
 		player.render(player.x, player.y, screen);
 		//screen.render(xOffset, yOffset);/*Now render screen*/
 		

@@ -9,7 +9,7 @@ public class ArrowProjectile extends Projectile {
 
 	public ArrowProjectile(int x, int y, double dir){
 		super(x, y, dir);
-		speed = 20;
+		speed = 10;
 		range = 500;
 		damage = 15;
 		sprite = Sprite.fireball;
@@ -23,9 +23,11 @@ public class ArrowProjectile extends Projectile {
 	}
 	
 	protected void move(){
-	if(!level.tileCollision(x, y, nx, ny, 64)){
+	if(!level.tileCollision(x, y, nx, ny, 64) && !level.mobProjectileCollision(x, y, nx, ny, 64)){
 		x += nx;
 		y += ny;
+	} else {
+		remove();
 	}
 	
 	if(distance() > range) {
@@ -47,6 +49,14 @@ public class ArrowProjectile extends Projectile {
 
 	public static int getFireRate() {
 		return FIRE_RATE;
+	}
+	
+	public double getX(){
+		return x;
+	}
+	
+	public double gety(){
+		return y;
 	}
 	
 	

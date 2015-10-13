@@ -32,4 +32,6 @@ public abstract class Entity {
 	
 	public void initialise(Level level){this.level = level;}
 	
+	
+	
 }
