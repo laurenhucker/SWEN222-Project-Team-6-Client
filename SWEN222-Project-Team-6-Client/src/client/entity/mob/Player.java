@@ -27,7 +27,6 @@ public class Player extends Mob {
 	private int fireRate = 0;
 	
 	private List<Item> inventory = new ArrayList<Item>();
-	private int percentHP = 100;
 	
 	public Player(int x, int y, Keyboard input, PLAYER_CLASS pClass){
 		this.x = x;
@@ -36,6 +35,7 @@ public class Player extends Mob {
 		this.yTile = ((this.y / GameClient.TILE_WIDTH) + ((GameClient.HEIGHT / GameClient.TILE_WIDTH) / 2)) - GameClient.DEFAULT_SPAWN.getY();
 		this.input = input;
 		fireRate = ArrowProjectile.getFireRate();
+		this.health = 69;
 		
 		switch(pClass){
 		case WARRIOR:
