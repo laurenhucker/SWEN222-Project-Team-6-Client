@@ -524,40 +524,47 @@ public class GameClient extends Canvas implements Runnable{
 		int xOfMouse = mouse.getX();
 		int yOfMouse = mouse.getY();
 		
-		int row = 1;
-		int col = 1;
-		
 		width -= topX;
 		height -= topY;
 		int sizeOfInv = width/3;
 		
-		System.out.println("Width of inv: " + width);
+		/*System.out.println("Width of inv: " + width);
 		System.out.println("height of inv: " + height);
 		System.out.println("Size of inv: " + sizeOfInv);
 		System.out.println("x of inv: " + topX);
 		System.out.println("y of inv: " + topY);
 		System.out.println("x of mouse: " + xOfMouse);
 		System.out.println("y of mouse: " + yOfMouse);
-		System.out.println("*******************************");
+		System.out.println("*******************************");*/
 		if(xOfMouse > topX && yOfMouse > topY){
 			if(xOfMouse <= topX+sizeOfInv){
-				row = findRow(yOfMouse, topY, sizeOfInv)-1;
-				col = 0;
-				String nameOfItem = player.getItems().get(row*col).getItemName();
-				drawRect(topX+(sizeOfInv*col), topY+(sizeOfInv*row), nameOfItem, g);
+				calcToolTip(0, yOfMouse, topY, topX, sizeOfInv, g);
 			}
 			else if(xOfMouse <= topX+(sizeOfInv*2)){
-				row = findRow(yOfMouse, topY, sizeOfInv)-1;
-				col = 1;
-				String nameOfItem = player.getItems().get(row*col).getItemName();
-				drawRect(topX+(sizeOfInv*col), topY+(sizeOfInv*row), nameOfItem, g);
+				calcToolTip(1, yOfMouse, topY, topX, sizeOfInv, g);
 			}
 			else if(xOfMouse <= topX+(sizeOfInv*3)){
-				row = findRow(yOfMouse, topY, sizeOfInv)-1;
-				col = 2;
-				String nameOfItem = player.getItems().get(row*col).getItemName();
-				drawRect(topX+(sizeOfInv*col), topY+(sizeOfInv*row), nameOfItem, g);
+				calcToolTip(2, yOfMouse, topY, topX, sizeOfInv, g);
 			}
+		}
+	}
+	
+	public void calcToolTip(int col, int yOfMouse, int topY, int topX, int sizeOfInv, Graphics g){
+		int row = findCol(yOfMouse, topY, sizeOfInv)-1;
+		int index = (col+(row*3));
+		String nameOfItem = "No Item Here";
+		System.out.println("row: "+row+"\n"
+				+"col: "+col+"\n"
+				+(row+1)*(col+1)
+				+"\n*********************");
+		if(index < player.getItems().size()){
+			nameOfItem = player.getItems().get(index).getItemName();
+		}
+		if(col < 2){
+			drawRect(topX+(sizeOfInv*col), topY+(sizeOfInv*row), nameOfItem, g);
+		}
+		else{
+			drawRect(topX+(sizeOfInv*col)-100, topY+(sizeOfInv*row), nameOfItem, g);
 		}
 	}
 	
@@ -586,7 +593,7 @@ public class GameClient extends Canvas implements Runnable{
 	 * @param sizeOfInv size of each space in inventory
 	 * @return row the mouse is on
 	 */
-	private int findRow(int yOfMouse, int topY, int sizeOfInv) {
+	private int findCol(int yOfMouse, int topY, int sizeOfInv) {
 		if(yOfMouse <= topY+sizeOfInv){
 			return 1;
 		}
