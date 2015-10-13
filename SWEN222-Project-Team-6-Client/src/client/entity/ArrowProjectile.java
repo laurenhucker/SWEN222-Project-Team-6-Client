@@ -42,7 +42,6 @@ public class ArrowProjectile extends Projectile {
 	}
 
 	public void render(Screen screen){
-		System.out.println("Rendering shoot");
 		screen.renderItem((int)x, (int)y - 25, sprite);
 		//ArrowProjectile.screen.renderProjectile((int)x, (int)y, sprite);
 		
