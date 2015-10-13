@@ -60,8 +60,8 @@ public class GameClient extends Canvas implements Runnable{
 			WIDTH = NUM_TILES * TILE_WIDTH,
 			HEIGHT = (WIDTH / 16 * 9) + (TILE_WIDTH - ((WIDTH/16*9) % TILE_WIDTH));//round to nearest tile but still at 16/9 ratio
 
-	public static final int WALK_SPEED = 3;
-	public static final TileCoordinate SPAWN_LOCATION = new TileCoordinate(7, 7);
+	public static final int WALK_SPEED = 5;
+	public static final TileCoordinate SPAWN_LOCATION = new TileCoordinate(124, 115);
 	public static final TileCoordinate DEFAULT_SPAWN = new TileCoordinate(10, 6);
 	
 	private boolean running = false;
@@ -319,16 +319,20 @@ public class GameClient extends Canvas implements Runnable{
 		key = new Keyboard();/*Initialise KeyBoard object*/
 		mouse = new Mouse();
 		//level = new RandomLevel(128, 128);
-		level = new SpawnLevel("/textures/map/MAP_1.PNG");
+		level = new SpawnLevel("/textures/map/MAP_3.PNG");
 		//level.generateLevel();
 		penisMob = new Monster(SPAWN_LOCATION.getX() - 100, SPAWN_LOCATION.getY() - 100, Sprite.penisMob);
 		level.add(penisMob);
 		player = new Player(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key, pClass);
-		player.getItems().add(new Item("SWORD"));
-		player.getItems().add(new Item("SWORD"));
-		player.getItems().add(new Item("SWORD"));
-		player.getItems().add(new Item("SWORD"));
-		player.getItems().add(new Item("SWORD"));
+		player.getItems().add(new Item("SWORD_WOOD"));
+		player.getItems().add(new Item("AXE_CRYSTAL"));
+		player.getItems().add(new Item("BOW_METAL"));
+		player.getItems().add(new Item("BOW_CRYSTAL"));
+		player.getItems().add(new Item("STAFF_CRYSTAL"));
+		player.getItems().add(new Item("STAFF_CRYSTAL"));
+		player.getItems().add(new Item("AXE_METAL"));
+		player.getItems().add(new Item("AXE_WOOD"));
+		player.getItems().add(new Item("SWORD_CRYSTAL"));
 		player.initialise(level);
 		addKeyListener(key);
 		addMouseListener(mouse);

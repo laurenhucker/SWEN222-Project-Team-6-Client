@@ -133,6 +133,16 @@ public class Level {
 		if(tiles[x + y*width] == 0xff808000) return Tile.DIRT;
 		if(tiles[x + y*width] == 0xffff0000) return Tile.ROCK;
 		if(tiles[x + y*width] == 0xffffff00) return Tile.SAND;
+		if(tiles[x + y*width] == 0xff551500) return Tile.WOOD;
+		if(tiles[x + y*width] == 0xff000000) return Tile.WOOD_WALL;
+		if(tiles[x + y*width] == 0xff322500) return Tile.NORTH_WALL;
+		if(tiles[x + y*width] == 0xff322501) return Tile.SOUTH_WALL;
+		if(tiles[x + y*width] == 0xff322502) return Tile.WEST_WALL;
+		if(tiles[x + y*width] == 0xff322503) return Tile.EAST_WALL;
+		if(tiles[x + y*width] == 0xff322504) return Tile.NORTH_WEST_CORNER;
+		if(tiles[x + y*width] == 0xff322505) return Tile.NORTH_EAST_CORNER;
+		if(tiles[x + y*width] == 0xff322506) return Tile.SOUTH_WEST_CORNER;
+		if(tiles[x + y*width] == 0xff322507) return Tile.SOUTH_EAST_CORNER;
 		return Tile.VOID;
 	}
 
