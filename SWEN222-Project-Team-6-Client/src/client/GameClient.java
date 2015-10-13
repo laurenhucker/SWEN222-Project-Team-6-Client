@@ -38,6 +38,7 @@ import client.entity.Entity;
 import client.entity.Item;
 import client.entity.mob.Monster;
 import client.entity.mob.Player;
+import client.graphics.InventoryGraphics;
 import client.graphics.Screen;
 import client.graphics.Sprite;
 import client.input.Keyboard;
@@ -505,9 +506,99 @@ public class GameClient extends Canvas implements Runnable{
 		//add mouse cursor
 		g.setColor(Color.RED);
 		g.fillOval(Mouse.getX() - 5, Mouse.getY() - 5, 10, 10);
-		
+		drawToolTip(g);
 		g.dispose();/*Dont need these graphics any more. Throw away or game will crash from memory overload*/
 		buffStrat.show();
+	}
+	
+	/**
+	 * used to determine where and what to draw regarding the tool tip
+	 * @param g the graphics pane
+	 */
+	public void drawToolTip(Graphics g){
+		InventoryGraphics ig = new InventoryGraphics(1366, 768);
+		int width = ig.getWidth();
+		int height = ig.getHeight();
+		int topX = ig.getX();
+		int topY = ig.getY();
+		int xOfMouse = mouse.getX();
+		int yOfMouse = mouse.getY();
+		
+		int row = 1;
+		int col = 1;
+		
+		width -= topX;
+		height -= topY;
+		int sizeOfInv = width/3;
+		
+		System.out.println("Width of inv: " + width);
+		System.out.println("height of inv: " + height);
+		System.out.println("Size of inv: " + sizeOfInv);
+		System.out.println("x of inv: " + topX);
+		System.out.println("y of inv: " + topY);
+		System.out.println("x of mouse: " + xOfMouse);
+		System.out.println("y of mouse: " + yOfMouse);
+		System.out.println("*******************************");
+		if(xOfMouse > topX && yOfMouse > topY){
+			if(xOfMouse <= topX+sizeOfInv){
+				row = findRow(yOfMouse, topY, sizeOfInv)-1;
+				col = 0;
+				String nameOfItem = player.getItems().get(row*col).getItemName();
+				drawRect(topX+(sizeOfInv*col), topY+(sizeOfInv*row), nameOfItem, g);
+			}
+			else if(xOfMouse <= topX+(sizeOfInv*2)){
+				row = findRow(yOfMouse, topY, sizeOfInv)-1;
+				col = 1;
+				String nameOfItem = player.getItems().get(row*col).getItemName();
+				drawRect(topX+(sizeOfInv*col), topY+(sizeOfInv*row), nameOfItem, g);
+			}
+			else if(xOfMouse <= topX+(sizeOfInv*3)){
+				row = findRow(yOfMouse, topY, sizeOfInv)-1;
+				col = 2;
+				String nameOfItem = player.getItems().get(row*col).getItemName();
+				drawRect(topX+(sizeOfInv*col), topY+(sizeOfInv*row), nameOfItem, g);
+			}
+		}
+	}
+	
+	/**
+	 * used by the drawToolTip method to reduce duplicate code
+	 * @param x upper-left x of the rectangle
+	 * @param y upper-left y of the rectangle
+	 * @param name name of the item
+	 * @param g graphics pane
+	 */
+	public void drawRect(int x, int y, String name, Graphics g){
+		g.setColor(Color.lightGray);
+		g.fillRect(x, y, 120, 30);
+		g.setColor(Color.black);
+		
+		g.drawRect(x, y, 120, 30);
+		//draw the text
+		g.setFont(new Font("Verdana", 0, 12));
+		g.drawString(name, x+10, y+20);
+	}
+	
+	/**
+	 * used by the draw toolTip to find the row where the mouse is
+	 * @param yOfMouse y position of the mouse
+	 * @param topY upper-left y of the inventory
+	 * @param sizeOfInv size of each space in inventory
+	 * @return row the mouse is on
+	 */
+	private int findRow(int yOfMouse, int topY, int sizeOfInv) {
+		if(yOfMouse <= topY+sizeOfInv){
+			return 1;
+		}
+		else if(yOfMouse <= topY+(sizeOfInv*2)){
+			return 2;
+		}
+		else if(yOfMouse <= topY+(sizeOfInv*3)){
+			return 3;
+		}
+		else{
+			return 4;
+		}
 	}
 	/*
 	public void send() throws IOException {
