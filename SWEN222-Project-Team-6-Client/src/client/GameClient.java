@@ -512,97 +512,11 @@ public class GameClient extends Canvas implements Runnable{
 		//add mouse cursor
 		g.setColor(Color.RED);
 		g.fillOval(Mouse.getX() - 5, Mouse.getY() - 5, 10, 10);
-		drawToolTip(g);
+		mouse.drawToolTip(g, player);
 		g.dispose();/*Dont need these graphics any more. Throw away or game will crash from memory overload*/
 		buffStrat.show();
 	}
 	
-	/**
-	 * used to determine where and what to draw regarding the tool tip
-	 * @param g the graphics pane
-	 */
-	public void drawToolTip(Graphics g){
-		InventoryGraphics ig = new InventoryGraphics(1366, 768);
-		int width = ig.getWidth();
-		int topX = ig.getX();
-		int topY = ig.getY();
-		int xOfMouse = mouse.getX();
-		int yOfMouse = mouse.getY();
-		
-		width -= topX;
-		int sizeOfInv = width/3;
-
-		if(xOfMouse > topX && yOfMouse > topY){
-			if(xOfMouse <= topX+sizeOfInv){
-				calcToolTip(0, yOfMouse, topY, topX, sizeOfInv, g);
-			}
-			else if(xOfMouse <= topX+(sizeOfInv*2)){
-				calcToolTip(1, yOfMouse, topY, topX, sizeOfInv, g);
-			}
-			else if(xOfMouse <= topX+(sizeOfInv*3)){
-				calcToolTip(2, yOfMouse, topY, topX, sizeOfInv, g);
-			}
-		}
-	}
-	
-	public void calcToolTip(int col, int yOfMouse, int topY, int topX, int sizeOfInv, Graphics g){
-		int row = findCol(yOfMouse, topY, sizeOfInv)-1;
-		int index = (col+(row*3));
-		String nameOfItem = "No Item Here";
-		System.out.println("row: "+row+"\n"
-				+"col: "+col+"\n"
-				+(row+1)*(col+1)
-				+"\n*********************");
-		if(index < player.getItems().size()){
-			nameOfItem = player.getItems().get(index).getItemName();
-		}
-		if(col < 2){
-			drawRect(topX+(sizeOfInv*col), topY+(sizeOfInv*row), nameOfItem, g);
-		}
-		else{
-			drawRect(topX+(sizeOfInv*col)-100, topY+(sizeOfInv*row), nameOfItem, g);
-		}
-	}
-	
-	/**
-	 * used by the drawToolTip method to reduce duplicate code
-	 * @param x upper-left x of the rectangle
-	 * @param y upper-left y of the rectangle
-	 * @param name name of the item
-	 * @param g graphics pane
-	 */
-	public void drawRect(int x, int y, String name, Graphics g){
-		g.setColor(Color.lightGray);
-		g.fillRect(x, y, 120, 30);
-		g.setColor(Color.black);
-		
-		g.drawRect(x, y, 120, 30);
-		//draw the text
-		g.setFont(new Font("Verdana", 0, 12));
-		g.drawString(name, x+10, y+20);
-	}
-	
-	/**
-	 * used by the draw toolTip to find the col where the mouse is
-	 * @param yOfMouse y position of the mouse
-	 * @param topY upper-left y of the inventory
-	 * @param sizeOfInv size of each space in inventory
-	 * @return row the mouse is on
-	 */
-	private int findCol(int yOfMouse, int topY, int sizeOfInv) {
-		if(yOfMouse <= topY+sizeOfInv){
-			return 1;
-		}
-		else if(yOfMouse <= topY+(sizeOfInv*2)){
-			return 2;
-		}
-		else if(yOfMouse <= topY+(sizeOfInv*3)){
-			return 3;
-		}
-		else{
-			return 4;
-		}
-	}
 	/*
 	public void send() throws IOException {
 		if (state == STATE.GAME){
