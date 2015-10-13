@@ -37,7 +37,7 @@ public class Player extends Mob {
 		this.yTile = ((this.y / GameClient.TILE_WIDTH) + ((GameClient.HEIGHT / GameClient.TILE_WIDTH) / 2)) - GameClient.DEFAULT_SPAWN.getY();
 		this.input = input;
 		fireRate = ArrowProjectile.getFireRate();
-		
+		this.health = 69;
 		switch(pClass){
 		case WARRIOR:
 			this.sprites = Sprite.player1;
