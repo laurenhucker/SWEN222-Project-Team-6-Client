@@ -31,5 +31,12 @@ public abstract class Entity {
 	public boolean isRemoved(){return removed;}
 	
 	public void initialise(Level level){this.level = level;}
+
+	public int getX() {
+		return x;
+	}
+	public int getY() {
+		return y;
+	}
 	
 }

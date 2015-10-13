@@ -102,27 +102,30 @@ public class Level {
 		}
 		return solid;
 	}
-	
-	public boolean mobProjectileCollision(double x, double y, double xa, double ya, Mob shooter, int size){
-		boolean solid = false;
-		for(int i = 0; i < 4; i++){
-			double xt = x + xa;
-			double yt = y + ya;
-			//System.out.println("mobCollison() xt: " + xt + "  yt: " + yt);
-			Mob mob = getMob(xt, yt);
-			if(mob != null && shooter != mob ){
-				solid = true;
-				mob.damage(10);
-				System.out.println("Mob health: " + mob.getHealth() );
-				if(mob.getHealth() <= 0){
-					entities.remove(mob);
-				}
-			    return solid;
-			}
-		}
-		return solid;
-	}
-		
+//	
+//	public boolean mobProjectileCollision(double x, double y, double xa, double ya, int size){
+//		boolean solid = false;
+//		double xt = x + xa;
+//		double yt = y + ya;
+//		//System.out.println("mobCollison() xt: " + xt + "  yt: " + yt);
+//		Mob mob = getMob(xt, yt);
+//		
+//		//System.out.println("Mob: " + mob);
+//		//System.out.println("Shooter: " + shooter);
+//		if(mob != null){ //can't collide with itself
+//			System.out.println("Player shot " + mob);
+//			solid = true;
+//			mob.damage(10);
+//			//System.out.println(mob);
+//			//System.out.println("Mob health: " + mob.getHealth() );
+//			if(mob.getHealth() <= 0){
+//				entities.remove(mob);
+//			}
+//			return solid;
+//		}
+//		return solid;
+//	}
+
 		
 	/**
 	 * 0xff00ff00 - GRASS
@@ -152,23 +155,24 @@ public class Level {
 		return Tile.VOID;
 	}
 
-	public Mob getMob(double x, double y){
-		for(Entity e : entities){
-			if(e instanceof Mob){
-				//System.out.println("Get mob() x: " + x + "   y: " + y);
-				//System.out.println("Mob position x: " + ((Mob)e).getX() + "  y: " + ((Mob)e).getY());
-				int mobXStart = ((Mob)e).getX();
-				int mobYStart = ((Mob)e).getY();
-				int mobXEnd = mobXStart + 64;
-				int mobYEnd = mobYStart + 64;
-				
-				if(x >= mobXStart && x <= mobXEnd && y >= mobYStart && x <= mobYEnd){
-					return (Mob)e;
-				}
-			}
-		}
-		return null;	
-	}
+//	public Mob getMob(double x, double y){
+//		for(Entity e : entities){
+//			if(e instanceof Mob){
+//				//System.out.println("Get mob() x: " + x + "   y: " + y);
+//				//System.out.println("Mob position x: " + ((Mob)e).getX() + "  y: " + ((Mob)e).getY());
+//				int mobXStart = ((Mob)e).getX();
+//				int mobYStart = ((Mob)e).getY();
+//				int mobXEnd = mobXStart + 64;
+//				int mobYEnd = mobYStart + 64;
+//				
+//				if(x >= mobXStart && x <= mobXEnd && y >= mobYStart && x <= mobYEnd && e instanceof Player ){
+//					//System.out.println(e);
+//					return (Mob)e;
+//				}
+//			}
+//		}
+//		return null;	
+//	}
 	
 	public List<Projectile> getProjectiles(){
 		return projectiles;
@@ -178,8 +182,16 @@ public class Level {
 		return entities;
 	}
 	
+	public List<Player> getPlayers(){
+		return players;
+	}
+	
 	public Player getClientPlayer(){
 		return players.get(0);
+	}
+	
+	public void removeMob(Mob m){
+		entities.remove(m);
 	}
 	
 	
