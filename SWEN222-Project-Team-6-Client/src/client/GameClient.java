@@ -527,15 +527,6 @@ public class GameClient extends Canvas implements Runnable{
 		width -= topX;
 		height -= topY;
 		int sizeOfInv = width/3;
-		
-		/*System.out.println("Width of inv: " + width);
-		System.out.println("height of inv: " + height);
-		System.out.println("Size of inv: " + sizeOfInv);
-		System.out.println("x of inv: " + topX);
-		System.out.println("y of inv: " + topY);
-		System.out.println("x of mouse: " + xOfMouse);
-		System.out.println("y of mouse: " + yOfMouse);
-		System.out.println("*******************************");*/
 		if(xOfMouse > topX && yOfMouse > topY){
 			if(xOfMouse <= topX+sizeOfInv){
 				calcToolTip(0, yOfMouse, topY, topX, sizeOfInv, g);
@@ -553,10 +544,6 @@ public class GameClient extends Canvas implements Runnable{
 		int row = findCol(yOfMouse, topY, sizeOfInv)-1;
 		int index = (col+(row*3));
 		String nameOfItem = "No Item Here";
-		System.out.println("row: "+row+"\n"
-				+"col: "+col+"\n"
-				+(row+1)*(col+1)
-				+"\n*********************");
 		if(index < player.getItems().size()){
 			nameOfItem = player.getItems().get(index).getItemName();
 		}
