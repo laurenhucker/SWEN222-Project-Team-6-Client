@@ -44,7 +44,8 @@ public class Sprite {
 	public static Sprite fireball = new Sprite(1, 0, SpriteSheet.PROJECTILES),
 			bullet = new Sprite(2, 0, SpriteSheet.PROJECTILES);
 
-	public static Sprite penisMob = new Sprite(0, 15, SpriteSheet.ENTITIES);
+	public static Sprite penisMob = new Sprite(0, 15, SpriteSheet.ENTITIES),
+			chestMob = new Sprite(1, 15, SpriteSheet.ENTITIES);
 
 	public static Sprite[] player1 = {
 		new Sprite(0, 0, SpriteSheet.ENTITIES),//NORTH LEFT FOOT

@@ -1,15 +1,10 @@
 
 package client.entity.mob;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import client.entity.ArrowProjectile;
 import client.entity.Entity;
-import client.entity.Projectile;
 import client.graphics.Screen;
 import client.graphics.Sprite;
-import client.level.Level;
 import client.level.tile.Tile;
 
 public abstract class Mob extends Entity{
