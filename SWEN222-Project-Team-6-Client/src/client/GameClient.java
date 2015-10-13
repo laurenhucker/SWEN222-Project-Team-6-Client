@@ -397,7 +397,10 @@ public class GameClient extends Canvas implements Runnable{
 		player.getItems().add(new Item("SWORD_CRYSTAL"));
 		player.initialise(level);
 		penisMob.initialise(level);
+		chestMob.initialise(level);
 		level.addEntity(penisMob);
+		level.addEntity(chestMob);
+		level.addEntity(player);
 		level.addPlayer(player);
 		addKeyListener(key);
 		addMouseListener(mouse);
