@@ -7,6 +7,7 @@ import client.GameClient;
 import client.entity.ArrowProjectile;
 import client.entity.Item;
 import client.entity.Projectile;
+import client.graphics.InventoryGraphics;
 import client.graphics.Screen;
 import client.graphics.Sprite;
 import client.input.Keyboard;
@@ -141,7 +142,13 @@ public class Player extends Mob {
 
 
 	private void updateShooting() {
-		if(Mouse.getButton() == 1 && fireRate <= 0){
+		InventoryGraphics ig = new InventoryGraphics(1344, 768);
+		int topXOfInv = ig.getX();
+		int topYOfInv = ig.getY();
+		System.out.println("topofinv:  "+ topXOfInv+"______ topY: "+ topYOfInv+"________ mouse x:"+ Mouse.getX()+"mouse y :"+ Mouse.getY());
+		if(Mouse.getButton() == 1 && fireRate <= 0 
+				&& !(topXOfInv < Mouse.getX() && topYOfInv < Mouse.getY())){
+			
 			double dx = Mouse.getX() - GameClient.WIDTH/2;
 			double dy = Mouse.getY() - GameClient.HEIGHT/2;
 			double dir = Math.atan2(dy, dx);
