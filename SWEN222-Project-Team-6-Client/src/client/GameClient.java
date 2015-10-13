@@ -103,7 +103,7 @@ public class GameClient extends Canvas implements Runnable{
 		client.addListener(new Listener(){
 			public void connected(Connection connection) {
 				handleConnect(connection);
-			}		
+			}
 
 			public void disconnected(Connection connection) {
 				handleDisonnect(connection);
@@ -127,16 +127,16 @@ public class GameClient extends Canvas implements Runnable{
 	}
 
 	protected void handleConnect(Connection connection) {
+		System.out.println(user +"    " + pass);
 		loginPacket = new Packet0LoginRequest(user, pass);
-		client.sendTCP(loginPacket);		
+		sendMessage(loginPacket);		
 	}
 
 	public void handleMessage(int playerId, Object message) {
 		if(message instanceof Packet1LoginAnswer){
 			boolean ans = ((Packet1LoginAnswer) message).accepted;
 			if(ans){
-				System.out.println("accepted");
-				
+				System.out.println("accepted");				
 			}else{
 				client.close();
 			}

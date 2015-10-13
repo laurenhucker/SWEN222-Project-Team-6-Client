@@ -23,7 +23,7 @@ public class Packet {
 	//	return new Packet0LoginRequest(user, pass);
 	//}
 	
-	public static class Packet1LoginAnswer { 		
+	public static class Packet1LoginAnswer { 
 		boolean accepted = false;
 	}
 	public static class Packet2ButtonClick {
