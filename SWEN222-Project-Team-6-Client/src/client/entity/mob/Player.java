@@ -64,6 +64,7 @@ public class Player extends Mob {
 	 * 1-NORTH, 2-EAST, 3-SOUTH, 4-WEST
 	 */ 
 	public void move(int deltaX, int deltaY){
+		System.out.println("dir: " + dir);
 		if(deltaX > 0) this.dir = 2;
 		else if(deltaX < 0) this.dir = 4;
 		else if(deltaY > 0) this.dir = 3;
@@ -74,36 +75,36 @@ public class Player extends Mob {
 		}*/
 		switch(this.dir){
 		case 1://north
-			if(!collisionWithTile(this.xTile, this.yTile - 1) && !collisionWithEntity(x,y -2)){
-				this.x += deltaX * GameClient.WALK_SPEED;
+			if(!collisionWithTile(this.xTile, this.yTile - 1)){
+				//this.x += deltaX * GameClient.WALK_SPEED;
 				this.y += deltaY * GameClient.WALK_SPEED;
 			}
 			break;
 		case 2://east
-			if(!collisionWithTile(this.xTile + 1, this.yTile)  && !collisionWithEntity(x+2,y)){
+			if(!collisionWithTile(this.xTile + 1, this.yTile)){
 				this.x += deltaX * GameClient.WALK_SPEED;
-				this.y += deltaY * GameClient.WALK_SPEED;
+				//this.y += deltaY * GameClient.WALK_SPEED;
 			}
 			break;
 		case 3://south
-			if(!collisionWithTile(this.xTile, this.yTile + 1) && !collisionWithEntity(x,y+2)){
-				this.x += deltaX * GameClient.WALK_SPEED;
+			if(!collisionWithTile(this.xTile, this.yTile + 1)){
+				//this.x += deltaX * GameClient.WALK_SPEED;
 				this.y += deltaY * GameClient.WALK_SPEED;
 			}
 			break;
 		case 4://west
-			if(!collisionWithTile(this.xTile - 1, this.yTile ) && !collisionWithEntity(x-2, y)){
+			if(!collisionWithTile(this.xTile - 1, this.yTile )){
 				this.x += deltaX * GameClient.WALK_SPEED;
-				this.y += deltaY * GameClient.WALK_SPEED;
+				//this.y += deltaY * GameClient.WALK_SPEED;
 			}
 			break;
 		}
 		
-		System.out.println(String.format("NORTH: %s, EAST: %s, SOUTH: %s, WEST: %s", 
-				level.getTile(this.xTile, this.yTile - 1),
-				level.getTile(this.xTile + 1, this.yTile),
-				level.getTile(this.xTile, this.yTile + 1),
-				level.getTile(this.xTile - 1, this.yTile)));
+//		System.out.println(String.format("NORTH: %s, EAST: %s, SOUTH: %s, WEST: %s", 
+//				level.getTile(this.xTile, this.yTile - 1),
+//				level.getTile(this.xTile + 1, this.yTile),
+//				level.getTile(this.xTile, this.yTile + 1),
+//				level.getTile(this.xTile - 1, this.yTile)));
 		
 		if(this.walkCycle > 60) this.walkCycle = 0;
 		this.walkCycle++;//swap between 0 and 1
