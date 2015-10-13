@@ -108,12 +108,12 @@ public class GameClient extends Canvas implements Runnable{
 		loadImages();
 		initFrames();
 		loginScreen();
-		InitializeConnection();
+		//InitializeConnection();
 	}
 	
 	public void InitializeConnection(){
 		client = new Client();
-		client.start();
+		new Thread(client).start();
 		registerPackets();
 		client.addListener(new Listener(){
 			public void connected(Connection connection) {
@@ -130,13 +130,6 @@ public class GameClient extends Canvas implements Runnable{
 			
 		});
 		
-		/*
-		try {
-			client.connect(100000, "localhost", 2555);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}	
-		*/	
 	}
 	
 	protected void handleDisonnect(Connection connection) {
@@ -144,9 +137,7 @@ public class GameClient extends Canvas implements Runnable{
 	}
 
 	protected void handleConnect(Connection connection) {
-		System.out.println(user +"    " + pass);
-		loginPacket = new Packet0LoginRequest(user, pass);
-		sendMessage(loginPacket);		
+		System.out.println(user +"    " + pass);		
 	}
 
 	public void handleMessage(int playerId, Object message) {
@@ -171,8 +162,15 @@ public class GameClient extends Canvas implements Runnable{
 	}
 	
 	public void sendMessage(Object message) {
+		System.out.println(client.isConnected());
 		if (client.isConnected()) {
 			client.sendTCP(message);
+		}
+	}
+	public void sendMessageUDP(Object message) {
+		System.out.println(client.isConnected());
+		if (client.isConnected()) {
+			client.sendUDP(message);
 		}
 	}
 	
@@ -182,7 +180,7 @@ public class GameClient extends Canvas implements Runnable{
 	
 	public void connect(String host) {
 		try {
-			client.connect(5000, host, 2555);//, Network.portUdp);
+			client.connect(10000, host, 2555, 2556);//, Network.portUdp);
 		} catch (IOException e) {
 			e.printStackTrace();			
 		}
@@ -234,17 +232,24 @@ public class GameClient extends Canvas implements Runnable{
 					@Override
 					public void actionPerformed(ActionEvent a1) {
 						verified = false;
-						//while(!verified){
 							//Stanton use these two strings and send them to server to request login.
 							System.out.println(getUser() + ":" + getPass());
 							user = username.getText();
 							pass = password.getText();
+							InitializeConnection();
 							connectLocal();
-						//}
+							//loginPacket = new Packet0LoginRequest(user, pass);
+							sendMessageUDP("hi");	
+						if (verified == false){
+							//client.stop();
+							//client.close();		
+						 System.out.println("NO");
+						}
 						//Only reaches here after verification
 						state = STATE.GAME;
 						loginFrame.setVisible(false);
 						initGame(Player.PLAYER_CLASS.WARRIOR);//Change this to the player's saved class
+						
 					}
 				});
 				loginPanel.add(username);
@@ -390,16 +395,10 @@ public class GameClient extends Canvas implements Runnable{
 		player.getItems().add(new Item("AXE_METAL"));
 		player.getItems().add(new Item("AXE_WOOD"));
 		player.getItems().add(new Item("SWORD_CRYSTAL"));
-		
 		player.initialise(level);
 		penisMob.initialise(level);
-		chestMob.initialise(level);
-		
 		level.addEntity(penisMob);
-		level.addEntity(chestMob);
-		level.addEntity(player);
 		level.addPlayer(player);
-		
 		addKeyListener(key);
 		addMouseListener(mouse);
 		addMouseMotionListener(mouse);
@@ -464,13 +463,7 @@ public class GameClient extends Canvas implements Runnable{
 		level.update();
 		counter++;
 		if(counter == 5){
-			/*
-			try {
-			send();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			*/
+			//sendMessage(message); //what we want to send
 		}
 	}
 
@@ -512,30 +505,102 @@ public class GameClient extends Canvas implements Runnable{
 		//add mouse cursor
 		g.setColor(Color.RED);
 		g.fillOval(Mouse.getX() - 5, Mouse.getY() - 5, 10, 10);
-		mouse.drawToolTip(g, player);
-		mouse.drawRightClick(gameFrame, player);
+		drawToolTip(g);
 		g.dispose();/*Dont need these graphics any more. Throw away or game will crash from memory overload*/
 		buffStrat.show();
 	}
 	
-	/*
-	public void send() throws IOException {
-		if (state == STATE.GAME){
-			OutputStreamWriter outStream;
-			String toSend = player.x + "\r" + player.y + "\n";
-			try{
-				outStream = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
-				outStream.write(toSend);
-				outStream.flush();
-			} catch (IOException e) {
-				System.err.print(e);
-			} finally {
-				if(socket != null)
-					socket.close();
-			}	
+	/**
+	 * used to determine where and what to draw regarding the tool tip
+	 * @param g the graphics pane
+	 */
+	public void drawToolTip(Graphics g){
+		InventoryGraphics ig = new InventoryGraphics(1366, 768);
+		int width = ig.getWidth();
+		int height = ig.getHeight();
+		int topX = ig.getX();
+		int topY = ig.getY();
+		int xOfMouse = mouse.getX();
+		int yOfMouse = mouse.getY();
+		
+		int row = 1;
+		int col = 1;
+		
+		width -= topX;
+		height -= topY;
+		int sizeOfInv = width/3;
+		/*
+		System.out.println("Width of inv: " + width);
+		System.out.println("height of inv: " + height);
+		System.out.println("Size of inv: " + sizeOfInv);
+		System.out.println("x of inv: " + topX);
+		System.out.println("y of inv: " + topY);
+		System.out.println("x of mouse: " + xOfMouse);
+		System.out.println("y of mouse: " + yOfMouse);
+		System.out.println("*******************************");
+		*/
+		if(xOfMouse > topX && yOfMouse > topY){
+			if(xOfMouse <= topX+sizeOfInv){
+				row = findRow(yOfMouse, topY, sizeOfInv)-1;
+				col = 0;
+				String nameOfItem = player.getItems().get(row*col).getItemName();
+				drawRect(topX+(sizeOfInv*col), topY+(sizeOfInv*row), nameOfItem, g);
+			}
+			else if(xOfMouse <= topX+(sizeOfInv*2)){
+				row = findRow(yOfMouse, topY, sizeOfInv)-1;
+				col = 1;
+				String nameOfItem = player.getItems().get(row*col).getItemName();
+				drawRect(topX+(sizeOfInv*col), topY+(sizeOfInv*row), nameOfItem, g);
+			}
+			else if(xOfMouse <= topX+(sizeOfInv*3)){
+				row = findRow(yOfMouse, topY, sizeOfInv)-1;
+				col = 2;
+				String nameOfItem = player.getItems().get(row*col).getItemName();
+				drawRect(topX+(sizeOfInv*col), topY+(sizeOfInv*row), nameOfItem, g);
+			}
 		}
 	}
-	*/
+	
+	/**
+	 * used by the drawToolTip method to reduce duplicate code
+	 * @param x upper-left x of the rectangle
+	 * @param y upper-left y of the rectangle
+	 * @param name name of the item
+	 * @param g graphics pane
+	 */
+	public void drawRect(int x, int y, String name, Graphics g){
+		g.setColor(Color.lightGray);
+		g.fillRect(x, y, 120, 30);
+		g.setColor(Color.black);
+		
+		g.drawRect(x, y, 120, 30);
+		//draw the text
+		g.setFont(new Font("Verdana", 0, 12));
+		g.drawString(name, x+10, y+20);
+	}
+	
+	/**
+	 * used by the draw toolTip to find the row where the mouse is
+	 * @param yOfMouse y position of the mouse
+	 * @param topY upper-left y of the inventory
+	 * @param sizeOfInv size of each space in inventory
+	 * @return row the mouse is on
+	 */
+	private int findRow(int yOfMouse, int topY, int sizeOfInv) {
+		if(yOfMouse <= topY+sizeOfInv){
+			return 1;
+		}
+		else if(yOfMouse <= topY+(sizeOfInv*2)){
+			return 2;
+		}
+		else if(yOfMouse <= topY+(sizeOfInv*3)){
+			return 3;
+		}
+		else{
+			return 4;
+		}
+	}
+	
 	
 	public static void main(String[] args){
 		GameClient game = new GameClient();
