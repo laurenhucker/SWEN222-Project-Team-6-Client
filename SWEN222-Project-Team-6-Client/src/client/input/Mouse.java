@@ -34,7 +34,12 @@ public class Mouse implements MouseListener, MouseMotionListener {
 	}
 
 	public void mouseClicked(MouseEvent e) {
-		clicked = true;
+		InventoryGraphics ig = new InventoryGraphics(1344, 768);
+		int topXOfInv = ig.getX();
+		int topYOfInv = ig.getY();
+		if(topXOfInv < getX() && topYOfInv < Mouse.getY()){
+			clicked = true;
+		}
 	}
 
 	public void mouseEntered(MouseEvent e) {
