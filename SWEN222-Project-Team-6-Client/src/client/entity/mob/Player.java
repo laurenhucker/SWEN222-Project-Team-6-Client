@@ -24,10 +24,9 @@ public class Player extends Mob {
 	protected int dir = 3;
 	private int walkCycle = 20;
 	private PLAYER_CLASS playerClass;
-	private int fireRate = 0;
+	private int fireRate = 15;
 	
 	private List<Item> inventory = new ArrayList<Item>();
-	private List<Projectile> myProjectiles = new ArrayList<Projectile>();
 	private int percentHP = 100;
 	
 	public Player(int x, int y, Keyboard input, PLAYER_CLASS pClass){
@@ -36,10 +35,11 @@ public class Player extends Mob {
 		this.xTile = ((this.x / GameClient.TILE_WIDTH) + ((GameClient.WIDTH / GameClient.TILE_WIDTH) / 2)) - GameClient.DEFAULT_SPAWN.getX();
 		this.yTile = ((this.y / GameClient.TILE_WIDTH) + ((GameClient.HEIGHT / GameClient.TILE_WIDTH) / 2)) - GameClient.DEFAULT_SPAWN.getY();
 		this.input = input;
-		fireRate = ArrowProjectile.getFireRate();
 		this.health = 69;
+		playerClass = pClass;
 		switch(pClass){
 		case WARRIOR:
+			
 			this.sprites = Sprite.player1;
 			break;
 		case ARCHER:
@@ -158,6 +158,8 @@ public class Player extends Mob {
 		screen.renderPlayer(x + screen.getWidth()/2, y + screen.getHeight()/2, this);
 	}
 	
+
+	
 	public int getWalkCycle(){
 		return this.walkCycle;
 	}
@@ -170,12 +172,13 @@ public class Player extends Mob {
 		return this.dir;
 	}
 	
-	public List<Projectile> getProjectiles(){
-		return myProjectiles;
-	}
 	
 	public List<Item> getItems(){
 		return this.inventory;
+	}
+	
+	public void setFireRate(int r){
+		this.fireRate = r;
 	}
 	
 }

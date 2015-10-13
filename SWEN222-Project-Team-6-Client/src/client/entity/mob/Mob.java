@@ -3,6 +3,8 @@ package client.entity.mob;
 
 import client.entity.ArrowProjectile;
 import client.entity.Entity;
+import client.entity.FireballProjectile;
+import client.entity.Projectile;
 import client.graphics.Screen;
 import client.graphics.Sprite;
 import client.level.tile.Tile;
@@ -35,9 +37,32 @@ public abstract class Mob extends Entity{
 	}
 	
 	public void shoot(int x, int y, double dir){
-		ArrowProjectile p = new ArrowProjectile(x, y, dir);
-		p.whoShotArrow(this);
+		Projectile p;
+		if(getProjectileType(this).equals("arrow")){
+			p = new ArrowProjectile(x, y, dir);
+			
+		} else if(getProjectileType(this).equals("fireball")){
+			p = new FireballProjectile(x, y, dir);
+		} else {
+			p = new ArrowProjectile(x, y, dir);
+		}
 		level.addProjectile(p);	
+		p.whoShotArrow(this);
+		
+	}
+	
+	public String getProjectileType(Mob m){
+		if(m instanceof Player){
+			Player p = (Player)m;
+			System.out.println(p.getPlayerClass());
+			if(p.getPlayerClass().equals(Player.PLAYER_CLASS.ARCHER)){
+				
+				return "arrow";
+			} else if(p.getPlayerClass().equals(Player.PLAYER_CLASS.MAGE)){
+				return "fireball";
+			}
+		}
+		return "fireball";
 	}
 	
 	public void move(int xa, int ya){
@@ -54,6 +79,8 @@ public abstract class Mob extends Entity{
 		health -= d;
 		if(health <= 0) health = 0;
 	}
+	
+
 	
 	public int getHealth(){
 		return health;

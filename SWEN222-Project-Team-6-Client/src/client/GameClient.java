@@ -537,14 +537,14 @@ public class GameClient extends Canvas implements Runnable{
 		height -= topY;
 		int sizeOfInv = width/3;
 		
-		System.out.println("Width of inv: " + width);
-		System.out.println("height of inv: " + height);
-		System.out.println("Size of inv: " + sizeOfInv);
-		System.out.println("x of inv: " + topX);
-		System.out.println("y of inv: " + topY);
-		System.out.println("x of mouse: " + xOfMouse);
-		System.out.println("y of mouse: " + yOfMouse);
-		System.out.println("*******************************");
+//		System.out.println("Width of inv: " + width);
+//		System.out.println("height of inv: " + height);
+//		System.out.println("Size of inv: " + sizeOfInv);
+//		System.out.println("x of inv: " + topX);
+//		System.out.println("y of inv: " + topY);
+//		System.out.println("x of mouse: " + xOfMouse);
+//		System.out.println("y of mouse: " + yOfMouse);
+//		System.out.println("*******************************");
 		if(xOfMouse > topX && yOfMouse > topY){
 			if(xOfMouse <= topX+sizeOfInv){
 				row = findRow(yOfMouse, topY, sizeOfInv)-1;
