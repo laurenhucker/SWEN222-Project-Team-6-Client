@@ -1,15 +1,10 @@
 
 package client.entity.mob;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import client.entity.ArrowProjectile;
 import client.entity.Entity;
-import client.entity.Projectile;
 import client.graphics.Screen;
 import client.graphics.Sprite;
-import client.level.Level;
 import client.level.tile.Tile;
 
 public abstract class Mob extends Entity{
@@ -31,7 +26,7 @@ public abstract class Mob extends Entity{
 	}
 	
 	public boolean collisionWithEntity(int x, int y){
-		System.out.println(level.getMob(x, y));
+		//System.out.println(level.getMob(x, y));
 //		if(level.getMob(x, y) != null){
 //			//System.out.println("Colliding with " + tileToCheck + " at " + x + ":" + y);
 //			return true;
@@ -40,7 +35,8 @@ public abstract class Mob extends Entity{
 	}
 	
 	public void shoot(int x, int y, double dir){
-		Projectile p = new ArrowProjectile(x, y, dir);
+		ArrowProjectile p = new ArrowProjectile(x, y, dir);
+		p.whoShotArrow(this);
 		level.addProjectile(p);	
 	}
 	

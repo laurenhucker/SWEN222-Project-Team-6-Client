@@ -9,6 +9,7 @@ import client.entity.Entity;
 import client.entity.Projectile;
 import client.entity.mob.Mob;
 import client.entity.mob.Monster;
+import client.entity.mob.Player;
 import client.graphics.Screen;
 import client.level.tile.Tile;
 
@@ -20,6 +21,7 @@ public class Level {
 	
 	private List<Entity> entities = new ArrayList<Entity>();
 	private List<Projectile> projectiles = new ArrayList<Projectile>();
+	private List<Player> players = new ArrayList<Player>();	
 	
 	
 	public Level(int w, int h){
@@ -48,7 +50,7 @@ public class Level {
 		}
 		
 		for(Projectile p : projectiles){
-				p.update();
+			p.update();
 		}
 	}
 	
@@ -75,8 +77,12 @@ public class Level {
 		}
 	}
 	
-	public void add(Entity e){
+	public void addEntity(Entity e){
 		entities.add(e);
+	}
+	
+	public void addPlayer(Player p){
+		players.add(p);
 	}
 	
 	public void addProjectile(Projectile p){
@@ -97,19 +103,19 @@ public class Level {
 		return solid;
 	}
 	
-	public boolean mobProjectileCollision(double x, double y, double xa, double ya, int size){
+	public boolean mobProjectileCollision(double x, double y, double xa, double ya, Mob shooter, int size){
 		boolean solid = false;
 		for(int i = 0; i < 4; i++){
 			double xt = x + xa;
 			double yt = y + ya;
 			//System.out.println("mobCollison() xt: " + xt + "  yt: " + yt);
-			if(getMob(xt, yt) != null){
-				//System.out.println("Colliding with mob");
+			Mob mob = getMob(xt, yt);
+			if(mob != null && shooter != mob ){
 				solid = true;
-				getMob(xt, yt).damage(10);
-				System.out.println("Mob health: " + getMob(xt, yt).getHealth() );
-				if(getMob(xt, yt).getHealth() <= 0){
-					entities.remove(getMob(xt, yt));
+				mob.damage(10);
+				System.out.println("Mob health: " + mob.getHealth() );
+				if(mob.getHealth() <= 0){
+					entities.remove(mob);
 				}
 			    return solid;
 			}
@@ -133,6 +139,16 @@ public class Level {
 		if(tiles[x + y*width] == 0xff808000) return Tile.DIRT;
 		if(tiles[x + y*width] == 0xffff0000) return Tile.ROCK;
 		if(tiles[x + y*width] == 0xffffff00) return Tile.SAND;
+		if(tiles[x + y*width] == 0xff551500) return Tile.WOOD;
+		if(tiles[x + y*width] == 0xff000000) return Tile.WOOD_WALL;
+		if(tiles[x + y*width] == 0xff322500) return Tile.NORTH_WALL;
+		if(tiles[x + y*width] == 0xff322501) return Tile.SOUTH_WALL;
+		if(tiles[x + y*width] == 0xff322502) return Tile.WEST_WALL;
+		if(tiles[x + y*width] == 0xff322503) return Tile.EAST_WALL;
+		if(tiles[x + y*width] == 0xff322504) return Tile.NORTH_WEST_CORNER;
+		if(tiles[x + y*width] == 0xff322505) return Tile.NORTH_EAST_CORNER;
+		if(tiles[x + y*width] == 0xff322506) return Tile.SOUTH_WEST_CORNER;
+		if(tiles[x + y*width] == 0xff322507) return Tile.SOUTH_EAST_CORNER;
 		return Tile.VOID;
 	}
 
@@ -160,6 +176,10 @@ public class Level {
 	
 	public List<Entity> getEntities(){
 		return entities;
+	}
+	
+	public Player getClientPlayer(){
+		return players.get(0);
 	}
 	
 	

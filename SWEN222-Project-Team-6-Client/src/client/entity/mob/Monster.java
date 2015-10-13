@@ -1,26 +1,43 @@
 package client.entity.mob;
 
+import client.GameClient;
+import client.entity.ArrowProjectile;
 import client.graphics.Screen;
 import client.graphics.Sprite;
+import client.input.Mouse;
 
 public class Monster extends Mob {
 	
 	private Sprite sprite;
 	private int x, y;
+	private int fireRate = 0;
 	
 	public Monster(int x, int y, Sprite sprite){
 		this.sprite = sprite;
 		this.x = x;
 		this.y = y;
 		health = MAX_HEALTH;
+		fireRate = ArrowProjectile.getFireRate() + 100;
 	}
 	
 	public void update(){
-		//System.out.println(String.format("This mob is here at %d:%d", x, y));
+		if(fireRate > 0) fireRate--;
+		updateShooting();
+	}
+	
+	private void updateShooting() {
+		Player p = level.getClientPlayer();
+		if(fireRate <= 0){
+			double px = p.getX();
+			double py = p.getY();
+			double dir = Math.atan2(py - y + 16, px - x + 16);
+			shoot(x, y, dir);
+			fireRate = ArrowProjectile.getFireRate()  + 100;
+		}
 	}
 
 	public void render(Screen screen){
-		screen.renderMonster(x, y, this);
+		screen.renderMonster(x - 16, y-16, this);
 	}
 	
 	public Sprite getSprite(){

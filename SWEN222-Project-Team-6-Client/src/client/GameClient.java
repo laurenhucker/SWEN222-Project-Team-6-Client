@@ -35,6 +35,7 @@ import com.esotericsoftware.kryonet.Listener;
 import client.Packet.Packet0LoginRequest;
 import client.Packet.Packet1LoginAnswer;
 import client.entity.Entity;
+import client.entity.Item;
 import client.entity.mob.Monster;
 import client.entity.mob.Player;
 import client.graphics.Screen;
@@ -73,8 +74,8 @@ public class GameClient extends Canvas implements Runnable{
 			WIDTH = NUM_TILES * TILE_WIDTH,
 			HEIGHT = (WIDTH / 16 * 9) + (TILE_WIDTH - ((WIDTH/16*9) % TILE_WIDTH));//round to nearest tile but still at 16/9 ratio
 
-	public static final int WALK_SPEED = 3;
-	public static final TileCoordinate SPAWN_LOCATION = new TileCoordinate(7, 7);
+	public static final int WALK_SPEED = 5;
+	public static final TileCoordinate SPAWN_LOCATION = new TileCoordinate(124, 115);
 	public static final TileCoordinate DEFAULT_SPAWN = new TileCoordinate(10, 6);
 	
 	private boolean running = false;
@@ -85,7 +86,7 @@ public class GameClient extends Canvas implements Runnable{
 	private Keyboard key;
 	private Mouse mouse;
 	private Level level;
-	private Monster penisMob;
+	private Monster penisMob, chestMob;
 	private Player player;
 	private int frames;
 	private STATE state = STATE.LOGIN;
@@ -372,12 +373,26 @@ public class GameClient extends Canvas implements Runnable{
 		key = new Keyboard();/*Initialise KeyBoard object*/
 		mouse = new Mouse();
 		//level = new RandomLevel(128, 128);
-		level = new SpawnLevel("/textures/map/MAP_1.PNG");
+		level = new SpawnLevel("/textures/map/MAP_3.PNG");
 		//level.generateLevel();
-		penisMob = new Monster(SPAWN_LOCATION.getX() - 100, SPAWN_LOCATION.getY() - 100, Sprite.penisMob);
-		level.add(penisMob);
+		penisMob = new Monster(116*64, 116*64, Sprite.penisMob);
+		chestMob = new Monster(116*64, 120*64, Sprite.chestMob);
+		
 		player = new Player(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key, pClass);
+		
+		player.getItems().add(new Item("SWORD_WOOD"));
+		player.getItems().add(new Item("AXE_CRYSTAL"));
+		player.getItems().add(new Item("BOW_METAL"));
+		player.getItems().add(new Item("BOW_CRYSTAL"));
+		player.getItems().add(new Item("STAFF_CRYSTAL"));
+		player.getItems().add(new Item("STAFF_CRYSTAL"));
+		player.getItems().add(new Item("AXE_METAL"));
+		player.getItems().add(new Item("AXE_WOOD"));
+		player.getItems().add(new Item("SWORD_CRYSTAL"));
 		player.initialise(level);
+		penisMob.initialise(level);
+		level.addEntity(penisMob);
+		level.addPlayer(player);
 		addKeyListener(key);
 		addMouseListener(mouse);
 		addMouseMotionListener(mouse);
@@ -469,8 +484,10 @@ public class GameClient extends Canvas implements Runnable{
 				((Monster)e).render(screen);
 		}
 		//penisMob.render(screen);
+		chestMob.render(screen);
 		player.render(player.x, player.y, screen);
 		//screen.render(xOffset, yOffset);/*Now render screen*/
+		screen.renderInventory(player);
 		
 		for(int i = 0; i < pixels.length; i++){/*Copy over pixels from screen object after rendering*/
 			pixels[i] = screen.pixels[i];
