@@ -1,11 +1,13 @@
 package client.entity;
 
+import client.entity.mob.Mob;
 import client.entity.mob.Player;
 import client.graphics.Screen;
 import client.graphics.Sprite;
 
 public class ArrowProjectile extends Projectile {
 	private static final int FIRE_RATE = 15; //higher is slower
+	private Mob whoShotArrow;
 
 	public ArrowProjectile(int x, int y, double dir){
 		super(x, y, dir);
@@ -23,7 +25,7 @@ public class ArrowProjectile extends Projectile {
 	}
 	
 	protected void move(){
-	if(!level.tileCollision(x, y, nx, ny, 64) && !level.mobProjectileCollision(x, y, nx, ny, 64)){
+	if(!level.tileCollision(x, y, nx, ny, 64) && !level.mobProjectileCollision(x, y, nx, ny, whoShotArrow, 64)){
 		x += nx;
 		y += ny;
 	} else {
@@ -57,6 +59,10 @@ public class ArrowProjectile extends Projectile {
 	
 	public double gety(){
 		return y;
+	}
+	
+	public void whoShotArrow(Mob m){
+		whoShotArrow = m;
 	}
 	
 	

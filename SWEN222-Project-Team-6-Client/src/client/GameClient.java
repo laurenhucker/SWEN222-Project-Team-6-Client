@@ -321,9 +321,10 @@ public class GameClient extends Canvas implements Runnable{
 		//level = new RandomLevel(128, 128);
 		level = new SpawnLevel("/textures/map/MAP_3.PNG");
 		//level.generateLevel();
-		penisMob = new Monster(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), Sprite.penisMob);
-		level.add(penisMob);
+		penisMob = new Monster(SPAWN_LOCATION.getX() - 100, SPAWN_LOCATION.getY() - 100, Sprite.penisMob);
+		
 		player = new Player(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key, pClass);
+		
 		player.getItems().add(new Item("SWORD_WOOD"));
 		player.getItems().add(new Item("AXE_CRYSTAL"));
 		player.getItems().add(new Item("BOW_METAL"));
@@ -334,6 +335,9 @@ public class GameClient extends Canvas implements Runnable{
 		player.getItems().add(new Item("AXE_WOOD"));
 		player.getItems().add(new Item("SWORD_CRYSTAL"));
 		player.initialise(level);
+		penisMob.initialise(level);
+		level.addEntity(penisMob);
+		level.addPlayer(player);
 		addKeyListener(key);
 		addMouseListener(mouse);
 		addMouseMotionListener(mouse);

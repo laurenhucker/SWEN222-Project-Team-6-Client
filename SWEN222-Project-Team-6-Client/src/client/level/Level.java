@@ -9,6 +9,7 @@ import client.entity.Entity;
 import client.entity.Projectile;
 import client.entity.mob.Mob;
 import client.entity.mob.Monster;
+import client.entity.mob.Player;
 import client.graphics.Screen;
 import client.level.tile.Tile;
 
@@ -20,6 +21,7 @@ public class Level {
 	
 	private List<Entity> entities = new ArrayList<Entity>();
 	private List<Projectile> projectiles = new ArrayList<Projectile>();
+	private List<Player> players = new ArrayList<Player>();	
 	
 	
 	public Level(int w, int h){
@@ -48,7 +50,7 @@ public class Level {
 		}
 		
 		for(Projectile p : projectiles){
-				p.update();
+			p.update();
 		}
 	}
 	
@@ -75,8 +77,12 @@ public class Level {
 		}
 	}
 	
-	public void add(Entity e){
+	public void addEntity(Entity e){
 		entities.add(e);
+	}
+	
+	public void addPlayer(Player p){
+		players.add(p);
 	}
 	
 	public void addProjectile(Projectile p){
@@ -97,19 +103,19 @@ public class Level {
 		return solid;
 	}
 	
-	public boolean mobProjectileCollision(double x, double y, double xa, double ya, int size){
+	public boolean mobProjectileCollision(double x, double y, double xa, double ya, Mob shooter, int size){
 		boolean solid = false;
 		for(int i = 0; i < 4; i++){
 			double xt = x + xa;
 			double yt = y + ya;
 			//System.out.println("mobCollison() xt: " + xt + "  yt: " + yt);
-			if(getMob(xt, yt) != null){
-				//System.out.println("Colliding with mob");
+			Mob mob = getMob(xt, yt);
+			if(mob != null && shooter != mob ){
 				solid = true;
-				getMob(xt, yt).damage(10);
-				System.out.println("Mob health: " + getMob(xt, yt).getHealth() );
-				if(getMob(xt, yt).getHealth() <= 0){
-					entities.remove(getMob(xt, yt));
+				mob.damage(10);
+				System.out.println("Mob health: " + mob.getHealth() );
+				if(mob.getHealth() <= 0){
+					entities.remove(mob);
 				}
 			    return solid;
 			}
@@ -170,6 +176,10 @@ public class Level {
 	
 	public List<Entity> getEntities(){
 		return entities;
+	}
+	
+	public Player getClientPlayer(){
+		return players.get(0);
 	}
 	
 	
