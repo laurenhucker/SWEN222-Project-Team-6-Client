@@ -3,6 +3,9 @@ package client.entity.mob;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+
 import client.GameClient;
 import client.entity.ArrowProjectile;
 import client.entity.Item;
@@ -138,14 +141,11 @@ public class Player extends Mob {
 //			}
 //		}
 	}
-	
-
 
 	private void updateShooting() {
 		InventoryGraphics ig = new InventoryGraphics(1344, 768);
 		int topXOfInv = ig.getX();
 		int topYOfInv = ig.getY();
-		System.out.println("topofinv:  "+ topXOfInv+"______ topY: "+ topYOfInv+"________ mouse x:"+ Mouse.getX()+"mouse y :"+ Mouse.getY());
 		if(Mouse.getButton() == 1 && fireRate <= 0 
 				&& !(topXOfInv < Mouse.getX() && topYOfInv < Mouse.getY())){
 			

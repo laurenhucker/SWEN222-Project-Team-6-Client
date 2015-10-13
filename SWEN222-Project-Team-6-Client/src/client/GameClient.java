@@ -513,6 +513,7 @@ public class GameClient extends Canvas implements Runnable{
 		g.setColor(Color.RED);
 		g.fillOval(Mouse.getX() - 5, Mouse.getY() - 5, 10, 10);
 		mouse.drawToolTip(g, player);
+		mouse.drawRightClick(gameFrame, player);
 		g.dispose();/*Dont need these graphics any more. Throw away or game will crash from memory overload*/
 		buffStrat.show();
 	}

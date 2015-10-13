@@ -7,6 +7,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
+import javax.swing.JFrame;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
+
 import client.entity.mob.Player;
 import client.graphics.InventoryGraphics;
 
@@ -15,6 +20,7 @@ public class Mouse implements MouseListener, MouseMotionListener {
 	private static int mouseX = -1;
 	private static int mouseY = -1;
 	private static int mouseB = -1;
+	private boolean clicked = false;
 
 
 	public void mouseDragged(MouseEvent e) {
@@ -28,6 +34,7 @@ public class Mouse implements MouseListener, MouseMotionListener {
 	}
 
 	public void mouseClicked(MouseEvent e) {
+		clicked = true;
 	}
 
 	public void mouseEntered(MouseEvent e) {
@@ -58,6 +65,47 @@ public class Mouse implements MouseListener, MouseMotionListener {
 		return mouseB;
 	}
 	
+	public void drawRightClick(JFrame gameFrame, Player player){
+		InventoryGraphics ig = new InventoryGraphics(1344, 768);
+		int topXOfInv = ig.getX();
+		int topYOfInv = ig.getY();
+		if(clicked && (topXOfInv < getX() && topYOfInv < Mouse.getY())){
+			Object[] options = {"USE",
+				"DROP"};
+			int n = JOptionPane.showOptionDialog(gameFrame,
+					"Would you like to use or drop that item?",
+					"Inventory",
+					JOptionPane.YES_NO_OPTION,
+					JOptionPane.QUESTION_MESSAGE,
+					null,     //do not use a custom Icon
+					options,  //the titles of buttons
+					options[0]); //default button title
+			clicked = false;
+			//mouse
+			//PopUp menu = new PopUp();
+			//menu.setVisible(true);
+			// menu.show(gameFrame, Mouse.getX(), Mouse.getY());
+	       
+		}
+		
+		
+	}
+	
+	private void drawPopUpMenu(){
+		
+	}
+	
+
+	private class PopUp extends JPopupMenu {
+		JMenuItem anItem;
+	    public PopUp(){
+	        anItem = new JMenuItem("Click Me!");
+	        add(new JMenuItem("DROP"));
+			add(new JMenuItem("USE"));
+	        add(anItem);
+	    }
+	    
+	}
 	//----------------------//
 	// methods for tool tip //
 	//----------------------//
