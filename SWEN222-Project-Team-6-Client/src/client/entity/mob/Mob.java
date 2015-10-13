@@ -3,7 +3,7 @@ package client.entity.mob;
 
 import client.entity.ArrowProjectile;
 import client.entity.Entity;
-import client.entity.FireballProjectile;
+//import client.entity.FireballProjectile;
 import client.entity.Projectile;
 import client.graphics.Screen;
 import client.graphics.Sprite;
@@ -42,7 +42,7 @@ public abstract class Mob extends Entity{
 			p = new ArrowProjectile(x, y, dir);
 			
 		} else if(getProjectileType(this).equals("fireball")){
-			p = new FireballProjectile(x, y, dir);
+			p = new ArrowProjectile(x, y, dir);
 		} else {
 			p = new ArrowProjectile(x, y, dir);
 		}
