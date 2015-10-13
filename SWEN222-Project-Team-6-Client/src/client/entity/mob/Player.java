@@ -69,25 +69,25 @@ public class Player extends Mob {
 		}*/
 		switch(this.dir){
 		case 1://north
-			if(!collision(this.xTile, this.yTile - 1)){
+			if(!collisionWithTile(this.xTile, this.yTile - 1) && !collisionWithEntity(x,y -2)){
 				this.x += deltaX * GameClient.WALK_SPEED;
 				this.y += deltaY * GameClient.WALK_SPEED;
 			}
 			break;
 		case 2://east
-			if(!collision(this.xTile + 1, this.yTile)){
+			if(!collisionWithTile(this.xTile + 1, this.yTile)  && !collisionWithEntity(x+2,y)){
 				this.x += deltaX * GameClient.WALK_SPEED;
 				this.y += deltaY * GameClient.WALK_SPEED;
 			}
 			break;
 		case 3://south
-			if(!collision(this.xTile, this.yTile + 1)){
+			if(!collisionWithTile(this.xTile, this.yTile + 1) && !collisionWithEntity(x,y+2)){
 				this.x += deltaX * GameClient.WALK_SPEED;
 				this.y += deltaY * GameClient.WALK_SPEED;
 			}
 			break;
 		case 4://west
-			if(!collision(this.xTile - 1, this.yTile )){
+			if(!collisionWithTile(this.xTile - 1, this.yTile ) && !collisionWithEntity(x-2, y)){
 				this.x += deltaX * GameClient.WALK_SPEED;
 				this.y += deltaY * GameClient.WALK_SPEED;
 			}

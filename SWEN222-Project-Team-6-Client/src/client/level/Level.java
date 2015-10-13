@@ -7,6 +7,8 @@ import client.GameClient;
 import client.entity.ArrowProjectile;
 import client.entity.Entity;
 import client.entity.Projectile;
+import client.entity.mob.Mob;
+import client.entity.mob.Monster;
 import client.graphics.Screen;
 import client.level.tile.Tile;
 
@@ -70,7 +72,6 @@ public class Level {
 		
 		for(Projectile p : projectiles){
 				p.render(screen);
-			
 		}
 	}
 	
@@ -79,11 +80,44 @@ public class Level {
 	}
 	
 	public void addProjectile(Projectile p){
+		p.initialise(this);
 		projectiles.add(p);
 	}
 	
+	public boolean tileCollision(double x, double y, double xa, double ya, int size){
+		boolean solid = false;
+		for(int i = 0; i < 4; i++){
+			double xt = ((x + xa) + i % 2 * size)/64;
+			double yt = ((y + ya) + i / 2 * size)/64;
+			if(getTile((int)xt, (int)yt).solid()) {
+				solid = true;
+				return solid;
+			}
+		}
+		return solid;
+	}
 	
-	
+	public boolean mobProjectileCollision(double x, double y, double xa, double ya, int size){
+		boolean solid = false;
+		for(int i = 0; i < 4; i++){
+			double xt = x + xa;
+			double yt = y + ya;
+			//System.out.println("mobCollison() xt: " + xt + "  yt: " + yt);
+			if(getMob(xt, yt) != null){
+				//System.out.println("Colliding with mob");
+				solid = true;
+				getMob(xt, yt).damage(10);
+				System.out.println("Mob health: " + getMob(xt, yt).getHealth() );
+				if(getMob(xt, yt).getHealth() <= 0){
+					entities.remove(getMob(xt, yt));
+				}
+			    return solid;
+			}
+		}
+		return solid;
+	}
+		
+		
 	/**
 	 * 0xff00ff00 - GRASS
 	 * 0xff808000 - DIRT
@@ -101,8 +135,32 @@ public class Level {
 		if(tiles[x + y*width] == 0xffffff00) return Tile.SAND;
 		return Tile.VOID;
 	}
+
+	public Mob getMob(double x, double y){
+		for(Entity e : entities){
+			if(e instanceof Mob){
+				//System.out.println("Get mob() x: " + x + "   y: " + y);
+				//System.out.println("Mob position x: " + ((Mob)e).getX() + "  y: " + ((Mob)e).getY());
+				int mobXStart = ((Mob)e).getX();
+				int mobYStart = ((Mob)e).getY();
+				int mobXEnd = mobXStart + 64;
+				int mobYEnd = mobYStart + 64;
+				
+				if(x >= mobXStart && x <= mobXEnd && y >= mobYStart && x <= mobYEnd){
+					return (Mob)e;
+				}
+			}
+		}
+		return null;	
+	}
 	
 	public List<Projectile> getProjectiles(){
 		return projectiles;
 	}
+	
+	public List<Entity> getEntities(){
+		return entities;
+	}
+	
+	
 }

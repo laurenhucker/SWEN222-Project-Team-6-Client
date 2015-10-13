@@ -12,6 +12,7 @@ public class Monster extends Mob {
 		this.sprite = sprite;
 		this.x = x;
 		this.y = y;
+		health = MAX_HEALTH;
 	}
 	
 	public void update(){
@@ -33,5 +34,8 @@ public class Monster extends Mob {
 	public int getY(){
 		return this.y;
 	}
+	
+
+	
 	
 }

@@ -10,9 +10,11 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -30,14 +32,21 @@ import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
+import client.Packet.Packet0LoginRequest;
+import client.Packet.Packet1LoginAnswer;
+import client.entity.Entity;
+import client.entity.mob.Monster;
 import client.entity.mob.Player;
 import client.graphics.Screen;
+import client.graphics.Sprite;
 import client.input.Keyboard;
 import client.input.Mouse;
 import client.level.Level;
 import client.level.SpawnLevel;
 import client.level.tile.TileCoordinate;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryonet.Client;
 
 enum STATE {
 	LOGIN,
@@ -50,6 +59,7 @@ public class GameClient extends Canvas implements Runnable{
 	
 	public Packet packet = new Packet();	
 	private Packet0LoginRequest loginPacket;
+	private boolean verified;
 	
 	public Client client;
 	private String user;
@@ -75,6 +85,7 @@ public class GameClient extends Canvas implements Runnable{
 	private Keyboard key;
 	private Mouse mouse;
 	private Level level;
+	private Monster penisMob;
 	private Player player;
 	private int frames;
 	private STATE state = STATE.LOGIN;
@@ -95,10 +106,12 @@ public class GameClient extends Canvas implements Runnable{
 		loadImages();
 		initFrames();
 		loginScreen();
+		InitializeConnection();
 	}
 	
 	public void InitializeConnection(){
 		client = new Client();
+		client.start();
 		registerPackets();
 		client.addListener(new Listener(){
 			public void connected(Connection connection) {
@@ -114,16 +127,18 @@ public class GameClient extends Canvas implements Runnable{
 			}
 			
 		});
-		client.start();
+		
+		/*
 		try {
-			client.connect(10000, "localhost", 2555);
+			client.connect(100000, "localhost", 2555);
 		} catch (IOException e1) {
 			e1.printStackTrace();
-		}		
+		}	
+		*/	
 	}
 	
 	protected void handleDisonnect(Connection connection) {
-		
+		//handleDisonnect(connection);
 	}
 
 	protected void handleConnect(Connection connection) {
@@ -135,7 +150,9 @@ public class GameClient extends Canvas implements Runnable{
 	public void handleMessage(int playerId, Object message) {
 		if(message instanceof Packet1LoginAnswer){
 			boolean ans = ((Packet1LoginAnswer) message).accepted;
+			System.out.println(ans);			
 			if(ans){
+				verified = true;
 				System.out.println("accepted");				
 			}else{
 				client.close();
@@ -157,6 +174,17 @@ public class GameClient extends Canvas implements Runnable{
 		}
 	}
 	
+	public void connectLocal() {
+		connect("localhost");
+	}
+	
+	public void connect(String host) {
+		try {
+			client.connect(5000, host, 2555);//, Network.portUdp);
+		} catch (IOException e) {
+			e.printStackTrace();			
+		}
+	}
 
 	private void loadImages(){
 		try {
@@ -203,15 +231,14 @@ public class GameClient extends Canvas implements Runnable{
 				loginButton.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent a1) {
-						boolean verified = false;
-						while(!verified){
+						verified = false;
+						//while(!verified){
 							//Stanton use these two strings and send them to server to request login.
 							System.out.println(getUser() + ":" + getPass());
 							user = username.getText();
 							pass = password.getText();
-							InitializeConnection();
-							//verified = true;
-						}
+							connectLocal();
+						//}
 						//Only reaches here after verification
 						state = STATE.GAME;
 						loginFrame.setVisible(false);
@@ -318,15 +345,7 @@ public class GameClient extends Canvas implements Runnable{
 		loginFrame.getContentPane().add(panel);
 		loginFrame.setVisible(true);
 	}
-	/*
-	private void connect(){
-		try {
-			socket = new Socket("localhost",2560);
-		} catch (IOException e) {
-			e.printStackTrace();
-     	}
-	}
-	*/
+
 	
 	private void initFrames(){
 		screen = new Screen(WIDTH, HEIGHT);
@@ -355,6 +374,8 @@ public class GameClient extends Canvas implements Runnable{
 		//level = new RandomLevel(128, 128);
 		level = new SpawnLevel("/textures/map/MAP_1.PNG");
 		//level.generateLevel();
+		penisMob = new Monster(SPAWN_LOCATION.getX() - 100, SPAWN_LOCATION.getY() - 100, Sprite.penisMob);
+		level.add(penisMob);
 		player = new Player(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key, pClass);
 		player.initialise(level);
 		addKeyListener(key);
@@ -421,11 +442,13 @@ public class GameClient extends Canvas implements Runnable{
 		level.update();
 		counter++;
 		if(counter == 5){
+			/*
 			try {
 			send();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			*/
 		}
 	}
 
@@ -441,6 +464,11 @@ public class GameClient extends Canvas implements Runnable{
 		
 		screen.clear();/*Clear screen before rendering again*/
 		level.render(player.x, player.y, screen);
+		for(Entity e : level.getEntities()){
+			if(e instanceof Monster)
+				((Monster)e).render(screen);
+		}
+		//penisMob.render(screen);
 		player.render(player.x, player.y, screen);
 		//screen.render(xOffset, yOffset);/*Now render screen*/
 		
@@ -464,7 +492,7 @@ public class GameClient extends Canvas implements Runnable{
 		g.dispose();/*Dont need these graphics any more. Throw away or game will crash from memory overload*/
 		buffStrat.show();
 	}
-	
+	/*
 	public void send() throws IOException {
 		if (state == STATE.GAME){
 			OutputStreamWriter outStream;
@@ -481,6 +509,7 @@ public class GameClient extends Canvas implements Runnable{
 			}	
 		}
 	}
+	*/
 	
 	public static void main(String[] args){
 		GameClient game = new GameClient();
