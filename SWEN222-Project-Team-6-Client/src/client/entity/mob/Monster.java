@@ -8,9 +8,11 @@ import client.input.Mouse;
 
 public class Monster extends Mob {
 	
-	private Sprite sprite;
-	private int x, y;
-	private int fireRate = 0;
+	protected Sprite sprite;
+	protected int x, y;
+	protected int fireRate = 0;
+	protected boolean moves;
+	protected boolean shoots;
 	
 	public Monster(int x, int y, Sprite sprite){
 		this.sprite = sprite;
@@ -27,6 +29,7 @@ public class Monster extends Mob {
 	
 	private void updateShooting() {
 		Player p = level.getClientPlayer();
+		if(!shoots) return;
 		if(fireRate <= 0){
 			double px = p.getX();
 			double py = p.getY();

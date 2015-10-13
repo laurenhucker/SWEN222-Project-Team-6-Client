@@ -55,7 +55,7 @@ public abstract class Mob extends Entity{
 	public String getProjectileType(Mob m){
 		if(m instanceof Player){
 			Player p = (Player)m;
-			System.out.println(p.getPlayerClass());
+			//System.out.println(p.getPlayerClass());
 			if(p.getPlayerClass().equals(Player.PLAYER_CLASS.ARCHER)){
 				return "arrow";
 			} else if(p.getPlayerClass().equals(Player.PLAYER_CLASS.MAGE)){
@@ -66,7 +66,6 @@ public abstract class Mob extends Entity{
 	}
 	
 	public void move(int xa, int ya){
-		System.out.println("Move");
 	}
 	
 	public int getDir(){return this.dir;}

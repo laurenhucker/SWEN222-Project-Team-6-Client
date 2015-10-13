@@ -1,5 +1,6 @@
 package client.entity;
 
+import client.GameClient;
 import client.entity.mob.Mob;
 import client.entity.mob.Monster;
 import client.entity.mob.Player;
@@ -38,6 +39,11 @@ public class FireballProjectile extends Projectile {
 				if(hitMob.getHealth() <= 0){
 					System.out.println("Health is 0");
 					level.getEntities().remove(hitMob);
+					if(hitMob instanceof Player){
+						level.getEntities().add(hitMob);
+						((Player) hitMob).setHealth(100);
+						((Player) hitMob).setPosition(GameClient.SPAWN_LOCATION);
+					}
 				}
 				this.remove();
 			}

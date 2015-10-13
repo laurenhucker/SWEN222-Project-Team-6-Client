@@ -1,5 +1,6 @@
 package client.entity;
 
+import client.GameClient;
 import client.entity.mob.Mob;
 import client.entity.mob.Monster;
 import client.entity.mob.Player;
@@ -12,8 +13,7 @@ public class ArrowProjectile extends Projectile {
 
 	public ArrowProjectile(int x, int y, double dir){
 		super(x, y, dir);
-		speed = 5;
-		speed = 5;
+		speed = GameClient.WALK_SPEED*3;
 		range = 500;
 		damage = 15;
 		sprite = Sprite.bullet;
@@ -38,6 +38,11 @@ public class ArrowProjectile extends Projectile {
 				if(hitMob.getHealth() <= 0){
 					System.out.println("Health is 0");
 					level.getEntities().remove(hitMob);
+					if(hitMob instanceof Player){
+						level.getEntities().add(hitMob);
+						((Player) hitMob).setHealth(100);
+						((Player) hitMob).setPosition(GameClient.SPAWN_LOCATION);
+					}
 				}
 				this.remove();
 			}
