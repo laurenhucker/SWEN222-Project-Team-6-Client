@@ -83,6 +83,7 @@ public class GameClient extends Canvas implements Runnable{
 	private int frames;
 	private STATE state = STATE.LOGIN;
 	private static ArrayList<GameClient> gameClients = new ArrayList<GameClient>();
+	public int[][] monsterCoords;
 	
 	private Socket socket;
 	
@@ -102,6 +103,9 @@ public class GameClient extends Canvas implements Runnable{
 		loadImages();
 		initFrames();
 		loginScreen();
+		
+		monsterCoords = new int[][] {{149,37}, {149, 38}, {149, 39}, {149, 40}, {148, 29},
+		{137, 44}, {141,46}, {166,31}, {166,32}, {162,15}, {164,14}, {167,13}, {122,91}, {128, 91} };
 		//InitializeConnection();
 	}
 	
@@ -372,7 +376,19 @@ public class GameClient extends Canvas implements Runnable{
 		gameFrame.setLocationRelativeTo(null);
 	}
 	
+	public void initialiseMonsters(){
+		for(int i = 0; i < monsterCoords.length; i++){
+			for(int j = 0; i < monsterCoords.length; j++){
+				Monster m = new ChestMonster(i<<6, j<<6, Sprite.penisMob, 15, 100, false, true);
+				level.addEntity(m);
+				m.initialise(level);
+			}
+			
+		}
+	}
+	
 	private void initGame(Player.PLAYER_CLASS pClass){
+		
 		key = new Keyboard();/*Initialise KeyBoard object*/
 		mouse = new Mouse();
 		//level = new RandomLevel(128, 128);
@@ -381,8 +397,11 @@ public class GameClient extends Canvas implements Runnable{
 		penisMob = new ChestMonster(116*64, 116*64, Sprite.penisMob, 15, 100, false, true);
 		chestMob = new ChestMonster(116*64, 120*64, Sprite.chestMob, 0, 1000, false, false);
 		ghostMob = new GhostMonster(116*64, 124*64, Sprite.ghostMob, 0, 50, true, false);
-		Monster guardMonster1 = new ChestMonster(128*64, 91*64, Sprite.penisMob, 15, 100, false, true);
-		Monster guardMonster2 = new ChestMonster(122*64, 91*64, Sprite.penisMob, 15, 100, false, true);
+//		Monster guardMonster1 = new ChestMonster(128*64, 91*64, Sprite.penisMob, 15, 100, false, true);
+//		Monster guardMonster2 = new ChestMonster(122*64, 91*64, Sprite.penisMob, 15, 100, false, true);
+
+		
+		
 		
 		player = new Player(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key, pClass);
 		
@@ -397,14 +416,16 @@ public class GameClient extends Canvas implements Runnable{
 		player.getItems().add(new Item("SWORD_CRYSTAL"));
 		player.initialise(level);
 		
+		initialiseMonsters();
+		
 		penisMob.initialise(level);
 		chestMob.initialise(level);
 		ghostMob.initialise(level);
-		guardMonster1.initialise(level);
-		guardMonster2.initialise(level);
+		//guardMonster1.initialise(level);
+		//guardMonster2.initialise(level);
 		
-		level.addEntity(guardMonster1);
-		level.addEntity(guardMonster2);
+		//level.addEntity(guardMonster1);
+		//level.addEntity(guardMonster2);
 		level.addEntity(penisMob);
 		level.addEntity(chestMob);
 		level.addEntity(ghostMob);
