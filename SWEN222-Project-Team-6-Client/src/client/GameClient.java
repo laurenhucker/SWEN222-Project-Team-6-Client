@@ -31,6 +31,7 @@ import client.entity.Item;
 import client.entity.mob.Monster;
 import client.entity.mob.Player;
 import client.entity.mob.monsters.ChestMonster;
+import client.entity.mob.monsters.GhostMonster;
 import client.graphics.Screen;
 import client.graphics.Sprite;
 import client.input.Keyboard;
@@ -378,8 +379,8 @@ public class GameClient extends Canvas implements Runnable{
 		//level = new RandomLevel(128, 128);
 		level = new SpawnLevel("/textures/map/MAP_3.PNG");
 		//level.generateLevel();
-		penisMob = new Monster(116*64, 116*64, Sprite.penisMob);
-		chestMob = new ChestMonster(116*64, 120*64, Sprite.chestMob, 0, 1000, false, false);
+		penisMob = new ChestMonster(116*64, 116*64, Sprite.penisMob, 15, 100, false, true);
+		chestMob = new GhostMonster(116*64, 120*64, Sprite.chestMob, 0, 50, true, false);
 		
 		player = new Player(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key, pClass);
 		
