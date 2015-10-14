@@ -7,11 +7,13 @@ import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -56,9 +58,9 @@ public class GameClient extends Canvas implements Runnable{
 	private boolean verified;
 	
 	public Client client;
+	public int id;
 	private String user;
 	private String pass;
-	public int id;
 	
 	public static final String TITLE = "Dylan is lame";
 	public static final int SCALE = 1,
@@ -83,20 +85,23 @@ public class GameClient extends Canvas implements Runnable{
 	private Player player;
 	private int frames;
 	private STATE state = STATE.LOGIN;
+	private static ArrayList<GameClient> gameClients = new ArrayList<GameClient>();
 	
 	private Socket socket;
 	
-	private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB),
+	private BufferedImage image,
 			loginScreenImg,
 			newCharButtonImg,
 			existingCharButtonImg,
 			warriorButtonImg,
 			archerButtonImg,
 			mageButtonImg;
-	private int[] pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
+	private int[] pixels;
 	private int counter = 0;
 	
-	public GameClient(){				
+	public GameClient(){	
+		image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+		pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
 		loadImages();
 		initFrames();
 		loginScreen();
@@ -456,6 +461,7 @@ public class GameClient extends Canvas implements Runnable{
 		key.update();
 		player.update();
 		level.update();
+		otherKeysCheck();
 		counter++;
 		if(counter == 5){
 			//sendMessage(message); //what we want to send
@@ -507,7 +513,7 @@ public class GameClient extends Canvas implements Runnable{
 	}
 	
 	public static void main(String[] args){
-		GameClient game = new GameClient();
+		gameClients.add(new GameClient());
 	}
 
 	private String getUser() {
@@ -526,6 +532,20 @@ public class GameClient extends Canvas implements Runnable{
 		this.pass = pass;
 	}
 
-	
+	private void otherKeysCheck(){
+		if(key.e){
+			System.out.println("PRESSED E DO SOME STUFF");
+		}
+		if(key.esc){
+			key.esc = false;
+			key.forceRelease(KeyEvent.VK_ESCAPE);
+			System.out.println(key);
+			//gameClients.get(0).gameFrame = null;
+			gameClients.get(0).gameFrame.dispose();
+			gameClients.get(0).running = false;
+			gameClients.remove(0);
+			gameClients.add(new GameClient());
+		}
+	}
 	
 }
