@@ -63,7 +63,7 @@ public class GameClient extends Canvas implements Runnable{
 	private String pass;
 	private Player.PLAYER_CLASS pClass;
 
-	public static final String TITLE = "Dylan is a sick cunt";
+	public static final String TITLE = "Haunted house";
 	public static final int SCALE = 1,
 			NUM_TILES = 21,
 			TILE_WIDTH = 64,
@@ -82,7 +82,7 @@ public class GameClient extends Canvas implements Runnable{
 	private Keyboard key;
 	private Mouse mouse;
 	private Level level;
-	private Monster penisMob, chestMob, ghostMob;
+	private Monster chestMob, ghostMob;
 	private Player player;
 	private int frames;
 	private STATE state = STATE.LOGIN;
@@ -547,11 +547,9 @@ public int [][] ghostCoords = {{125,158},{121,183},{85,225},{23,170},{215,49},{2
 		//level = new RandomLevel(128, 128);
 		level = new SpawnLevel("/textures/map/MAP_3.PNG");
 		//level.generateLevel();
-		penisMob = new ChestMonster(116*64, 116*64, Sprite.penisMob, 15, 100, false, true);
 		chestMob = new ChestMonster(116*64, 120*64, Sprite.chestMob, 0, 1000, false, false);
 		ghostMob = new GhostMonster(116*64, 124*64, Sprite.ghostMob, 0, 50, true, false);
-		//		Monster guardMonster1 = new ChestMonster(128*64, 91*64, Sprite.penisMob, 15, 100, false, true);
-		//		Monster guardMonster2 = new ChestMonster(122*64, 91*64, Sprite.penisMob, 15, 100, false, true);
+		
 
 		player = new Player(name, SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key, pClass);
 
@@ -568,15 +566,8 @@ public int [][] ghostCoords = {{125,158},{121,183},{85,225},{23,170},{215,49},{2
 
 		initialiseMonsters();
 
-		penisMob.initialise(level);
 		chestMob.initialise(level);
 		ghostMob.initialise(level);
-		//guardMonster1.initialise(level);
-		//guardMonster2.initialise(level);
-
-		//level.addEntity(guardMonster1);
-		//level.addEntity(guardMonster2);
-		level.addEntity(penisMob);
 		level.addEntity(chestMob);
 		level.addEntity(ghostMob);
 		level.addEntity(player);
@@ -595,7 +586,7 @@ public int [][] ghostCoords = {{125,158},{121,183},{85,225},{23,170},{215,49},{2
 		//level = new RandomLevel(128, 128);
 		level = new SpawnLevel("/textures/map/MAP_3.PNG");
 		//level.generateLevel();
-		penisMob = new ChestMonster(116*64, 116*64, Sprite.penisMob, 15, 100, false, true);
+		
 		chestMob = new ChestMonster(116*64, 120*64, Sprite.chestMob, 0, 1000, false, false);
 		ghostMob = new GhostMonster(116*64, 124*64, Sprite.ghostMob, 0, 50, true, false);
 		//		Monster guardMonster1 = new ChestMonster(128*64, 91*64, Sprite.penisMob, 15, 100, false, true);
@@ -616,7 +607,6 @@ public int [][] ghostCoords = {{125,158},{121,183},{85,225},{23,170},{215,49},{2
 
 		initialiseMonsters();
 
-		penisMob.initialise(level);
 		chestMob.initialise(level);
 		ghostMob.initialise(level);
 		//guardMonster1.initialise(level);
@@ -624,7 +614,6 @@ public int [][] ghostCoords = {{125,158},{121,183},{85,225},{23,170},{215,49},{2
 
 		//level.addEntity(guardMonster1);
 		//level.addEntity(guardMonster2);
-		level.addEntity(penisMob);
 		level.addEntity(chestMob);
 		level.addEntity(ghostMob);
 		level.addEntity(player);
