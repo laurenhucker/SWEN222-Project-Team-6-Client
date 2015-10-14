@@ -90,8 +90,21 @@ public class GameClient extends Canvas implements Runnable{
 	private ArrayList<Player> otherPlayers = new ArrayList<Player>();
 	private ArrayList<Player> otherPlayersOnScreen = new ArrayList<Player>();
 
-	public int[][] monsterCoords = {{149,37}, {149, 38}, {149, 39}, {149, 40}, {148, 29},
-			{137, 44}, {141,46}, {166,31}, {166,32}, {162,15}, {164,14}, {167,13}, {122,91}, {128, 91}, {SPAWN_LOCATION.getX()  + 2, SPAWN_LOCATION.getY() + 5}};
+	public int[][] kniteCoords = {{149,37}, {149, 38}, {149, 39}, {149, 40}, {148, 29},
+			{137, 44}, {141,46}, {166,31}, {166,32}, {162,15}, {164,14}, {167,13}, 
+			{122,91}, {128, 91}, {142,164}, {127,200}, {105,218}, {103,244}, {135,248}, {20,27}, {33,107},
+			{192,84}, {185,87}, {165,100}, {175,113}, {208,129}, {179,167}, {181,170}, {32,235},
+			{94,121}, {94,114}, {107,122}, {121,147}, {128,147}, {155,125}, {155,118}};
+			
+public int[][] bossCoords = {{19,154}, {40,240}, {149,237}, {88,14}, {40, 99}, {142,36},
+					{209,140}, {106,201}};
+
+public int [][] treasureCoords = {{137,175},{133,180},{16,225},{145,57},{16,19},{72,75},
+					{167,69}, {196,87}, {169,94}, {189,112}, {236,102}, {176,163}, {41,242}, {155,101}, {109,127}, {125,141}  };
+
+public int [][] ghostCoords = {{125,158},{121,183},{85,225},{23,170},{215,49},{206,28},{184,13},{120,13},{31,15},{33,37},{42,109},
+								{126,65}, {188,46}, {207,73}, {234,80}, {217,141}, {232,117}, {227,102}, {125,159}, {106,209}, {28,227}
+								, {140,121}, {125,102}, {136,143}};
 
 	private Socket socket;
 
@@ -502,12 +515,28 @@ public class GameClient extends Canvas implements Runnable{
 	}
 
 	public void initialiseMonsters(){
-		for(int i = 0; i < monsterCoords.length; i++){
-			//for(int j = 0; j < monsterCoords[0].length; j++){
-			Monster m = new ChestMonster((monsterCoords[i][0])*64, (monsterCoords[i][1])*64, Sprite.knightMob, 15, 100, false, true);
+		for(int i = 0; i < kniteCoords.length; i++){
+			Monster m = new ChestMonster((kniteCoords[i][0])*64, (kniteCoords[i][1])*64, Sprite.knightMob, 15, 100, false, true);
 			m.initialise(level);
 			level.addEntity(m);
-			//}
+		}
+		
+		for(int i = 0; i < bossCoords.length; i++){
+			Monster m = new ChestMonster((bossCoords[i][0])*64, (bossCoords[i][1])*64, Sprite.knightMob, 15, 500, false, true);
+			m.initialise(level);
+			level.addEntity(m);
+		}
+		
+		for(int i = 0; i < treasureCoords.length; i++){
+			Monster m = new ChestMonster((treasureCoords[i][0])*64, (treasureCoords[i][1])*64, Sprite.chestMob, 0, 0, false, false);
+			m.initialise(level);
+			level.addEntity(m);
+		}
+		
+		for(int i = 0; i < ghostCoords.length; i++){
+			Monster m = new ChestMonster((ghostCoords[i][0])*64, (ghostCoords[i][1])*64, Sprite.ghostMob, 15, 100, true, false);
+			m.initialise(level);
+			level.addEntity(m);
 		}
 	}
 
