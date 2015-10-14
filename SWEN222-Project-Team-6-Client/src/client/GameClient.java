@@ -51,16 +51,16 @@ enum STATE {
 }
 
 public class GameClient extends Canvas implements Runnable{
-	
+
 	private boolean verified = false, newUser = false;;
 	private String[] words;
-	
+
 	public Client client;
 	public int id;
 	private String user;
 	private String pass;
 	private Player.PLAYER_CLASS pClass;
-	
+
 	public static final String TITLE = "Dylan is a sick cunt";
 	public static final int SCALE = 1,
 			NUM_TILES = 21,
@@ -71,7 +71,7 @@ public class GameClient extends Canvas implements Runnable{
 	public static final int WALK_SPEED = 5;
 	public static final TileCoordinate SPAWN_LOCATION = new TileCoordinate(124, 115);
 	public static final TileCoordinate DEFAULT_SPAWN = new TileCoordinate(10, 6);
-	
+
 	private boolean running = false;
 	private Thread thread;
 	private JFrame gameFrame, loginFrame;
@@ -86,31 +86,31 @@ public class GameClient extends Canvas implements Runnable{
 	private STATE state = STATE.LOGIN;
 	private static ArrayList<GameClient> gameClients = new ArrayList<GameClient>();
 	public int[][] monsterCoords = {{149,37}, {149, 38}, {149, 39}, {149, 40}, {148, 29},
-		{137, 44}, {141,46}, {166,31}, {166,32}, {162,15}, {164,14}, {167,13}, {122,91}, {128, 91}, {SPAWN_LOCATION.getX()  + 2, SPAWN_LOCATION.getY() + 5}};
-	
+			{137, 44}, {141,46}, {166,31}, {166,32}, {162,15}, {164,14}, {167,13}, {122,91}, {128, 91}, {SPAWN_LOCATION.getX()  + 2, SPAWN_LOCATION.getY() + 5}};
+
 	private Socket socket;
-	
+
 	private BufferedImage image,
-			loginScreenImg,
-			newCharButtonImg,
-			existingCharButtonImg,
-			warriorButtonImg,
-			archerButtonImg,
-			mageButtonImg;
+	loginScreenImg,
+	newCharButtonImg,
+	existingCharButtonImg,
+	warriorButtonImg,
+	archerButtonImg,
+	mageButtonImg;
 	private int[] pixels;
 	private int counter = 0;
-	
+
 	public GameClient(){	
 		image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 		pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
 		loadImages();
 		initFrames();
 		loginScreen();
-		
-		
+
+
 		//InitializeConnection();
 	}
-	
+
 	public void InitializeConnection(){
 		client = new Client();
 		new Thread(client).start();
@@ -123,15 +123,15 @@ public class GameClient extends Canvas implements Runnable{
 			public void disconnected(Connection connection) {
 				handleDisonnect(connection);
 			}
-			
+
 			public void received(Connection connection, Object object) {
 				handleMessage(connection.getID(), object);
 			}
-			
+
 		});
-		
+
 	}
-	
+
 	protected void handleDisonnect(Connection connection) {
 		//handleDisonnect(connection);
 	}
@@ -142,25 +142,25 @@ public class GameClient extends Canvas implements Runnable{
 			System.out.println(user + "    " + pass);
 			sendMessageUDP(send);
 		} else {
-			String send = (String.format("login,%s,%s,%s", this.user, this.pass, this.pClass));
+			String send = (String.format("login,%s,%s", this.user, this.pass));
 			System.out.println(user + "    " + pass);
 			sendMessageUDP(send);
 		}	
-		
+
 	}
 
 	public void handleMessage(int playerId, Object message) {
 		if(message instanceof String){
 			words = ((String) message).split(",");
-			
-			if(words[0].equalsIgnoreCase("login")){//SHOULD RETURN "login,true,class"	
+
+			if(words[0].equalsIgnoreCase("login")){//SHOULD RETURN "login,true,class,exp,lvl,x,y"	
 				String ans = words[1];
 				System.out.println("[CLIENT] ans is" + ans);	
 				if(ans.equalsIgnoreCase("true")){					
 					System.out.println("accepted");	
-					verify(true, words[2]);
+					loginPass(words[2], words[3], words[4], words[5], words[6]);
 				} else {
-					verify(false, words[2]);
+					loginFail();
 				}
 			} else if (words[0].equalsIgnoreCase("player")){
 				System.out.println("[CLIENT] is type player");
@@ -173,19 +173,19 @@ public class GameClient extends Canvas implements Runnable{
 				String ans = words[1];
 				System.out.println("[CLIENT] - New user successfully created: " + ans);
 				if(ans.equalsIgnoreCase("true")){
-					verify(true, this.pClass.toString());
+					loginPass(this.pClass.toString(), 0+"", 1+"", SPAWN_LOCATION.getX()+"", SPAWN_LOCATION.getY()+"");
 				} else {
-					verify(false, this.pClass.toString());
+					loginFail();
 				}
 			}
 		}
 	}
-	
+
 	public void registerPackets(){
 		Kryo kryo = client.getKryo();
-		
+
 	}
-	
+
 	public void sendMessage(Object message) {
 		System.out.println(client.isConnected());
 		if (client.isConnected()) {
@@ -198,11 +198,11 @@ public class GameClient extends Canvas implements Runnable{
 			client.sendUDP(message);
 		}
 	}
-	
+
 	public void connectLocal() {
 		connect("localhost");
 	}
-	
+
 	public void connect(String host) {
 		try {
 			client.connect(10000, host, 2555, 2556);//, Network.portUdp);
@@ -210,8 +210,14 @@ public class GameClient extends Canvas implements Runnable{
 			e.printStackTrace();			
 		}
 	}
-	
-	public void verify(boolean verified, String pClass){
+
+	public void loginFail(){
+		client.stop();
+		client.close();		
+		System.out.println("NO");
+	}
+
+	public void loginPass(String pClass, String exp, String lvl, String xPos, String yPos){
 		Player.PLAYER_CLASS c = null;
 		switch(pClass){
 		case "WARRIOR":
@@ -222,17 +228,13 @@ public class GameClient extends Canvas implements Runnable{
 			break;
 		case "MAGE":
 			c = Player.PLAYER_CLASS.MAGE;
+			break;
+		default:
+			c = Player.PLAYER_CLASS.ARCHER;
 		}
-		if (verified == false){
-			client.stop();
-			client.close();		
-			System.out.println("NO");
-		} else {
-			//Only reaches here after verification
-			state = STATE.GAME;
-			loginFrame.setVisible(false);
-			initGame(c);//Change this to the player's saved class
-		}
+		state = STATE.GAME;
+		loginFrame.setVisible(false);
+		initGame(Integer.parseInt(xPos), Integer.parseInt(yPos), c, Integer.parseInt(exp), Integer.parseInt(lvl));
 	}
 
 	private void loadImages(){
@@ -247,11 +249,11 @@ public class GameClient extends Canvas implements Runnable{
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void loginScreen(){
 		JButton newCharButton = new JButton();
 		JButton existingCharButton = new JButton();
-		
+
 		newCharButton.setIcon(new ImageIcon(newCharButtonImg));
 		newCharButton.setBorder(BorderFactory.createEmptyBorder());
 		newCharButton.setContentAreaFilled(false);
@@ -264,14 +266,14 @@ public class GameClient extends Canvas implements Runnable{
 				characterSelectScreen();
 			}
 		});
-		
+
 		existingCharButton.setIcon(new ImageIcon(existingCharButtonImg));
 		existingCharButton.setBorder(BorderFactory.createEmptyBorder());
 		existingCharButton.setContentAreaFilled(false);
 		existingCharButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent a) {
-				
+
 				JFrame loginBox = new JFrame();
 				JPanel loginPanel = new JPanel(new GridLayout(1, 3));
 				JTextField username = new JTextField("Username");
@@ -280,12 +282,13 @@ public class GameClient extends Canvas implements Runnable{
 				loginButton.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent a1) {
-							//Stanton use these two strings and send them to server to request login.
-							user = username.getText();
-							pass = password.getText();
-							pClass = Player.PLAYER_CLASS.EXISTING;
-							InitializeConnection();
-							connectLocal();
+						//Stanton use these two strings and send them to server to request login.
+						user = username.getText();
+						pass = password.getText();
+						pClass = Player.PLAYER_CLASS.EXISTING;
+						InitializeConnection();
+						connectLocal();
+						loginBox.setVisible(false);
 					}
 				});
 				loginPanel.add(username);
@@ -298,7 +301,7 @@ public class GameClient extends Canvas implements Runnable{
 				loginBox.setVisible(true);
 			}
 		});
-		
+
 		panel = new JPanel(){
 			@Override
 			protected void paintComponent(Graphics g) {
@@ -307,7 +310,7 @@ public class GameClient extends Canvas implements Runnable{
 					g.drawImage(loginScreenImg, 0, 0, this);
 			}
 		};
-		
+
 		/*
 		 * I want the buttons at coordinates 2,2 and 2,3 in the GridLayout to try and put them in the right place on the 
 		 * screen. To fill the gaps I will put empty JLabel objects.
@@ -320,7 +323,7 @@ public class GameClient extends Canvas implements Runnable{
 		panel.add(new JLabel());
 		panel.add(new JLabel());
 		panel.add(new JLabel());
-		
+
 		panel.add(new JLabel());
 		panel.add(newCharButton);
 		panel.add(new JLabel());
@@ -332,13 +335,13 @@ public class GameClient extends Canvas implements Runnable{
 		panel.add(new JLabel());
 		panel.add(new JLabel());
 		panel.add(new JLabel());
-		
+
 		panel.setPreferredSize(new Dimension(1344, 768));
 		panel.setVisible(true);
 		loginFrame.getContentPane().add(panel);
 		loginFrame.setVisible(true);
 	}
-	
+
 	private void characterSelectScreen(){
 		JButton warriorButton = new JButton();
 		JButton archerButton = new JButton();
@@ -358,12 +361,13 @@ public class GameClient extends Canvas implements Runnable{
 				loginButton.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent a1) {
-							//Stanton use these two strings and send them to server to request login.
-							user = username.getText();
-							pass = password.getText();
-							pClass = Player.PLAYER_CLASS.WARRIOR;
-							InitializeConnection();
-							connectLocal();
+						//Stanton use these two strings and send them to server to request login.
+						user = username.getText();
+						pass = password.getText();
+						pClass = Player.PLAYER_CLASS.WARRIOR;
+						InitializeConnection();
+						connectLocal();
+						loginBox.setVisible(false);
 					}
 				});
 				loginPanel.add(username);
@@ -376,7 +380,7 @@ public class GameClient extends Canvas implements Runnable{
 				loginBox.setVisible(true);
 			}
 		});
-		
+
 		archerButton.setIcon(new ImageIcon(this.archerButtonImg));
 		archerButton.setBorder(BorderFactory.createEmptyBorder());
 		archerButton.setContentAreaFilled(false);
@@ -391,12 +395,13 @@ public class GameClient extends Canvas implements Runnable{
 				loginButton.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent a1) {
-							//Stanton use these two strings and send them to server to request login.
-							user = username.getText();
-							pass = password.getText();
-							pClass = Player.PLAYER_CLASS.ARCHER;
-							InitializeConnection();
-							connectLocal();
+						//Stanton use these two strings and send them to server to request login.
+						user = username.getText();
+						pass = password.getText();
+						pClass = Player.PLAYER_CLASS.ARCHER;
+						InitializeConnection();
+						connectLocal();
+						loginBox.setVisible(false);
 					}
 				});
 				loginPanel.add(username);
@@ -409,7 +414,7 @@ public class GameClient extends Canvas implements Runnable{
 				loginBox.setVisible(true);
 			}
 		});
-		
+
 		mageButton.setIcon(new ImageIcon(this.mageButtonImg));
 		mageButton.setBorder(BorderFactory.createEmptyBorder());
 		mageButton.setContentAreaFilled(false);
@@ -424,12 +429,13 @@ public class GameClient extends Canvas implements Runnable{
 				loginButton.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent a1) {
-							//Stanton use these two strings and send them to server to request login.
-							user = username.getText();
-							pass = password.getText();
-							pClass = Player.PLAYER_CLASS.MAGE;
-							InitializeConnection();
-							connectLocal();
+						//Stanton use these two strings and send them to server to request login.
+						user = username.getText();
+						pass = password.getText();
+						pClass = Player.PLAYER_CLASS.MAGE;
+						InitializeConnection();
+						connectLocal();
+						loginBox.setVisible(false);
 					}
 				});
 				loginPanel.add(username);
@@ -442,9 +448,9 @@ public class GameClient extends Canvas implements Runnable{
 				loginBox.setVisible(true);
 			}
 		});
-		
+
 		panel = new JPanel();
-		
+
 		panel.setLayout(new GridLayout(1, 3));
 		panel.add(warriorButton);
 		panel.add(archerButton);
@@ -455,7 +461,7 @@ public class GameClient extends Canvas implements Runnable{
 		loginFrame.setVisible(true);
 	}
 
-	
+
 	private void initFrames(){
 		screen = new Screen(WIDTH, HEIGHT);
 		loginFrame = new JFrame(TITLE);
@@ -476,19 +482,19 @@ public class GameClient extends Canvas implements Runnable{
 		gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		gameFrame.setLocationRelativeTo(null);
 	}
-	
+
 	public void initialiseMonsters(){
 		for(int i = 0; i < monsterCoords.length; i++){
 			//for(int j = 0; j < monsterCoords[0].length; j++){
-				Monster m = new ChestMonster((monsterCoords[i][0])*64, (monsterCoords[i][1])*64, Sprite.knightMob, 15, 100, false, true);
-				m.initialise(level);
-				level.addEntity(m);
+			Monster m = new ChestMonster((monsterCoords[i][0])*64, (monsterCoords[i][1])*64, Sprite.knightMob, 15, 100, false, true);
+			m.initialise(level);
+			level.addEntity(m);
 			//}
 		}
 	}
-	
+
 	private void initGame(Player.PLAYER_CLASS pClass){
-		
+
 		key = new Keyboard();/*Initialise KeyBoard object*/
 		mouse = new Mouse();
 		//level = new RandomLevel(128, 128);
@@ -497,11 +503,11 @@ public class GameClient extends Canvas implements Runnable{
 		penisMob = new ChestMonster(116*64, 116*64, Sprite.penisMob, 15, 100, false, true);
 		chestMob = new ChestMonster(116*64, 120*64, Sprite.chestMob, 0, 1000, false, false);
 		ghostMob = new GhostMonster(116*64, 124*64, Sprite.ghostMob, 0, 50, true, false);
-//		Monster guardMonster1 = new ChestMonster(128*64, 91*64, Sprite.penisMob, 15, 100, false, true);
-//		Monster guardMonster2 = new ChestMonster(122*64, 91*64, Sprite.penisMob, 15, 100, false, true);
-		
+		//		Monster guardMonster1 = new ChestMonster(128*64, 91*64, Sprite.penisMob, 15, 100, false, true);
+		//		Monster guardMonster2 = new ChestMonster(122*64, 91*64, Sprite.penisMob, 15, 100, false, true);
+
 		player = new Player(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key, pClass);
-		
+
 		player.getItems().add(new Item("SWORD_WOOD"));
 		player.getItems().add(new Item("AXE_CRYSTAL"));
 		player.getItems().add(new Item("BOW_METAL"));
@@ -512,15 +518,15 @@ public class GameClient extends Canvas implements Runnable{
 		player.getItems().add(new Item("AXE_WOOD"));
 		player.getItems().add(new Item("SWORD_CRYSTAL"));
 		player.initialise(level);
-		
+
 		initialiseMonsters();
-	
+
 		penisMob.initialise(level);
 		chestMob.initialise(level);
 		ghostMob.initialise(level);
 		//guardMonster1.initialise(level);
 		//guardMonster2.initialise(level);
-		
+
 		//level.addEntity(guardMonster1);
 		//level.addEntity(guardMonster2);
 		level.addEntity(penisMob);
@@ -534,13 +540,61 @@ public class GameClient extends Canvas implements Runnable{
 		gameFrame.setVisible(true);
 		this.start();
 	}
-	
+
+	private void initGame(int x, int y, Player.PLAYER_CLASS pClass, int exp, int lvl){
+
+		key = new Keyboard();/*Initialise KeyBoard object*/
+		mouse = new Mouse();
+		//level = new RandomLevel(128, 128);
+		level = new SpawnLevel("/textures/map/MAP_3.PNG");
+		//level.generateLevel();
+		penisMob = new ChestMonster(116*64, 116*64, Sprite.penisMob, 15, 100, false, true);
+		chestMob = new ChestMonster(116*64, 120*64, Sprite.chestMob, 0, 1000, false, false);
+		ghostMob = new GhostMonster(116*64, 124*64, Sprite.ghostMob, 0, 50, true, false);
+		//		Monster guardMonster1 = new ChestMonster(128*64, 91*64, Sprite.penisMob, 15, 100, false, true);
+		//		Monster guardMonster2 = new ChestMonster(122*64, 91*64, Sprite.penisMob, 15, 100, false, true);
+
+		player = new Player(x, y, exp, lvl, key, pClass);
+
+		player.getItems().add(new Item("SWORD_WOOD"));
+		player.getItems().add(new Item("AXE_CRYSTAL"));
+		player.getItems().add(new Item("BOW_METAL"));
+		player.getItems().add(new Item("BOW_CRYSTAL"));
+		player.getItems().add(new Item("STAFF_CRYSTAL"));
+		player.getItems().add(new Item("STAFF_CRYSTAL"));
+		player.getItems().add(new Item("AXE_METAL"));
+		player.getItems().add(new Item("AXE_WOOD"));
+		player.getItems().add(new Item("SWORD_CRYSTAL"));
+		player.initialise(level);
+
+		initialiseMonsters();
+
+		penisMob.initialise(level);
+		chestMob.initialise(level);
+		ghostMob.initialise(level);
+		//guardMonster1.initialise(level);
+		//guardMonster2.initialise(level);
+
+		//level.addEntity(guardMonster1);
+		//level.addEntity(guardMonster2);
+		level.addEntity(penisMob);
+		level.addEntity(chestMob);
+		level.addEntity(ghostMob);
+		level.addEntity(player);
+		level.addPlayer(player);
+		addKeyListener(key);
+		addMouseListener(mouse);
+		addMouseMotionListener(mouse);
+		gameFrame.setVisible(true);
+		this.start();
+	}
+
 	public synchronized void start(){
 		running = true;
 		thread = new Thread(this, "Display");
 		thread.start();
 	}
-	
+
 	public synchronized void stop(){
 		running = false;
 		try {
@@ -549,7 +603,7 @@ public class GameClient extends Canvas implements Runnable{
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public void run() {
 		long lastTime = System.nanoTime();
@@ -558,9 +612,9 @@ public class GameClient extends Canvas implements Runnable{
 		double delta = 0;
 		frames = 0;
 		int updates = 0;
-		
+
 		requestFocus();
-		
+
 		while(running){
 			long now = System.nanoTime();
 			delta += (now - lastTime) / ns;
@@ -581,7 +635,7 @@ public class GameClient extends Canvas implements Runnable{
 		}
 		stop();
 	}
-	
+
 	/**
 	 * Called 60 times per second from the run() method.
 	 * Handles key presses for map movement
@@ -597,7 +651,7 @@ public class GameClient extends Canvas implements Runnable{
 			sendMessage(send); //what we want to send
 			counter = 0;
 		}
-		
+
 	}
 
 	/**
@@ -609,7 +663,7 @@ public class GameClient extends Canvas implements Runnable{
 			createBufferStrategy(3);/*For triple buffering*/
 			return;
 		}
-		
+
 		screen.clear();/*Clear screen before rendering again*/
 		level.render(player.x, player.y, screen);
 		for(Entity e : level.getEntities()){
@@ -621,16 +675,16 @@ public class GameClient extends Canvas implements Runnable{
 		player.render(player.x, player.y, screen);
 		//screen.render(xOffset, yOffset);/*Now render screen*/
 		screen.renderInventory(player);
-		
+
 		for(int i = 0; i < pixels.length; i++){/*Copy over pixels from screen object after rendering*/
 			pixels[i] = screen.pixels[i];
 		}
-		
+
 		Graphics g = buffStrat.getDrawGraphics();
-		
+
 		g.setColor(Color.DARK_GRAY);
 		g.drawImage(image, 0, 0, getWidth(), getHeight(), null);/*Draw the BufferedImage image on the screen*/
-		
+
 		g.setColor(Color.WHITE);
 		g.setFont(new Font("Verdana", 0, 20));
 		g.drawString("x:" + player.xTile + ", y:" + player.yTile, 20, 20);
@@ -644,7 +698,7 @@ public class GameClient extends Canvas implements Runnable{
 		g.dispose();/*Dont need these graphics any more. Throw away or game will crash from memory overload*/
 		buffStrat.show();
 	}
-	
+
 	public static void main(String[] args){
 		gameClients.add(new GameClient());
 	}
@@ -678,5 +732,5 @@ public class GameClient extends Canvas implements Runnable{
 			clientToRemove.running = false;
 		}
 	}
-	
+
 }

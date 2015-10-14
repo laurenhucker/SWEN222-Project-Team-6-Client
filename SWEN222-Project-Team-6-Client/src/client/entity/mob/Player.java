@@ -32,12 +32,16 @@ public class Player extends Mob {
 	private PLAYER_CLASS playerClass;
 	private int fireRate = 15;
 	
+	private int exp, lvl;
+	
 	private List<Item> inventory = new ArrayList<Item>();
 	private int percentHP = 100;
 	
 	public Player(int x, int y, Keyboard input, PLAYER_CLASS pClass){
 		this.x = x;
 		this.y = y;
+		this.exp = 0;
+		this.lvl = 1;
 		this.xTile = ((this.x / GameClient.TILE_WIDTH) + ((GameClient.WIDTH / GameClient.TILE_WIDTH) / 2)) - GameClient.DEFAULT_SPAWN.getX();
 		this.yTile = ((this.y / GameClient.TILE_WIDTH) + ((GameClient.HEIGHT / GameClient.TILE_WIDTH) / 2)) - GameClient.DEFAULT_SPAWN.getY();
 		this.input = input;
@@ -54,7 +58,29 @@ public class Player extends Mob {
 			this.sprites = Sprite.player3;
 			break;
 		}
-		
+	}
+	
+	public Player(int x, int y, int exp, int lvl, Keyboard input, PLAYER_CLASS pClass){
+		this.x = x;
+		this.y = y;
+		this.exp = exp;
+		this.lvl = lvl;
+		this.xTile = ((this.x / GameClient.TILE_WIDTH) + ((GameClient.WIDTH / GameClient.TILE_WIDTH) / 2)) - GameClient.DEFAULT_SPAWN.getX();
+		this.yTile = ((this.y / GameClient.TILE_WIDTH) + ((GameClient.HEIGHT / GameClient.TILE_WIDTH) / 2)) - GameClient.DEFAULT_SPAWN.getY();
+		this.input = input;
+		this.health = 69;
+		this.playerClass = pClass;
+		switch(pClass){
+		case WARRIOR:
+			this.sprites = Sprite.player1;
+			break;
+		case ARCHER:
+			this.sprites = Sprite.player2;
+			break;
+		case MAGE:
+			this.sprites = Sprite.player3;
+			break;
+		}
 	}
 	
 	public Player(Keyboard input){
