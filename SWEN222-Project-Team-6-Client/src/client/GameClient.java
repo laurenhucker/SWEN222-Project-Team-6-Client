@@ -54,7 +54,7 @@ enum STATE {
 
 public class GameClient extends Canvas implements Runnable{
 	
-	private boolean verified=false;
+	
 	private String[] words;
 	
 	public Client client;
@@ -524,21 +524,6 @@ public class GameClient extends Canvas implements Runnable{
 		gameClients.add(new GameClient());
 	}
 
-	private String getUser() {
-		return user;
-	}
-
-	private void setUser(String user) {
-		this.user = user;
-	}
-
-	private String getPass() {
-		return pass;
-	}
-
-	private void setPass(String pass) {
-		this.pass = pass;
-	}
 
 	private void otherKeysCheck(){
 		if(key.e){
