@@ -26,6 +26,7 @@ import javax.swing.JTextField;
 
 import client.entity.Entity;
 import client.entity.Item;
+import client.entity.Projectile;
 import client.entity.mob.Monster;
 import client.entity.mob.Player;
 import client.entity.mob.monsters.ChestMonster;
@@ -647,9 +648,13 @@ public class GameClient extends Canvas implements Runnable{
 		otherKeysCheck();
 		counter++;
 		if(counter == 5){
-			String send = "player" + "," + player.x + "," + player.y + "," + player.getPlayerClass();	
+			String send = "player" + "," + player.x + "," + player.y + "," + player.getPlayerClass(); 
 			sendMessage(send); //what we want to send
-			counter = 0;
+			String projectile = "projectile" + "," ;
+			for (Projectile p : level.getProjectiles()){
+				projectile =projectile + p.getX()+ "," + p.getY() + ",";    
+			}
+			sendMessage(projectile);
 		}
 
 	}
