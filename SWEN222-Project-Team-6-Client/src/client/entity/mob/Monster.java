@@ -13,6 +13,7 @@ public class Monster extends Mob {
 	protected int fireRate = 0;
 	protected boolean moves;
 	protected boolean shoots;
+	protected int speed = 3;
 	
 	public Monster(int x, int y, Sprite sprite){
 		this.sprite = sprite;
@@ -24,7 +25,28 @@ public class Monster extends Mob {
 	
 	public void update(){
 		if(fireRate > 0) fireRate--;
+		move();
 		updateShooting();
+	}
+	
+	public void move(){
+		if(!moves) return;
+		Player p = level.getClientPlayer();
+		double px = p.getX();
+		double py = p.getY();
+		double dir = Math.atan2(py - y + 16, px - x + 16);
+		double nx = speed * Math.cos(dir);
+		double ny = speed * Math.sin(dir);
+		x += nx;
+		y += ny;
+		if(isPlayerInRange(p)){
+			p.damage(1);
+		}
+		if(p.getHealth() <= 0){
+			p.setPosition(GameClient.SPAWN_LOCATION);
+			p.setHealth(100);
+		}
+		
 	}
 	
 	private void updateShooting() {
@@ -37,6 +59,14 @@ public class Monster extends Mob {
 			shoot(x, y, dir);
 			fireRate = ArrowProjectile.getFireRate()  + 100;
 		}
+	}
+	
+	public boolean isPlayerInRange(Player p){
+		if((this.x >= p.getX() - 16 && this.x <= p.getX() + 16) 
+				&& (this.y >= p.getY() - 16 && this.y <= p.getY() + 16)){
+			return true;
+		}
+		return false;
 	}
 
 	public void render(Screen screen){
