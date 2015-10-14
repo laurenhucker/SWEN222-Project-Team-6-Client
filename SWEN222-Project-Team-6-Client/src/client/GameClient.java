@@ -23,8 +23,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
-
 import client.entity.Entity;
 import client.entity.Item;
 import client.entity.mob.Monster;
@@ -53,7 +51,7 @@ enum STATE {
 
 public class GameClient extends Canvas implements Runnable{
 	
-	
+	private boolean verified=false;
 	private String[] words;
 	
 	public Client client;
@@ -383,6 +381,8 @@ public class GameClient extends Canvas implements Runnable{
 		penisMob = new ChestMonster(116*64, 116*64, Sprite.penisMob, 15, 100, false, true);
 		chestMob = new ChestMonster(116*64, 120*64, Sprite.chestMob, 0, 1000, false, false);
 		ghostMob = new GhostMonster(116*64, 124*64, Sprite.ghostMob, 0, 50, true, false);
+		Monster guardMonster1 = new ChestMonster(128*64, 91*64, Sprite.penisMob, 15, 100, false, true);
+		Monster guardMonster2 = new ChestMonster(122*64, 91*64, Sprite.penisMob, 15, 100, false, true);
 		
 		player = new Player(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key, pClass);
 		
@@ -396,9 +396,15 @@ public class GameClient extends Canvas implements Runnable{
 		player.getItems().add(new Item("AXE_WOOD"));
 		player.getItems().add(new Item("SWORD_CRYSTAL"));
 		player.initialise(level);
+		
 		penisMob.initialise(level);
 		chestMob.initialise(level);
 		ghostMob.initialise(level);
+		guardMonster1.initialise(level);
+		guardMonster2.initialise(level);
+		
+		level.addEntity(guardMonster1);
+		level.addEntity(guardMonster2);
 		level.addEntity(penisMob);
 		level.addEntity(chestMob);
 		level.addEntity(ghostMob);
@@ -521,6 +527,21 @@ public class GameClient extends Canvas implements Runnable{
 		gameClients.add(new GameClient());
 	}
 
+	private String getUser() {
+		return user;
+	}
+
+	private void setUser(String user) {
+		this.user = user;
+	}
+
+	private String getPass() {
+		return pass;
+	}
+
+	private void setPass(String pass) {
+		this.pass = pass;
+	}
 
 	private void otherKeysCheck(){
 		if(key.e){
