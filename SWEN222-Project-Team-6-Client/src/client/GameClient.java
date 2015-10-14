@@ -24,8 +24,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import client.Packet.Packet0LoginRequest;
-import client.Packet.Packet1LoginAnswer;
+
 import client.entity.Entity;
 import client.entity.Item;
 import client.entity.mob.Monster;
@@ -158,8 +157,6 @@ public class GameClient extends Canvas implements Runnable{
 	
 	public void registerPackets(){
 		Kryo kryo = client.getKryo();
-		kryo.register(Packet0LoginRequest.class);
-		kryo.register(Packet1LoginAnswer.class);
 		
 	}
 	
