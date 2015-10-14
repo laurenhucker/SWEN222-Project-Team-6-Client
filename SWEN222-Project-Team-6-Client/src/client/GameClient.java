@@ -255,7 +255,7 @@ public class GameClient extends Canvas implements Runnable{
 							user = username.getText();
 							pass = password.getText();
 							InitializeConnection();
-							connect("dylanteam6.no-ip.biz");							
+							connectLocal();							
 					}
 				});
 				loginPanel.add(username);
