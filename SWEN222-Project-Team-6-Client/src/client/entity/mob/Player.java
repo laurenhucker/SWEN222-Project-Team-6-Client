@@ -15,6 +15,7 @@ import client.graphics.Screen;
 import client.graphics.Sprite;
 import client.input.Keyboard;
 import client.input.Mouse;
+import client.level.tile.TileCoordinate;
 
 
 public class Player extends Mob {
@@ -43,7 +44,6 @@ public class Player extends Mob {
 		playerClass = pClass;
 		switch(pClass){
 		case WARRIOR:
-			
 			this.sprites = Sprite.player1;
 			break;
 		case ARCHER:
@@ -64,7 +64,6 @@ public class Player extends Mob {
 	 * 1-NORTH, 2-EAST, 3-SOUTH, 4-WEST
 	 */ 
 	public void move(int deltaX, int deltaY){
-		System.out.println("dir: " + dir);
 		if(deltaX > 0) this.dir = 2;
 		else if(deltaX < 0) this.dir = 4;
 		else if(deltaY > 0) this.dir = 3;
@@ -187,6 +186,19 @@ public class Player extends Mob {
 	
 	public void setFireRate(int r){
 		this.fireRate = r;
+	}
+	
+	public void setHealth(int health){
+		this.health = health;
+	}
+	
+	public void setPosition(TileCoordinate t){
+		this.x = t.getX();
+		this.y = t.getY();
+	}
+	
+	public int getMaxHealth(){
+		return this.MAX_HEALTH;
 	}
 	
 }

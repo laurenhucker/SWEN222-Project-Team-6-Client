@@ -15,7 +15,7 @@ public abstract class Mob extends Entity{
 	protected Sprite sprite;
 	protected int dir = 1;//direction - 1:NORTH 2:EAST 3:SOUTH 4:WEST
 	protected boolean moving = false;
-	protected final int MAX_HEALTH = 100;
+	protected int MAX_HEALTH = 100;
 	protected int health;
 	
 	
@@ -55,7 +55,7 @@ public abstract class Mob extends Entity{
 	public String getProjectileType(Mob m){
 		if(m instanceof Player){
 			Player p = (Player)m;
-			System.out.println(p.getPlayerClass());
+			//System.out.println(p.getPlayerClass());
 			if(p.getPlayerClass().equals(Player.PLAYER_CLASS.ARCHER)){
 				return "arrow";
 			} else if(p.getPlayerClass().equals(Player.PLAYER_CLASS.MAGE)){
@@ -66,7 +66,6 @@ public abstract class Mob extends Entity{
 	}
 	
 	public void move(int xa, int ya){
-		System.out.println("Move");
 	}
 	
 	public int getDir(){return this.dir;}
@@ -80,8 +79,6 @@ public abstract class Mob extends Entity{
 		if(health <= 0) health = 0;
 	}
 	
-
-	
 	public int getHealth(){
 		return health;
 	}
@@ -93,6 +90,8 @@ public abstract class Mob extends Entity{
 		return y;
 	}
 	
-	
+	public int getMaxHealth(){
+		return this.MAX_HEALTH;
+	}
 	
 }

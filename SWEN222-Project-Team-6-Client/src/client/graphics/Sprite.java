@@ -19,6 +19,7 @@ public class Sprite {
 			sand = new Sprite(4, 0, SpriteSheet.TILES),
 			wood = new Sprite(5, 0, SpriteSheet.TILES),
 			wood_wall = new Sprite(6, 0, SpriteSheet.TILES),
+			tree = new Sprite(7, 0, SpriteSheet.TILES),
 			south_wall_face = new Sprite(0, 1, SpriteSheet.TILES),
 			north_wall_face = new Sprite(1, 1, SpriteSheet.TILES),
 			east_wall_face = new Sprite(2, 1, SpriteSheet.TILES),
@@ -45,7 +46,8 @@ public class Sprite {
 			bullet = new Sprite(2, 0, SpriteSheet.PROJECTILES);
 
 	public static Sprite penisMob = new Sprite(0, 15, SpriteSheet.ENTITIES),
-			chestMob = new Sprite(1, 15, SpriteSheet.ENTITIES);
+			chestMob = new Sprite(1, 15, SpriteSheet.ENTITIES),
+			ghostMob = new Sprite(2, 15, SpriteSheet.ENTITIES);
 
 	public static Sprite[] player1 = {
 		new Sprite(0, 0, SpriteSheet.ENTITIES),//NORTH LEFT FOOT

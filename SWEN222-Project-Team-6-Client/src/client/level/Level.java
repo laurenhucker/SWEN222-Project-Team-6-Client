@@ -144,6 +144,7 @@ public class Level {
 		if(tiles[x + y*width] == 0xffffff00) return Tile.SAND;
 		if(tiles[x + y*width] == 0xff551500) return Tile.WOOD;
 		if(tiles[x + y*width] == 0xff000000) return Tile.WOOD_WALL;
+		if(tiles[x + y*width] == 0xff454c35) return Tile.TREE;
 		if(tiles[x + y*width] == 0xff322500) return Tile.NORTH_WALL;
 		if(tiles[x + y*width] == 0xff322501) return Tile.SOUTH_WALL;
 		if(tiles[x + y*width] == 0xff322502) return Tile.WEST_WALL;

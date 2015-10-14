@@ -6,7 +6,7 @@ import java.awt.event.KeyListener;
 public class Keyboard implements KeyListener {
 
 	private boolean[] keys = new boolean[65536];/*maximum num in char[]*/
-	public boolean up, down, left, right;
+	public boolean up, down, left, right, e, esc;
 	
 	/**
 	 * Called inside update() in Game class.
@@ -19,6 +19,8 @@ public class Keyboard implements KeyListener {
 		down = keys[KeyEvent.VK_DOWN] || keys[KeyEvent.VK_S];
 		left = keys[KeyEvent.VK_LEFT] || keys[KeyEvent.VK_A];
 		right = keys[KeyEvent.VK_RIGHT] || keys[KeyEvent.VK_D];
+		e = keys[KeyEvent.VK_E];
+		esc = keys[KeyEvent.VK_ESCAPE];
 	}
 	
 	/**
@@ -40,6 +42,10 @@ public class Keyboard implements KeyListener {
 	@Override
 	public void keyTyped(KeyEvent e) {
 		
+	}
+	
+	public void forceRelease(int k){
+		keys[k] = false;
 	}
 
 }
