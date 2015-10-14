@@ -52,15 +52,16 @@ enum STATE {
 
 public class GameClient extends Canvas implements Runnable{
 	
-	private boolean verified=false;
+	private boolean verified = false, newUser = false;;
 	private String[] words;
 	
 	public Client client;
 	public int id;
 	private String user;
 	private String pass;
+	private Player.PLAYER_CLASS pClass;
 	
-	public static final String TITLE = "Dylan is lame";
+	public static final String TITLE = "Dylan is a sick cunt";
 	public static final int SCALE = 1,
 			NUM_TILES = 21,
 			TILE_WIDTH = 64,
@@ -136,30 +137,46 @@ public class GameClient extends Canvas implements Runnable{
 	}
 
 	protected void handleConnect(Connection connection) {
-		String send=("login" +"," + this.user+ ","+this.pass);
-		System.out.println(user +"    " + pass);
-		sendMessageUDP(send);	
+		if(newUser){
+			String send = (String.format("newuser,%s,%s,%s", this.user, this.pass, this.pClass));
+			System.out.println(user + "    " + pass);
+			sendMessageUDP(send);
+		} else {
+			String send = (String.format("login,%s,%s,%s", this.user, this.pass, this.pClass));
+			System.out.println(user + "    " + pass);
+			sendMessageUDP(send);
+		}	
+		
 	}
 
 	public void handleMessage(int playerId, Object message) {
 		if(message instanceof String){
-			words=((String) message).split(",");
+			words = ((String) message).split(",");
 			
-			if(words[0].equalsIgnoreCase("login")){
+			if(words[0].equalsIgnoreCase("login")){//SHOULD RETURN "login,true,class"	
 				String ans = words[1];
-				System.out.println("[CLIENT] ans is" + ans);			
+				System.out.println("[CLIENT] ans is" + ans);	
 				if(ans.equalsIgnoreCase("true")){					
 					System.out.println("accepted");	
-					verify(true);
-				}else{
-					verify(false);
+					verify(true, words[2]);
+				} else {
+					verify(false, words[2]);
 				}
-			}else if (words[0].equalsIgnoreCase("player")){
+			} else if (words[0].equalsIgnoreCase("player")){
 				System.out.println("[CLIENT] is type player");
 				int x = Integer.parseInt(words[1]);
 				int y = Integer.parseInt(words[2]);
 				String playerClass = words[3];
-				
+				int clientHeight = 768, clientWidth = 1344;
+				//TODO: Handle rendering here
+			} else if(words[0].equalsIgnoreCase("newuser")){//SHOULD RETURN "newuser,true"	
+				String ans = words[1];
+				System.out.println("[CLIENT] - New user successfully created: " + ans);
+				if(ans.equalsIgnoreCase("true")){
+					verify(true, this.pClass.toString());
+				} else {
+					verify(false, this.pClass.toString());
+				}
 			}
 		}
 	}
@@ -194,17 +211,27 @@ public class GameClient extends Canvas implements Runnable{
 		}
 	}
 	
-	public void verify(boolean verified){
-				
+	public void verify(boolean verified, String pClass){
+		Player.PLAYER_CLASS c = null;
+		switch(pClass){
+		case "WARRIOR":
+			c = Player.PLAYER_CLASS.WARRIOR;
+			break;
+		case "ARCHER":
+			c = Player.PLAYER_CLASS.ARCHER;
+			break;
+		case "MAGE":
+			c = Player.PLAYER_CLASS.MAGE;
+		}
 		if (verified == false){
 			client.stop();
 			client.close();		
 			System.out.println("NO");
-		}else{
+		} else {
 			//Only reaches here after verification
 			state = STATE.GAME;
 			loginFrame.setVisible(false);
-			initGame(Player.PLAYER_CLASS.WARRIOR);//Change this to the player's saved class
+			initGame(c);//Change this to the player's saved class
 		}
 	}
 
@@ -256,8 +283,9 @@ public class GameClient extends Canvas implements Runnable{
 							//Stanton use these two strings and send them to server to request login.
 							user = username.getText();
 							pass = password.getText();
+							pClass = Player.PLAYER_CLASS.EXISTING;
 							InitializeConnection();
-							connect("122.60.108.70");							
+							connectLocal();
 					}
 				});
 				loginPanel.add(username);
@@ -315,15 +343,37 @@ public class GameClient extends Canvas implements Runnable{
 		JButton warriorButton = new JButton();
 		JButton archerButton = new JButton();
 		JButton mageButton = new JButton();
-		
+		newUser = true;
 		warriorButton.setIcon(new ImageIcon(this.warriorButtonImg));
 		warriorButton.setBorder(BorderFactory.createEmptyBorder());
 		warriorButton.setContentAreaFilled(false);
 		warriorButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent a) {
-				loginFrame.setVisible(false);
-				initGame(Player.PLAYER_CLASS.WARRIOR);
+				JFrame loginBox = new JFrame();
+				JPanel loginPanel = new JPanel(new GridLayout(1, 3));
+				JTextField username = new JTextField("Username");
+				JTextField password = new JTextField("Password");
+				JButton loginButton = new JButton("Log in!");
+				loginButton.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent a1) {
+							//Stanton use these two strings and send them to server to request login.
+							user = username.getText();
+							pass = password.getText();
+							pClass = Player.PLAYER_CLASS.WARRIOR;
+							InitializeConnection();
+							connectLocal();
+					}
+				});
+				loginPanel.add(username);
+				loginPanel.add(password);
+				loginPanel.add(loginButton);
+				loginBox.add(loginPanel);
+				loginBox.setLocationRelativeTo(null);
+				loginBox.pack();
+				loginBox.setResizable(false);
+				loginBox.setVisible(true);
 			}
 		});
 		
@@ -333,8 +383,30 @@ public class GameClient extends Canvas implements Runnable{
 		archerButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent a) {
-				loginFrame.setVisible(false);
-				initGame(Player.PLAYER_CLASS.ARCHER);
+				JFrame loginBox = new JFrame();
+				JPanel loginPanel = new JPanel(new GridLayout(1, 3));
+				JTextField username = new JTextField("Username");
+				JTextField password = new JTextField("Password");
+				JButton loginButton = new JButton("Log in!");
+				loginButton.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent a1) {
+							//Stanton use these two strings and send them to server to request login.
+							user = username.getText();
+							pass = password.getText();
+							pClass = Player.PLAYER_CLASS.ARCHER;
+							InitializeConnection();
+							connectLocal();
+					}
+				});
+				loginPanel.add(username);
+				loginPanel.add(password);
+				loginPanel.add(loginButton);
+				loginBox.add(loginPanel);
+				loginBox.setLocationRelativeTo(null);
+				loginBox.pack();
+				loginBox.setResizable(false);
+				loginBox.setVisible(true);
 			}
 		});
 		
@@ -344,8 +416,30 @@ public class GameClient extends Canvas implements Runnable{
 		mageButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent a) {
-				loginFrame.setVisible(false);
-				initGame(Player.PLAYER_CLASS.MAGE);
+				JFrame loginBox = new JFrame();
+				JPanel loginPanel = new JPanel(new GridLayout(1, 3));
+				JTextField username = new JTextField("Username");
+				JTextField password = new JTextField("Password");
+				JButton loginButton = new JButton("Log in!");
+				loginButton.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent a1) {
+							//Stanton use these two strings and send them to server to request login.
+							user = username.getText();
+							pass = password.getText();
+							pClass = Player.PLAYER_CLASS.MAGE;
+							InitializeConnection();
+							connectLocal();
+					}
+				});
+				loginPanel.add(username);
+				loginPanel.add(password);
+				loginPanel.add(loginButton);
+				loginBox.add(loginPanel);
+				loginBox.setLocationRelativeTo(null);
+				loginBox.pack();
+				loginBox.setResizable(false);
+				loginBox.setVisible(true);
 			}
 		});
 		
@@ -386,7 +480,7 @@ public class GameClient extends Canvas implements Runnable{
 	public void initialiseMonsters(){
 		for(int i = 0; i < monsterCoords.length; i++){
 			//for(int j = 0; j < monsterCoords[0].length; j++){
-				Monster m = new ChestMonster((monsterCoords[i][0])*64, (monsterCoords[i][1])*64, Sprite.penisMob, 15, 100, false, true);
+				Monster m = new ChestMonster((monsterCoords[i][0])*64, (monsterCoords[i][1])*64, Sprite.knightMob, 15, 100, false, true);
 				m.initialise(level);
 				level.addEntity(m);
 			//}
@@ -405,9 +499,6 @@ public class GameClient extends Canvas implements Runnable{
 		ghostMob = new GhostMonster(116*64, 124*64, Sprite.ghostMob, 0, 50, true, false);
 //		Monster guardMonster1 = new ChestMonster(128*64, 91*64, Sprite.penisMob, 15, 100, false, true);
 //		Monster guardMonster2 = new ChestMonster(122*64, 91*64, Sprite.penisMob, 15, 100, false, true);
-
-		
-		
 		
 		player = new Player(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key, pClass);
 		

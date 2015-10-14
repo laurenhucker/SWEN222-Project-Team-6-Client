@@ -22,7 +22,8 @@ public class Player extends Mob {
 	public static enum PLAYER_CLASS {
 		WARRIOR,
 		ARCHER,
-		MAGE
+		MAGE,
+		EXISTING
 	}
 	
 	private Keyboard input;
