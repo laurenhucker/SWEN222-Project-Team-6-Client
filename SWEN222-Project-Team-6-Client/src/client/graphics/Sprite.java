@@ -42,12 +42,14 @@ public class Sprite {
 			bow_metal = new Sprite(3, 1, SpriteSheet.ITEMS),
 			bow_crystal = new Sprite(3, 2, SpriteSheet.ITEMS);
 
-	public static Sprite fireball = new Sprite(1, 0, SpriteSheet.PROJECTILES),
+	public static Sprite shield = new Sprite(0, 0, SpriteSheet.PROJECTILES),
+			fireball = new Sprite(1, 0, SpriteSheet.PROJECTILES),
 			bullet = new Sprite(2, 0, SpriteSheet.PROJECTILES);
 
 	public static Sprite penisMob = new Sprite(0, 15, SpriteSheet.ENTITIES),
 			chestMob = new Sprite(1, 15, SpriteSheet.ENTITIES),
-			ghostMob = new Sprite(2, 15, SpriteSheet.ENTITIES);
+			ghostMob = new Sprite(2, 15, SpriteSheet.ENTITIES),
+			knightMob = new Sprite(3, 15, SpriteSheet.ENTITIES);
 
 	public static Sprite[] player1 = {
 		new Sprite(0, 0, SpriteSheet.ENTITIES),//NORTH LEFT FOOT

@@ -543,6 +543,7 @@ public class GameClient extends Canvas implements Runnable{
 		g.setColor(Color.WHITE);
 		g.setFont(new Font("Verdana", 0, 20));
 		g.drawString("x:" + player.xTile + ", y:" + player.yTile, 20, 20);
+		g.drawString("xP:" + player.x + ", yP:" + player.y, 20, 50);
 
 		//add mouse cursor
 		g.setColor(Color.RED);
