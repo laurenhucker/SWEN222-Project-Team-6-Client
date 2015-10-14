@@ -24,8 +24,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import client.Packet.Packet0LoginRequest;
-import client.Packet.Packet1LoginAnswer;
+
 import client.entity.Entity;
 import client.entity.Item;
 import client.entity.mob.Monster;
@@ -54,7 +53,7 @@ enum STATE {
 
 public class GameClient extends Canvas implements Runnable{
 	
-	private boolean verified=false;
+	
 	private String[] words;
 	
 	public Client client;
@@ -158,8 +157,6 @@ public class GameClient extends Canvas implements Runnable{
 	
 	public void registerPackets(){
 		Kryo kryo = client.getKryo();
-		kryo.register(Packet0LoginRequest.class);
-		kryo.register(Packet1LoginAnswer.class);
 		
 	}
 	
@@ -524,21 +521,6 @@ public class GameClient extends Canvas implements Runnable{
 		gameClients.add(new GameClient());
 	}
 
-	private String getUser() {
-		return user;
-	}
-
-	private void setUser(String user) {
-		this.user = user;
-	}
-
-	private String getPass() {
-		return pass;
-	}
-
-	private void setPass(String pass) {
-		this.pass = pass;
-	}
 
 	private void otherKeysCheck(){
 		if(key.e){
