@@ -23,7 +23,6 @@ public class Player extends Mob {
 		WARRIOR,
 		ARCHER,
 		MAGE,
-		EXISTING
 	}
 	
 	private Keyboard input;
@@ -33,11 +32,13 @@ public class Player extends Mob {
 	private int fireRate = 15;
 	
 	private int exp, lvl;
+	private String name;
 	
 	private List<Item> inventory = new ArrayList<Item>();
 	private int percentHP = 100;
 	
-	public Player(int x, int y, Keyboard input, PLAYER_CLASS pClass){
+	public Player(String name, int x, int y, Keyboard input, PLAYER_CLASS pClass){
+		this.name = name;
 		this.x = x;
 		this.y = y;
 		this.exp = 0;
@@ -60,7 +61,8 @@ public class Player extends Mob {
 		}
 	}
 	
-	public Player(int x, int y, int exp, int lvl, Keyboard input, PLAYER_CLASS pClass){
+	public Player(String name, int x, int y, int exp, int lvl, Keyboard input, PLAYER_CLASS pClass){
+		this.name = name;
 		this.x = x;
 		this.y = y;
 		this.exp = exp;
@@ -226,6 +228,10 @@ public class Player extends Mob {
 	
 	public int getMaxHealth(){
 		return this.MAX_HEALTH;
+	}
+	
+	public String getName(){
+		return this.name;
 	}
 	
 }

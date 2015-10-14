@@ -24,6 +24,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import client.entity.ArrowProjectile;
 import client.entity.Entity;
 import client.entity.Item;
 import client.entity.Projectile;
@@ -86,6 +87,9 @@ public class GameClient extends Canvas implements Runnable{
 	private int frames;
 	private STATE state = STATE.LOGIN;
 	private static ArrayList<GameClient> gameClients = new ArrayList<GameClient>();
+	private ArrayList<Player> otherPlayers = new ArrayList<Player>();
+	private ArrayList<Player> otherPlayersOnScreen = new ArrayList<Player>();
+
 	public int[][] monsterCoords = {{149,37}, {149, 38}, {149, 39}, {149, 40}, {148, 29},
 			{137, 44}, {141,46}, {166,31}, {166,32}, {162,15}, {164,14}, {167,13}, {122,91}, {128, 91}, {SPAWN_LOCATION.getX()  + 2, SPAWN_LOCATION.getY() + 5}};
 
@@ -156,27 +160,56 @@ public class GameClient extends Canvas implements Runnable{
 
 			if(words[0].equalsIgnoreCase("login")){//SHOULD RETURN "login,true,class,exp,lvl,x,y"	
 				String ans = words[1];
-				System.out.println("[CLIENT] ans is" + ans);	
+				System.out.println("[CLIENT] ans is " + ans);	
 				if(ans.equalsIgnoreCase("true")){					
 					System.out.println("accepted");	
-					loginPass(words[2], words[3], words[4], words[5], words[6]);
+					loginPass(words[2], words[3], words[4], words[5], words[6], words[7]);
 				} else {
 					loginFail();
 				}
-			} else if (words[0].equalsIgnoreCase("player")){
-				System.out.println("[CLIENT] is type player");
-				int x = Integer.parseInt(words[1]);
-				int y = Integer.parseInt(words[2]);
-				String playerClass = words[3];
-				int clientHeight = 768, clientWidth = 1344;
-				//TODO: Handle rendering here
+			} else if (words[0].equalsIgnoreCase("player")){//SHOULD RETURN "player,name,x,y,class,"
+				if(words.length == 5){
+					String name = words[1];
+					int x = Integer.parseInt(words[2]);
+					int y = Integer.parseInt(words[3]);
+					Player.PLAYER_CLASS c = getClassByName(words[4]);
+					otherPlayers.add(new Player(name, x, y, null, c));
+				} else {
+					int x = Integer.parseInt(words[1]);
+					int y = Integer.parseInt(words[2]);
+					int clientHeight = 768, clientWidth = 1344;
+
+					for(Player p : otherPlayers){
+						if(!p.getName().equalsIgnoreCase(player.getName())){
+							/*if((p.x > player.x - (clientWidth/2)) && (p.x < player.x + (clientWidth/2) && (p.y > player.y - (clientHeight/2) && (p.y < player.y + (clientHeight/2))))){
+
+							} else {
+								otherPlayersOnScreen.remove(p);
+							}*/
+							if(otherPlayersOnScreen.contains(p)){
+								p.x = x;
+								p.y = y;
+							} else {
+								otherPlayersOnScreen.add(p);
+							}
+						}
+					}
+				}
 			} else if(words[0].equalsIgnoreCase("newuser")){//SHOULD RETURN "newuser,true"	
 				String ans = words[1];
+				String name = words[2];
 				System.out.println("[CLIENT] - New user successfully created: " + ans);
 				if(ans.equalsIgnoreCase("true")){
-					loginPass(this.pClass.toString(), 0+"", 1+"", SPAWN_LOCATION.getX()+"", SPAWN_LOCATION.getY()+"");
+					loginPass(name, this.pClass.toString(), 0+"", 1+"", SPAWN_LOCATION.getX()+"", SPAWN_LOCATION.getY()+"");
 				} else {
 					loginFail();
+				}
+			} else if (words[0].equalsIgnoreCase("projectile")){
+				System.out.println("is type projectile");      
+				for(int i=1; i< (words.length);i=i+3){
+					System.out.println(words[i] +"," + words[i+1]+"," +words[i+2]);
+					Projectile p = new ArrowProjectile(Integer.parseInt(words[i]), Integer.parseInt(words[i+1]), Double.parseDouble(words[i+2]));
+					level.addProjectile(p);     
 				}
 			}
 		}
@@ -188,13 +221,11 @@ public class GameClient extends Canvas implements Runnable{
 	}
 
 	public void sendMessage(Object message) {
-		System.out.println(client.isConnected());
 		if (client.isConnected()) {
 			client.sendTCP(message);
 		}
 	}
 	public void sendMessageUDP(Object message) {
-		System.out.println(client.isConnected());
 		if (client.isConnected()) {
 			client.sendUDP(message);
 		}
@@ -218,24 +249,11 @@ public class GameClient extends Canvas implements Runnable{
 		System.out.println("NO");
 	}
 
-	public void loginPass(String pClass, String exp, String lvl, String xPos, String yPos){
-		Player.PLAYER_CLASS c = null;
-		switch(pClass){
-		case "WARRIOR":
-			c = Player.PLAYER_CLASS.WARRIOR;
-			break;
-		case "ARCHER":
-			c = Player.PLAYER_CLASS.ARCHER;
-			break;
-		case "MAGE":
-			c = Player.PLAYER_CLASS.MAGE;
-			break;
-		default:
-			c = Player.PLAYER_CLASS.ARCHER;
-		}
+	public void loginPass(String name, String pClass, String exp, String lvl, String xPos, String yPos){
+		Player.PLAYER_CLASS c = getClassByName(pClass);
 		state = STATE.GAME;
 		loginFrame.setVisible(false);
-		initGame(Integer.parseInt(xPos), Integer.parseInt(yPos), c, Integer.parseInt(exp), Integer.parseInt(lvl));
+		initGame(name, Integer.parseInt(xPos), Integer.parseInt(yPos), c, Integer.parseInt(exp), Integer.parseInt(lvl));
 	}
 
 	private void loadImages(){
@@ -286,7 +304,6 @@ public class GameClient extends Canvas implements Runnable{
 						//Stanton use these two strings and send them to server to request login.
 						user = username.getText();
 						pass = password.getText();
-						pClass = Player.PLAYER_CLASS.EXISTING;
 						InitializeConnection();
 						connectLocal();
 						loginBox.setVisible(false);
@@ -494,7 +511,7 @@ public class GameClient extends Canvas implements Runnable{
 		}
 	}
 
-	private void initGame(Player.PLAYER_CLASS pClass){
+	private void initGame(String name, Player.PLAYER_CLASS pClass){
 
 		key = new Keyboard();/*Initialise KeyBoard object*/
 		mouse = new Mouse();
@@ -507,7 +524,7 @@ public class GameClient extends Canvas implements Runnable{
 		//		Monster guardMonster1 = new ChestMonster(128*64, 91*64, Sprite.penisMob, 15, 100, false, true);
 		//		Monster guardMonster2 = new ChestMonster(122*64, 91*64, Sprite.penisMob, 15, 100, false, true);
 
-		player = new Player(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key, pClass);
+		player = new Player(name, SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key, pClass);
 
 		player.getItems().add(new Item("SWORD_WOOD"));
 		player.getItems().add(new Item("AXE_CRYSTAL"));
@@ -542,7 +559,7 @@ public class GameClient extends Canvas implements Runnable{
 		this.start();
 	}
 
-	private void initGame(int x, int y, Player.PLAYER_CLASS pClass, int exp, int lvl){
+	private void initGame(String name, int x, int y, Player.PLAYER_CLASS pClass, int exp, int lvl){
 
 		key = new Keyboard();/*Initialise KeyBoard object*/
 		mouse = new Mouse();
@@ -555,7 +572,7 @@ public class GameClient extends Canvas implements Runnable{
 		//		Monster guardMonster1 = new ChestMonster(128*64, 91*64, Sprite.penisMob, 15, 100, false, true);
 		//		Monster guardMonster2 = new ChestMonster(122*64, 91*64, Sprite.penisMob, 15, 100, false, true);
 
-		player = new Player(x, y, exp, lvl, key, pClass);
+		player = new Player(name, x, y, exp, lvl, key, pClass);
 
 		player.getItems().add(new Item("SWORD_WOOD"));
 		player.getItems().add(new Item("AXE_CRYSTAL"));
@@ -647,14 +664,15 @@ public class GameClient extends Canvas implements Runnable{
 		level.update();
 		otherKeysCheck();
 		counter++;
-		if(counter == 5){
-			String send = "player" + "," + player.x + "," + player.y + "," + player.getPlayerClass(); 
+		if(counter == 1){
+			String send = "player," + player.getName() + "," + player.x + "," + player.y + "," + player.getPlayerClass(); 
 			sendMessage(send); //what we want to send
 			String projectile = "projectile" + "," ;
 			for (Projectile p : level.getProjectiles()){
-				projectile =projectile + p.getX()+ "," + p.getY() + ",";    
+				projectile = projectile + p.getX()+ "," + p.getY() + ",";    
 			}
 			sendMessage(projectile);
+			counter = 0;
 		}
 
 	}
@@ -678,6 +696,9 @@ public class GameClient extends Canvas implements Runnable{
 		//penisMob.render(screen);
 		chestMob.render(screen);
 		player.render(player.x, player.y, screen);
+		for(int i = 0; i < otherPlayersOnScreen.size(); i++){
+			otherPlayersOnScreen.get(i).render(otherPlayersOnScreen.get(i).getX(), otherPlayersOnScreen.get(i).getY(), screen);
+		}
 		//screen.render(xOffset, yOffset);/*Now render screen*/
 		screen.renderInventory(player);
 
@@ -722,6 +743,18 @@ public class GameClient extends Canvas implements Runnable{
 
 	private void setPass(String pass) {
 		this.pass = pass;
+	}
+
+	private Player.PLAYER_CLASS getClassByName(String pClass){
+		switch(pClass){
+		case "WARRIOR":
+			return Player.PLAYER_CLASS.WARRIOR;
+		case "ARCHER":
+			return Player.PLAYER_CLASS.ARCHER;
+		case "MAGE":
+			return Player.PLAYER_CLASS.MAGE;
+		}
+		return null;
 	}
 
 	private void otherKeysCheck(){
