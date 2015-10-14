@@ -6,6 +6,7 @@ import client.entity.Entity;
 import client.entity.FireballProjectile;
 //import client.entity.FireballProjectile;
 import client.entity.Projectile;
+import client.entity.ShieldProjectile;
 import client.graphics.Screen;
 import client.graphics.Sprite;
 import client.level.tile.Tile;
@@ -44,7 +45,10 @@ public abstract class Mob extends Entity{
 			
 		} else if(getProjectileType(this).equals("fireball")){
 			p = new FireballProjectile(x, y, dir);
-		} else {
+		} else if(getProjectileType(this).equals("shield")){
+			p = new ShieldProjectile(x, y, dir);
+		}
+		else{
 			p = new ArrowProjectile(x, y, dir);
 		}
 		level.addProjectile(p);	
@@ -60,9 +64,11 @@ public abstract class Mob extends Entity{
 				return "arrow";
 			} else if(p.getPlayerClass().equals(Player.PLAYER_CLASS.MAGE)){
 				return "fireball";
+			} else if(p.getPlayerClass().equals(Player.PLAYER_CLASS.WARRIOR)){
+				return "shield";
 			}
 		}
-		return "fireball";
+		return "arrow";
 	}
 	
 	public void move(int xa, int ya){
