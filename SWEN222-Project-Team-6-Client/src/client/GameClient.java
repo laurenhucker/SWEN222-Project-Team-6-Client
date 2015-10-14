@@ -537,14 +537,12 @@ public class GameClient extends Canvas implements Runnable{
 			System.out.println("PRESSED E DO SOME STUFF");
 		}
 		if(key.esc){
-			key.esc = false;
-			key.forceRelease(KeyEvent.VK_ESCAPE);
-			System.out.println(key);
-			//gameClients.get(0).gameFrame = null;
-			gameClients.get(0).gameFrame.dispose();
-			gameClients.get(0).running = false;
+			key.forceRelease(KeyEvent.VK_ESCAPE);//Because it gets stuck down if I don't force it to be released before I close everything.
+			GameClient clientToRemove = gameClients.get(0);
 			gameClients.remove(0);
 			gameClients.add(new GameClient());
+			clientToRemove.gameFrame.dispose();
+			clientToRemove.running = false;
 		}
 	}
 	
