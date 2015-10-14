@@ -7,14 +7,13 @@ import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -25,20 +24,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import client.Packet.*;
-
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryonet.Client;
-import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.Listener;
-
 import client.Packet.Packet0LoginRequest;
 import client.Packet.Packet1LoginAnswer;
 import client.entity.Entity;
 import client.entity.Item;
 import client.entity.mob.Monster;
 import client.entity.mob.Player;
-import client.graphics.InventoryGraphics;
+import client.entity.mob.monsters.ChestMonster;
+import client.entity.mob.monsters.GhostMonster;
 import client.graphics.Screen;
 import client.graphics.Sprite;
 import client.input.Keyboard;
@@ -49,6 +42,8 @@ import client.level.tile.TileCoordinate;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
 
 enum STATE {
 	LOGIN,
@@ -63,9 +58,9 @@ public class GameClient extends Canvas implements Runnable{
 	private String[] words;
 	
 	public Client client;
+	public int id;
 	private String user;
 	private String pass;
-	public int id;
 	
 	public static final String TITLE = "Dylan is lame";
 	public static final int SCALE = 1,
@@ -86,24 +81,27 @@ public class GameClient extends Canvas implements Runnable{
 	private Keyboard key;
 	private Mouse mouse;
 	private Level level;
-	private Monster penisMob, chestMob;
+	private Monster penisMob, chestMob, ghostMob;
 	private Player player;
 	private int frames;
 	private STATE state = STATE.LOGIN;
+	private static ArrayList<GameClient> gameClients = new ArrayList<GameClient>();
 	
 	private Socket socket;
 	
-	private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB),
+	private BufferedImage image,
 			loginScreenImg,
 			newCharButtonImg,
 			existingCharButtonImg,
 			warriorButtonImg,
 			archerButtonImg,
 			mageButtonImg;
-	private int[] pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
+	private int[] pixels;
 	private int counter = 0;
 	
-	public GameClient(){				
+	public GameClient(){	
+		image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+		pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
 		loadImages();
 		initFrames();
 		loginScreen();
@@ -152,7 +150,7 @@ public class GameClient extends Canvas implements Runnable{
 					System.out.println("accepted");	
 					verify(true);
 				}else{
-					client.close();
+					verify(false);
 				}
 			}
 		}
@@ -193,8 +191,8 @@ public class GameClient extends Canvas implements Runnable{
 	public void verify(boolean verified){
 				
 		if (verified == false){
-			//client.stop();
-			//client.close();		
+			client.stop();
+			client.close();		
 			System.out.println("NO");
 		}else{
 			//Only reaches here after verification
@@ -385,8 +383,9 @@ public class GameClient extends Canvas implements Runnable{
 		//level = new RandomLevel(128, 128);
 		level = new SpawnLevel("/textures/map/MAP_3.PNG");
 		//level.generateLevel();
-		penisMob = new Monster(116*64, 116*64, Sprite.penisMob);
-		chestMob = new Monster(116*64, 120*64, Sprite.chestMob);
+		penisMob = new ChestMonster(116*64, 116*64, Sprite.penisMob, 15, 100, false, true);
+		chestMob = new ChestMonster(116*64, 120*64, Sprite.chestMob, 0, 1000, false, false);
+		ghostMob = new GhostMonster(116*64, 124*64, Sprite.ghostMob, 0, 50, true, false);
 		
 		player = new Player(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key, pClass);
 		
@@ -402,8 +401,10 @@ public class GameClient extends Canvas implements Runnable{
 		player.initialise(level);
 		penisMob.initialise(level);
 		chestMob.initialise(level);
+		ghostMob.initialise(level);
 		level.addEntity(penisMob);
 		level.addEntity(chestMob);
+		level.addEntity(ghostMob);
 		level.addEntity(player);
 		level.addPlayer(player);
 		addKeyListener(key);
@@ -468,6 +469,7 @@ public class GameClient extends Canvas implements Runnable{
 		key.update();
 		player.update();
 		level.update();
+		otherKeysCheck();
 		counter++;
 		if(counter == 5){
 			//sendMessage(message); //what we want to send
@@ -519,7 +521,7 @@ public class GameClient extends Canvas implements Runnable{
 	}
 	
 	public static void main(String[] args){
-		GameClient game = new GameClient();
+		gameClients.add(new GameClient());
 	}
 
 	private String getUser() {
@@ -538,6 +540,18 @@ public class GameClient extends Canvas implements Runnable{
 		this.pass = pass;
 	}
 
-	
+	private void otherKeysCheck(){
+		if(key.e){
+			System.out.println("PRESSED E DO SOME STUFF");
+		}
+		if(key.esc){
+			key.forceRelease(KeyEvent.VK_ESCAPE);//Because it gets stuck down if I don't force it to be released before I close everything.
+			GameClient clientToRemove = gameClients.get(0);
+			gameClients.remove(0);
+			gameClients.add(new GameClient());
+			clientToRemove.gameFrame.dispose();
+			clientToRemove.running = false;
+		}
+	}
 	
 }
