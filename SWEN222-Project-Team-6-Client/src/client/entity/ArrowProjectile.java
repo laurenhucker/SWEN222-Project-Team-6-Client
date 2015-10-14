@@ -35,6 +35,9 @@ public class ArrowProjectile extends Projectile {
 			if(hitMob != null){
 				hitMob.damage(10);
 				System.out.println("hit " + hitMob);
+				System.out.println("Health is " + hitMob.getHealth());
+				System.out.println("Max health is " + hitMob.getMaxHealth());
+				System.out.println(hitMob.getHealth()/hitMob.getMaxHealth()*100);
 				if(hitMob.getHealth() <= 0){
 					System.out.println("Health is 0");
 					level.getEntities().remove(hitMob);

@@ -197,4 +197,8 @@ public class Player extends Mob {
 		this.y = t.getY();
 	}
 	
+	public int getMaxHealth(){
+		return this.MAX_HEALTH;
+	}
+	
 }

@@ -92,7 +92,7 @@ public class Screen {
 				int col = sprite.pixels[x + y * sprite.SIZE];
 				if(col != 0xffff00ff)//dont render pink
 					pixels[xAbs + yAbs * width] = col;
-				renderHealthBar(xPos, yPos, player.getHealth());
+				renderHealthBar(xPos, yPos, player.getHealth(), player.getMaxHealth());
 			}
 		}
 	}
@@ -110,7 +110,7 @@ public class Screen {
 				if(col != 0xffff00ff)
 					pixels[xAbs + yAbs * width] = monster.getSprite().pixels[x + y * monster.getSprite().SIZE];
 				if(xPos > 0 && yPos > 0)
-					renderHealthBar(xPos, yPos, monster.getHealth());
+					renderHealthBar(xPos, yPos, monster.getHealth(), monster.getMaxHealth());
 			}
 		}
 		
@@ -164,7 +164,8 @@ public class Screen {
 		
 	}
 	
-	private void renderHealthBar(int x, int y, int health){
+	private void renderHealthBar(int x, int y, int health, int maxHealth){
+		if(health <= 0) return;
 		int xPos = x - 18;//18/64/18 for health bar split
 		int yPos = y - 20;//Slightly above the entity
 		if(xPos < 0 || yPos < 0){
@@ -176,7 +177,7 @@ public class Screen {
 				pixels[i + (j*this.width)] = redBar;
 			}
 		}
-		for(int i = xPos; i < xPos + health; i++){//fill green bar on top
+		for(int i = xPos; i < xPos + ((health*100)/maxHealth); i++){//fill green bar on top
 			for(int j = yPos; j < yPos + hpBarThickness; j++){
 				pixels[i + (j*this.width)] = greenBar;
 			}

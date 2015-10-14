@@ -55,7 +55,9 @@ public class Monster extends Mob {
 		return this.y;
 	}
 	
-
+	public int getMaxHealth(){
+		return this.MAX_HEALTH;
+	}
 	
 	
 }

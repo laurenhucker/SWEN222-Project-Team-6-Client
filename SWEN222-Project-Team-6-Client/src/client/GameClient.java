@@ -11,10 +11,7 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -25,20 +22,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import client.Packet.*;
-
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryonet.Client;
-import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.Listener;
-
 import client.Packet.Packet0LoginRequest;
 import client.Packet.Packet1LoginAnswer;
 import client.entity.Entity;
 import client.entity.Item;
 import client.entity.mob.Monster;
 import client.entity.mob.Player;
-import client.graphics.InventoryGraphics;
+import client.entity.mob.monsters.ChestMonster;
 import client.graphics.Screen;
 import client.graphics.Sprite;
 import client.input.Keyboard;
@@ -49,6 +39,8 @@ import client.level.tile.TileCoordinate;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
 
 enum STATE {
 	LOGIN,
@@ -382,7 +374,7 @@ public class GameClient extends Canvas implements Runnable{
 		level = new SpawnLevel("/textures/map/MAP_3.PNG");
 		//level.generateLevel();
 		penisMob = new Monster(116*64, 116*64, Sprite.penisMob);
-		chestMob = new Monster(116*64, 120*64, Sprite.chestMob);
+		chestMob = new ChestMonster(116*64, 120*64, Sprite.chestMob, 0, 1000, false, false);
 		
 		player = new Player(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key, pClass);
 		

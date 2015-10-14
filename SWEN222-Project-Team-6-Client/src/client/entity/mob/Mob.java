@@ -15,7 +15,7 @@ public abstract class Mob extends Entity{
 	protected Sprite sprite;
 	protected int dir = 1;//direction - 1:NORTH 2:EAST 3:SOUTH 4:WEST
 	protected boolean moving = false;
-	protected final int MAX_HEALTH = 100;
+	protected int MAX_HEALTH = 100;
 	protected int health;
 	
 	
@@ -79,8 +79,6 @@ public abstract class Mob extends Entity{
 		if(health <= 0) health = 0;
 	}
 	
-
-	
 	public int getHealth(){
 		return health;
 	}
@@ -92,6 +90,8 @@ public abstract class Mob extends Entity{
 		return y;
 	}
 	
-	
+	public int getMaxHealth(){
+		return this.MAX_HEALTH;
+	}
 	
 }
