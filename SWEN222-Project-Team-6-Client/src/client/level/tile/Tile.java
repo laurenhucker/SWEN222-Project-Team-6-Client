@@ -25,6 +25,7 @@ public class Tile {
 	public static final Tile SAND = new SandTile(Sprite.sand);
 	public static final Tile WOOD = new WoodTile(Sprite.wood);
 	public static final Tile WOOD_WALL = new WoodWallTile(Sprite.wood_wall);
+	public static final Tile TREE = new WoodWallTile(Sprite.tree);
 	public static final Tile NORTH_WALL = new NorthWallFaceTile(Sprite.north_wall_face);
 	public static final Tile SOUTH_WALL = new SouthWallFaceTile(Sprite.south_wall_face);
 	public static final Tile EAST_WALL = new EastWallFaceTile(Sprite.east_wall_face);
