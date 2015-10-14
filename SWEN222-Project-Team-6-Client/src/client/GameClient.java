@@ -23,6 +23,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
 import client.entity.Entity;
 import client.entity.Item;
 import client.entity.mob.Monster;
@@ -142,17 +143,23 @@ public class GameClient extends Canvas implements Runnable{
 
 	public void handleMessage(int playerId, Object message) {
 		if(message instanceof String){
-			System.out.println("is a string");
 			words=((String) message).split(",");
+			
 			if(words[0].equalsIgnoreCase("login")){
 				String ans = words[1];
-				System.out.println("ans is" + ans);			
+				System.out.println("[CLIENT] ans is" + ans);			
 				if(ans.equalsIgnoreCase("true")){					
 					System.out.println("accepted");	
 					verify(true);
 				}else{
 					verify(false);
 				}
+			}else if (words[0].equalsIgnoreCase("player")){
+				System.out.println("[CLIENT] is type player");
+				int x = Integer.parseInt(words[1]);
+				int y = Integer.parseInt(words[2]);
+				String playerClass = words[3];
+				
 			}
 		}
 	}
@@ -495,8 +502,11 @@ public class GameClient extends Canvas implements Runnable{
 		otherKeysCheck();
 		counter++;
 		if(counter == 5){
-			//sendMessage(message); //what we want to send
+			String send = "player" + "," + player.x + "," + player.y + "," + player.getPlayerClass();	
+			sendMessage(send); //what we want to send
+			counter = 0;
 		}
+		
 	}
 
 	/**
