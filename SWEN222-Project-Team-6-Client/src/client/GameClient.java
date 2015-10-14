@@ -82,7 +82,7 @@ public class GameClient extends Canvas implements Runnable{
 	private Keyboard key;
 	private Mouse mouse;
 	private Level level;
-	private Monster penisMob, chestMob;
+	private Monster penisMob, chestMob, ghostMob;
 	private Player player;
 	private int frames;
 	private STATE state = STATE.LOGIN;
@@ -380,7 +380,8 @@ public class GameClient extends Canvas implements Runnable{
 		level = new SpawnLevel("/textures/map/MAP_3.PNG");
 		//level.generateLevel();
 		penisMob = new ChestMonster(116*64, 116*64, Sprite.penisMob, 15, 100, false, true);
-		chestMob = new GhostMonster(116*64, 120*64, Sprite.chestMob, 0, 50, true, false);
+		chestMob = new ChestMonster(116*64, 120*64, Sprite.chestMob, 0, 1000, false, false);
+		ghostMob = new GhostMonster(116*64, 124*64, Sprite.ghostMob, 0, 50, true, false);
 		
 		player = new Player(SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key, pClass);
 		
@@ -396,8 +397,10 @@ public class GameClient extends Canvas implements Runnable{
 		player.initialise(level);
 		penisMob.initialise(level);
 		chestMob.initialise(level);
+		ghostMob.initialise(level);
 		level.addEntity(penisMob);
 		level.addEntity(chestMob);
+		level.addEntity(ghostMob);
 		level.addEntity(player);
 		level.addPlayer(player);
 		addKeyListener(key);
