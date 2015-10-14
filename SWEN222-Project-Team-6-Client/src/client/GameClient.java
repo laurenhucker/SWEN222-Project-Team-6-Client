@@ -154,6 +154,9 @@ public class GameClient extends Canvas implements Runnable{
 				}
 			}else if (words[0].equalsIgnoreCase("player")){
 				System.out.println("[CLIENT] is type player");
+				int x = Integer.parseInt(words[1]);
+				int y = Integer.parseInt(words[2]);
+				String playerClass = words[3];
 				
 			}
 		}
@@ -252,7 +255,7 @@ public class GameClient extends Canvas implements Runnable{
 							user = username.getText();
 							pass = password.getText();
 							InitializeConnection();
-							connectLocal();							
+							connect("dylanteam6.no-ip.biz");							
 					}
 				});
 				loginPanel.add(username);
