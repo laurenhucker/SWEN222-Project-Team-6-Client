@@ -73,7 +73,7 @@ public class Level {
 		}
 		
 		for(Projectile p : projectiles){
-				p.render(screen);
+			p.render(screen);
 		}
 	}
 	

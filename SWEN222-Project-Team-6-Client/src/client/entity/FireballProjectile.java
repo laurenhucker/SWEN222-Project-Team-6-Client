@@ -22,6 +22,18 @@ public class FireballProjectile extends Projectile {
 		ny = speed * Math.sin(angle);
 
 	}
+	
+	public FireballProjectile(int x, int y, double dir, int id){
+		super(x, y, dir, id);
+		speed = 5;
+		speed = 5;
+		range = 500;
+		damage = 15;
+		sprite = Sprite.fireball;
+		nx = speed * Math.cos(angle);
+		ny = speed * Math.sin(angle);
+
+	}
 
 	public void update(){
 		move();

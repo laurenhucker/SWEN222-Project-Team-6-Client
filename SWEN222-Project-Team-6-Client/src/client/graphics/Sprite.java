@@ -49,8 +49,8 @@ public class Sprite {
 	public static Sprite penisMob = new Sprite(0, 15, SpriteSheet.ENTITIES),
 			chestMob = new Sprite(1, 15, SpriteSheet.ENTITIES),
 			ghostMob = new Sprite(2, 15, SpriteSheet.ENTITIES),
-			knightMob = new Sprite(3, 15, SpriteSheet.ENTITIES);
-
+			knightMob = new Sprite(3, 15, SpriteSheet.ENTITIES),
+			davidMob = new Sprite(4, 15, SpriteSheet.ENTITIES);
 	public static Sprite[] player1 = {
 		new Sprite(0, 0, SpriteSheet.ENTITIES),//NORTH LEFT FOOT
 		new Sprite(1, 0, SpriteSheet.ENTITIES),//NORTH STILL

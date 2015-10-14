@@ -21,6 +21,17 @@ public class ArrowProjectile extends Projectile {
 		ny = speed * Math.sin(angle);
 
 	}
+	
+	public ArrowProjectile(int x, int y, double dir, int id){
+		super(x, y, dir, id);
+		speed = GameClient.WALK_SPEED*3;
+		range = 500;
+		damage = 15;
+		sprite = Sprite.bullet;
+		nx = speed * Math.cos(angle);
+		ny = speed * Math.sin(angle);
+
+	}
 
 	public void update(){
 		move();

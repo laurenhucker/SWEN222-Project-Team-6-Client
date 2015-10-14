@@ -35,7 +35,6 @@ public class Player extends Mob {
 	private String name;
 	
 	private List<Item> inventory = new ArrayList<Item>();
-	private int percentHP = 100;
 	
 	private int lastDir = 1;
 	/**
@@ -51,7 +50,7 @@ public class Player extends Mob {
 		this.xTile = ((this.x / GameClient.TILE_WIDTH) + ((GameClient.WIDTH / GameClient.TILE_WIDTH) / 2)) - GameClient.DEFAULT_SPAWN.getX();
 		this.yTile = ((this.y / GameClient.TILE_WIDTH) + ((GameClient.HEIGHT / GameClient.TILE_WIDTH) / 2)) - GameClient.DEFAULT_SPAWN.getY();
 		this.input = input;
-		this.health = 69;
+		this.health = 100;
 		playerClass = pClass;
 		switch(pClass){
 		case WARRIOR:
@@ -75,7 +74,7 @@ public class Player extends Mob {
 		this.xTile = ((this.x / GameClient.TILE_WIDTH) + ((GameClient.WIDTH / GameClient.TILE_WIDTH) / 2)) - GameClient.DEFAULT_SPAWN.getX();
 		this.yTile = ((this.y / GameClient.TILE_WIDTH) + ((GameClient.HEIGHT / GameClient.TILE_WIDTH) / 2)) - GameClient.DEFAULT_SPAWN.getY();
 		this.input = input;
-		this.health = 69;
+		this.health = 100;
 		this.playerClass = pClass;
 		switch(pClass){
 		case WARRIOR:
@@ -199,7 +198,11 @@ public class Player extends Mob {
 		screen.renderPlayer(x + screen.getWidth()/2, y + screen.getHeight()/2, this);
 	}
 	
-
+	public void renderOther(int x, int y, Screen screen){
+		x -= GameClient.DEFAULT_SPAWN.getX();
+		y -= GameClient.DEFAULT_SPAWN.getY();
+		screen.renderOtherPlayer(x + screen.getWidth()/2, y + screen.getHeight()/2, this);
+	}
 	
 	public int getWalkCycle(){
 		return this.walkCycle;

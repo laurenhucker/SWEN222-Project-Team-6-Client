@@ -25,8 +25,10 @@ import javax.swing.JTextField;
 
 import client.entity.ArrowProjectile;
 import client.entity.Entity;
+import client.entity.FireballProjectile;
 import client.entity.Item;
 import client.entity.Projectile;
+import client.entity.ShieldProjectile;
 import client.entity.mob.Monster;
 import client.entity.mob.Player;
 import client.entity.mob.monsters.ChestMonster;
@@ -191,11 +193,11 @@ public class GameClient extends Canvas implements Runnable{
 					}
 					for(Player p : otherPlayers){
 						if(!p.getName().equalsIgnoreCase(player.getName())){
-							/*if((p.x > player.x - (clientWidth/2)) && (p.x < player.x + (clientWidth/2) && (p.y > player.y - (clientHeight/2) && (p.y < player.y + (clientHeight/2))))){
-
-							} else {
-								otherPlayersOnScreen.remove(p);
-							}*/
+//							if((p.x > player.x - (clientWidth/2)) && (p.x < player.x + (clientWidth/2) && (p.y > player.y - (clientHeight/2) && (p.y < player.y + (clientHeight/2))))){
+//
+//							} else {
+//								otherPlayersOnScreen.remove(p);
+//							}
 							if(p.getName().equals(name)){
 								if(otherPlayersOnScreen.contains(p)){
 									p.x = x;
@@ -216,12 +218,31 @@ public class GameClient extends Canvas implements Runnable{
 				} else {
 					loginFail();
 				}
-			} else if (words[0].equalsIgnoreCase("projectile")){
+			} else if (words[0].equalsIgnoreCase("projectile")){//SHOULD RECEIVE "projectile,x,y,dir,type,id"
 				System.out.println("is type projectile");      
 				for(int i=1; i< (words.length);i=i+3){
 					System.out.println(words[i] +"," + words[i+1]+"," +words[i+2]);
-					Projectile p = new ArrowProjectile(Integer.parseInt(words[i]), Integer.parseInt(words[i+1]), Double.parseDouble(words[i+2]));
-					level.addProjectile(p);     
+					int x = Integer.parseInt(words[1]);
+					int y = Integer.parseInt(words[2]);
+					int dir = Integer.parseInt(words[3]);
+					String type = words[4];
+					switch(type){
+					case "SHIELD":
+						Projectile p = new ShieldProjectile(x, y, dir, id);
+						if(!levelContainsProjectile(p))
+							level.addProjectile(p);
+						break;
+					case "BULLET":
+						Projectile p1 = new ArrowProjectile(x, y, dir, id);
+						if(!levelContainsProjectile(p1))
+							level.addProjectile(p1);
+						break;
+					case "FIREBALL":
+						Projectile p2 = new FireballProjectile(x, y, dir, id);
+						if(!levelContainsProjectile(p2))
+							level.addProjectile(p2);
+						break;
+					}
 				}
 			}
 		}
@@ -323,7 +344,8 @@ public class GameClient extends Canvas implements Runnable{
 						user = username.getText();
 						pass = password.getText();
 						InitializeConnection();
-						connectLocal();
+						//connectLocal();
+						connect("192.168.1.165");
 						loginBox.setVisible(false);
 					}
 				});
@@ -527,7 +549,7 @@ public class GameClient extends Canvas implements Runnable{
 		}
 		
 		for(int i = 0; i < bossCoords.length; i++){
-			Monster m = new ChestMonster((bossCoords[i][0])*64, (bossCoords[i][1])*64, Sprite.knightMob, 15, 500, false, true);
+			Monster m = new ChestMonster((bossCoords[i][0])*64, (bossCoords[i][1])*64, Sprite.davidMob, 15, 500, false, true);
 			m.initialise(level);
 			level.addEntity(m);
 		}
@@ -651,15 +673,19 @@ public class GameClient extends Canvas implements Runnable{
 			if(p.getWalkCycle() > 60)
 				p.setWalkCycle(0);
 		}
-		if(counter == 60){
+		if(counter == 1){
 			String send = "player," + player.getName() + "," + player.x + "," + player.y + "," + player.getPlayerClass(); 
 			sendMessage(send); //what we want to send
-			String projectile = "projectile" + "," ;
+			String projectile = "";
 			for (Projectile p : level.getProjectiles()){
-				projectile = projectile + p.getX()+ "," + p.getY() + ",";    
+				projectile = String.format("projectile,%s,%s,%s,%s,%s", p.getX(), p.getY(), p.getDir(), p.getType(), p.getID()); 
 			}
 			//sendMessage(projectile);
 			counter = 0;
+		}
+		for(int i = 0; i < otherPlayersOnScreen.size(); i++){
+			Player p = otherPlayersOnScreen.get(i);
+			System.out.println(p.getName());
 		}
 
 	}
@@ -680,11 +706,11 @@ public class GameClient extends Canvas implements Runnable{
 			if(e instanceof Monster)
 				((Monster)e).render(screen);
 		}
-		//penisMob.render(screen);
 		chestMob.render(screen);
 		player.render(player.x, player.y, screen);
 		for(int i = 0; i < otherPlayersOnScreen.size(); i++){
-			otherPlayersOnScreen.get(i).render(otherPlayersOnScreen.get(i).getX(), otherPlayersOnScreen.get(i).getY(), screen);
+			Player p = otherPlayersOnScreen.get(i);
+			p.renderOther(p.getX(), p.getY(), screen);
 		}
 		//screen.render(xOffset, yOffset);/*Now render screen*/
 		screen.renderInventory(player);
@@ -740,6 +766,13 @@ public class GameClient extends Canvas implements Runnable{
 			clientToRemove.gameFrame.dispose();
 			clientToRemove.running = false;
 		}
+	}
+	
+	private boolean levelContainsProjectile(Projectile p){
+		for(int i = 0; i < level.getProjectiles().size(); i++){
+			if(level.getProjectiles().get(i).getID() == p.getID()) return true;
+		}
+		return false;
 	}
 
 }
