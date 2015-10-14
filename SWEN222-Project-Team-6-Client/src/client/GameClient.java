@@ -12,7 +12,6 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;
-import java.net.Socket;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
@@ -40,7 +39,6 @@ import client.level.Level;
 import client.level.SpawnLevel;
 import client.level.tile.TileCoordinate;
 
-import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -54,7 +52,7 @@ enum STATE {
 
 public class GameClient extends Canvas implements Runnable{
 
-	private boolean verified = false, newUser = false;;
+	private boolean newUser = false;;
 	private String[] words;
 
 	public Client client;
@@ -63,7 +61,7 @@ public class GameClient extends Canvas implements Runnable{
 	private String pass;
 	private Player.PLAYER_CLASS pClass;
 
-	public static final String TITLE = "Haunted house";
+	public static final String TITLE = "Haunted House";
 	public static final int SCALE = 1,
 			NUM_TILES = 21,
 			TILE_WIDTH = 64,
@@ -90,23 +88,21 @@ public class GameClient extends Canvas implements Runnable{
 	private ArrayList<Player> otherPlayers = new ArrayList<Player>();
 	private ArrayList<Player> otherPlayersOnScreen = new ArrayList<Player>();
 
-	public int[][] kniteCoords = {{149,37}, {149, 38}, {149, 39}, {149, 40}, {148, 29},
+	public int[][] knightCoords = {{149,37}, {149, 38}, {149, 39}, {149, 40}, {148, 29},
 			{137, 44}, {141,46}, {166,31}, {166,32}, {162,15}, {164,14}, {167,13}, 
 			{122,91}, {128, 91}, {142,164}, {127,200}, {105,218}, {103,244}, {135,248}, {20,27}, {33,107},
 			{192,84}, {185,87}, {165,100}, {175,113}, {208,129}, {179,167}, {181,170}, {32,235},
 			{94,121}, {94,114}, {107,122}, {121,147}, {128,147}, {155,125}, {155,118}};
 			
-public int[][] bossCoords = {{19,154}, {40,240}, {149,237}, {88,14}, {40, 99}, {142,36},
+	public int[][] bossCoords = {{19,154}, {40,240}, {149,237}, {88,14}, {40, 99}, {142,36},
 					{209,140}, {106,201}};
 
-public int [][] treasureCoords = {{137,175},{133,180},{16,225},{145,57},{16,19},{72,75},
+	public int [][] treasureCoords = {{137,175},{133,180},{16,225},{145,57},{16,19},{72,75},
 					{167,69}, {196,87}, {169,94}, {189,112}, {236,102}, {176,163}, {41,242}, {155,101}, {109,127}, {125,141}  };
 
-public int [][] ghostCoords = {{125,158},{121,183},{85,225},{23,170},{215,49},{206,28},{184,13},{120,13},{31,15},{33,37},{42,109},
+	public int [][] ghostCoords = {{125,158},{121,183},{85,225},{23,170},{215,49},{206,28},{184,13},{120,13},{31,15},{33,37},{42,109},
 								{126,65}, {188,46}, {207,73}, {234,80}, {217,141}, {232,117}, {227,102}, {125,159}, {106,209}, {28,227}
 								, {140,121}, {125,102}, {136,143}};
-
-	private Socket socket;
 
 	private BufferedImage image,
 	loginScreenImg,
@@ -187,11 +183,12 @@ public int [][] ghostCoords = {{125,158},{121,183},{85,225},{23,170},{215,49},{2
 					int y = Integer.parseInt(words[3]);
 					Player.PLAYER_CLASS c = getClassByName(words[4]);
 					otherPlayers.add(new Player(name, x, y, null, c));
-				} else {
-					int x = Integer.parseInt(words[1]);
-					int y = Integer.parseInt(words[2]);
+					
 					int clientHeight = 768, clientWidth = 1344;
-
+					if(!playerAddedToThisClient(name)){//if Player list doesnt contain a Player with "name"
+						System.out.println("Adding new player to this client with name " + name);
+						otherPlayers.add(new Player(name, x, y, null, c));
+					}
 					for(Player p : otherPlayers){
 						if(!p.getName().equalsIgnoreCase(player.getName())){
 							/*if((p.x > player.x - (clientWidth/2)) && (p.x < player.x + (clientWidth/2) && (p.y > player.y - (clientHeight/2) && (p.y < player.y + (clientHeight/2))))){
@@ -199,11 +196,13 @@ public int [][] ghostCoords = {{125,158},{121,183},{85,225},{23,170},{215,49},{2
 							} else {
 								otherPlayersOnScreen.remove(p);
 							}*/
-							if(otherPlayersOnScreen.contains(p)){
-								p.x = x;
-								p.y = y;
-							} else {
-								otherPlayersOnScreen.add(p);
+							if(p.getName().equals(name)){
+								if(otherPlayersOnScreen.contains(p)){
+									p.x = x;
+									p.y = y;
+								} else {
+									otherPlayersOnScreen.add(p);
+								}
 							}
 						}
 					}
@@ -228,9 +227,15 @@ public int [][] ghostCoords = {{125,158},{121,183},{85,225},{23,170},{215,49},{2
 		}
 	}
 
-	public void registerPackets(){
-		Kryo kryo = client.getKryo();
+	private boolean playerAddedToThisClient(String name) {
+		for(Player p : this.otherPlayers){
+			if(p.getName().equalsIgnoreCase(name)) return true;
+		}
+		return false;
+	}
 
+	public void registerPackets(){
+		client.getKryo();
 	}
 
 	public void sendMessage(Object message) {
@@ -515,8 +520,8 @@ public int [][] ghostCoords = {{125,158},{121,183},{85,225},{23,170},{215,49},{2
 	}
 
 	public void initialiseMonsters(){
-		for(int i = 0; i < kniteCoords.length; i++){
-			Monster m = new ChestMonster((kniteCoords[i][0])*64, (kniteCoords[i][1])*64, Sprite.knightMob, 15, 100, false, true);
+		for(int i = 0; i < knightCoords.length; i++){
+			Monster m = new ChestMonster((knightCoords[i][0])*64, (knightCoords[i][1])*64, Sprite.knightMob, 15, 100, false, true);
 			m.initialise(level);
 			level.addEntity(m);
 		}
@@ -540,45 +545,6 @@ public int [][] ghostCoords = {{125,158},{121,183},{85,225},{23,170},{215,49},{2
 		}
 	}
 
-	private void initGame(String name, Player.PLAYER_CLASS pClass){
-
-		key = new Keyboard();/*Initialise KeyBoard object*/
-		mouse = new Mouse();
-		//level = new RandomLevel(128, 128);
-		level = new SpawnLevel("/textures/map/MAP_3.PNG");
-		//level.generateLevel();
-		chestMob = new ChestMonster(116*64, 120*64, Sprite.chestMob, 0, 1000, false, false);
-		ghostMob = new GhostMonster(116*64, 124*64, Sprite.ghostMob, 0, 50, true, false);
-		
-
-		player = new Player(name, SPAWN_LOCATION.getX(), SPAWN_LOCATION.getY(), key, pClass);
-
-		player.getItems().add(new Item("SWORD_WOOD"));
-		player.getItems().add(new Item("AXE_CRYSTAL"));
-		player.getItems().add(new Item("BOW_METAL"));
-		player.getItems().add(new Item("BOW_CRYSTAL"));
-		player.getItems().add(new Item("STAFF_CRYSTAL"));
-		player.getItems().add(new Item("STAFF_CRYSTAL"));
-		player.getItems().add(new Item("AXE_METAL"));
-		player.getItems().add(new Item("AXE_WOOD"));
-		player.getItems().add(new Item("SWORD_CRYSTAL"));
-		player.initialise(level);
-
-		initialiseMonsters();
-
-		chestMob.initialise(level);
-		ghostMob.initialise(level);
-		level.addEntity(chestMob);
-		level.addEntity(ghostMob);
-		level.addEntity(player);
-		level.addPlayer(player);
-		addKeyListener(key);
-		addMouseListener(mouse);
-		addMouseMotionListener(mouse);
-		gameFrame.setVisible(true);
-		this.start();
-	}
-
 	private void initGame(String name, int x, int y, Player.PLAYER_CLASS pClass, int exp, int lvl){
 
 		key = new Keyboard();/*Initialise KeyBoard object*/
@@ -586,12 +552,9 @@ public int [][] ghostCoords = {{125,158},{121,183},{85,225},{23,170},{215,49},{2
 		//level = new RandomLevel(128, 128);
 		level = new SpawnLevel("/textures/map/MAP_3.PNG");
 		//level.generateLevel();
-		
 		chestMob = new ChestMonster(116*64, 120*64, Sprite.chestMob, 0, 1000, false, false);
 		ghostMob = new GhostMonster(116*64, 124*64, Sprite.ghostMob, 0, 50, true, false);
-		//		Monster guardMonster1 = new ChestMonster(128*64, 91*64, Sprite.penisMob, 15, 100, false, true);
-		//		Monster guardMonster2 = new ChestMonster(122*64, 91*64, Sprite.penisMob, 15, 100, false, true);
-
+		
 		player = new Player(name, x, y, exp, lvl, key, pClass);
 
 		player.getItems().add(new Item("SWORD_WOOD"));
@@ -682,14 +645,20 @@ public int [][] ghostCoords = {{125,158},{121,183},{85,225},{23,170},{215,49},{2
 		level.update();
 		otherKeysCheck();
 		counter++;
-		if(counter == 1){
+		for(int i = 0; i < otherPlayers.size(); i++){
+			Player p = otherPlayers.get(i);
+			p.setWalkCycle(p.getWalkCycle() + 1);;
+			if(p.getWalkCycle() > 60)
+				p.setWalkCycle(0);
+		}
+		if(counter == 60){
 			String send = "player," + player.getName() + "," + player.x + "," + player.y + "," + player.getPlayerClass(); 
 			sendMessage(send); //what we want to send
 			String projectile = "projectile" + "," ;
 			for (Projectile p : level.getProjectiles()){
 				projectile = projectile + p.getX()+ "," + p.getY() + ",";    
 			}
-			sendMessage(projectile);
+			//sendMessage(projectile);
 			counter = 0;
 		}
 
@@ -745,22 +714,6 @@ public int [][] ghostCoords = {{125,158},{121,183},{85,225},{23,170},{215,49},{2
 
 	public static void main(String[] args){
 		gameClients.add(new GameClient());
-	}
-
-	private String getUser() {
-		return user;
-	}
-
-	private void setUser(String user) {
-		this.user = user;
-	}
-
-	private String getPass() {
-		return pass;
-	}
-
-	private void setPass(String pass) {
-		this.pass = pass;
 	}
 
 	private Player.PLAYER_CLASS getClassByName(String pClass){

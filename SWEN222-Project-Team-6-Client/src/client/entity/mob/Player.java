@@ -37,6 +37,11 @@ public class Player extends Mob {
 	private List<Item> inventory = new ArrayList<Item>();
 	private int percentHP = 100;
 	
+	private int lastDir = 1;
+	/**
+	 * 1-NORTH, 2-EAST, 3-SOUTH, 4-WEST
+	 */ 
+	
 	public Player(String name, int x, int y, Keyboard input, PLAYER_CLASS pClass){
 		this.name = name;
 		this.x = x;
@@ -232,6 +237,18 @@ public class Player extends Mob {
 	
 	public String getName(){
 		return this.name;
+	}
+	
+	public void setWalkCycle(int n){
+		this.walkCycle = n;
+	}
+	
+	public int getLastDir(){
+		return this.lastDir;
+	}
+	
+	public void setLastDir(int n){
+		this.lastDir = n;
 	}
 	
 }
