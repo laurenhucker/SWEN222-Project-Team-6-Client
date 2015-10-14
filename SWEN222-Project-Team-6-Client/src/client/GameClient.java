@@ -83,7 +83,8 @@ public class GameClient extends Canvas implements Runnable{
 	private int frames;
 	private STATE state = STATE.LOGIN;
 	private static ArrayList<GameClient> gameClients = new ArrayList<GameClient>();
-	public int[][] monsterCoords;
+	public int[][] monsterCoords = {{149,37}, {149, 38}, {149, 39}, {149, 40}, {148, 29},
+		{137, 44}, {141,46}, {166,31}, {166,32}, {162,15}, {164,14}, {167,13}, {122,91}, {128, 91}, {SPAWN_LOCATION.getX()  + 2, SPAWN_LOCATION.getY() + 5}};
 	
 	private Socket socket;
 	
@@ -104,8 +105,7 @@ public class GameClient extends Canvas implements Runnable{
 		initFrames();
 		loginScreen();
 		
-		monsterCoords = new int[][] {{149,37}, {149, 38}, {149, 39}, {149, 40}, {148, 29},
-		{137, 44}, {141,46}, {166,31}, {166,32}, {162,15}, {164,14}, {167,13}, {122,91}, {128, 91} };
+		
 		//InitializeConnection();
 	}
 	
@@ -250,7 +250,7 @@ public class GameClient extends Canvas implements Runnable{
 							user = username.getText();
 							pass = password.getText();
 							InitializeConnection();
-							connectLocal();							
+							connect("122.60.108.70");							
 					}
 				});
 				loginPanel.add(username);
@@ -378,12 +378,11 @@ public class GameClient extends Canvas implements Runnable{
 	
 	public void initialiseMonsters(){
 		for(int i = 0; i < monsterCoords.length; i++){
-			for(int j = 0; i < monsterCoords.length; j++){
-				Monster m = new ChestMonster(i<<6, j<<6, Sprite.penisMob, 15, 100, false, true);
-				level.addEntity(m);
+			//for(int j = 0; j < monsterCoords[0].length; j++){
+				Monster m = new ChestMonster((monsterCoords[i][0])*64, (monsterCoords[i][1])*64, Sprite.penisMob, 15, 100, false, true);
 				m.initialise(level);
-			}
-			
+				level.addEntity(m);
+			//}
 		}
 	}
 	
@@ -417,7 +416,7 @@ public class GameClient extends Canvas implements Runnable{
 		player.initialise(level);
 		
 		initialiseMonsters();
-		
+	
 		penisMob.initialise(level);
 		chestMob.initialise(level);
 		ghostMob.initialise(level);
