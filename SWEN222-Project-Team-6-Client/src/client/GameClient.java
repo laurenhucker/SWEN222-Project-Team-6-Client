@@ -59,9 +59,8 @@ enum STATE {
 
 public class GameClient extends Canvas implements Runnable{
 	
-	public Packet packet = new Packet();	
-	private Packet0LoginRequest loginPacket;
-	private boolean verified;
+	private boolean verified=false;
+	private String[] words;
 	
 	public Client client;
 	private String user;
@@ -137,21 +136,26 @@ public class GameClient extends Canvas implements Runnable{
 	}
 
 	protected void handleConnect(Connection connection) {
-		System.out.println(user +"    " + pass);		
+		String send=("login" +"," + this.user+ ","+this.pass);
+		System.out.println(user +"    " + pass);
+		sendMessageUDP(send);	
 	}
 
 	public void handleMessage(int playerId, Object message) {
-		if(message instanceof Packet1LoginAnswer){
-			boolean ans = ((Packet1LoginAnswer) message).accepted;
-			System.out.println(ans);			
-			if(ans){
-				verified = true;
-				System.out.println("accepted");				
-			}else{
-				client.close();
+		if(message instanceof String){
+			System.out.println("is a string");
+			words=((String) message).split(",");
+			if(words[0].equalsIgnoreCase("login")){
+				String ans = words[1];
+				System.out.println("ans is" + ans);			
+				if(ans.equalsIgnoreCase("true")){					
+					System.out.println("accepted");	
+					verify(true);
+				}else{
+					client.close();
+				}
 			}
 		}
-
 	}
 	
 	public void registerPackets(){
@@ -183,6 +187,20 @@ public class GameClient extends Canvas implements Runnable{
 			client.connect(10000, host, 2555, 2556);//, Network.portUdp);
 		} catch (IOException e) {
 			e.printStackTrace();			
+		}
+	}
+	
+	public void verify(boolean verified){
+				
+		if (verified == false){
+			//client.stop();
+			//client.close();		
+			System.out.println("NO");
+		}else{
+			//Only reaches here after verification
+			state = STATE.GAME;
+			loginFrame.setVisible(false);
+			initGame(Player.PLAYER_CLASS.WARRIOR);//Change this to the player's saved class
 		}
 	}
 
@@ -231,25 +249,11 @@ public class GameClient extends Canvas implements Runnable{
 				loginButton.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent a1) {
-						verified = false;
 							//Stanton use these two strings and send them to server to request login.
-							System.out.println(getUser() + ":" + getPass());
 							user = username.getText();
 							pass = password.getText();
 							InitializeConnection();
-							connectLocal();
-							//loginPacket = new Packet0LoginRequest(user, pass);
-							sendMessageUDP("hi");	
-						if (verified == false){
-							//client.stop();
-							//client.close();		
-						 System.out.println("NO");
-						}
-						//Only reaches here after verification
-						state = STATE.GAME;
-						loginFrame.setVisible(false);
-						initGame(Player.PLAYER_CLASS.WARRIOR);//Change this to the player's saved class
-						
+							connectLocal();							
 					}
 				});
 				loginPanel.add(username);
